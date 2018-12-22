@@ -1,0 +1,981 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"Pin_OA_NonInverting.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Pin_OA_NonInverting_Write,"ax",%progbits
+  20              		.align	2
+  21              		.global	Pin_OA_NonInverting_Write
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	Pin_OA_NonInverting_Write, %function
+  25              	Pin_OA_NonInverting_Write:
+  26              	.LFB0:
+  27              		.file 1 "Generated_Source\\PSoC4\\Pin_OA_NonInverting.c"
+   1:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** /*******************************************************************************
+   2:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * File Name: Pin_OA_NonInverting.c  
+   3:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Version 2.10
+   4:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+   5:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Description:
+   6:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  This file contains API to enable firmware control of a Pins component.
+   7:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+   8:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Note:
+   9:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  10:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** ********************************************************************************
+  11:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Copyright 2008-2014, Cypress Semiconductor Corporation.  All rights reserved.
+  12:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * You may use this file only in accordance with the license, terms, conditions, 
+  13:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * disclaimers, and limitations in the end user license agreement accompanying 
+  14:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * the software package with which this file was provided.
+  15:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *******************************************************************************/
+  16:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+  17:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** #include "cytypes.h"
+  18:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** #include "Pin_OA_NonInverting.h"
+  19:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+  20:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** #define SetP4PinDriveMode(shift, mode)  \
+  21:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     do { \
+  22:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****         Pin_OA_NonInverting_PC =   (Pin_OA_NonInverting_PC & \
+  23:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****                                 (uint32)(~(uint32)(Pin_OA_NonInverting_DRIVE_MODE_IND_MASK << (Pin_
+  24:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****                                 (uint32)((uint32)(mode) << (Pin_OA_NonInverting_DRIVE_MODE_BITS * (
+  25:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     } while (0)
+  26:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+  27:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+  28:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** /*******************************************************************************
+  29:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Function Name: Pin_OA_NonInverting_Write
+  30:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** ********************************************************************************
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 2
+
+
+  31:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  32:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Summary:
+  33:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Assign a new value to the digital port's data output register.  
+  34:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  35:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Parameters:  
+  36:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  prtValue:  The value to be assigned to the Digital Port. 
+  37:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  38:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Return: 
+  39:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  None 
+  40:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  
+  41:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *******************************************************************************/
+  42:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** void Pin_OA_NonInverting_Write(uint8 value) 
+  43:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** {
+  28              		.loc 1 43 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 16
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 80B5     		push	{r7, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 84B0     		sub	sp, sp, #16
+  37              		.cfi_def_cfa_offset 24
+  38 0004 00AF     		add	r7, sp, #0
+  39              		.cfi_def_cfa_register 7
+  40 0006 0200     		movs	r2, r0
+  41 0008 FB1D     		adds	r3, r7, #7
+  42 000a 1A70     		strb	r2, [r3]
+  44:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     uint8 drVal = (uint8)(Pin_OA_NonInverting_DR & (uint8)(~Pin_OA_NonInverting_MASK));
+  43              		.loc 1 44 0
+  44 000c 0E4B     		ldr	r3, .L2
+  45 000e 1B68     		ldr	r3, [r3]
+  46 0010 DAB2     		uxtb	r2, r3
+  47 0012 0F23     		movs	r3, #15
+  48 0014 FB18     		adds	r3, r7, r3
+  49 0016 0121     		movs	r1, #1
+  50 0018 8A43     		bics	r2, r1
+  51 001a 1A70     		strb	r2, [r3]
+  45:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     drVal = (drVal | ((uint8)(value << Pin_OA_NonInverting_SHIFT) & Pin_OA_NonInverting_MASK));
+  52              		.loc 1 45 0
+  53 001c FB1D     		adds	r3, r7, #7
+  54 001e 1B78     		ldrb	r3, [r3]
+  55 0020 0122     		movs	r2, #1
+  56 0022 1340     		ands	r3, r2
+  57 0024 D9B2     		uxtb	r1, r3
+  58 0026 0F23     		movs	r3, #15
+  59 0028 FB18     		adds	r3, r7, r3
+  60 002a 0F22     		movs	r2, #15
+  61 002c BA18     		adds	r2, r7, r2
+  62 002e 1278     		ldrb	r2, [r2]
+  63 0030 0A43     		orrs	r2, r1
+  64 0032 1A70     		strb	r2, [r3]
+  46:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     Pin_OA_NonInverting_DR = (uint32)drVal;
+  65              		.loc 1 46 0
+  66 0034 044B     		ldr	r3, .L2
+  67 0036 0F22     		movs	r2, #15
+  68 0038 BA18     		adds	r2, r7, r2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 3
+
+
+  69 003a 1278     		ldrb	r2, [r2]
+  70 003c 1A60     		str	r2, [r3]
+  47:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** }
+  71              		.loc 1 47 0
+  72 003e C046     		nop
+  73 0040 BD46     		mov	sp, r7
+  74 0042 04B0     		add	sp, sp, #16
+  75              		@ sp needed
+  76 0044 80BD     		pop	{r7, pc}
+  77              	.L3:
+  78 0046 C046     		.align	2
+  79              	.L2:
+  80 0048 00050440 		.word	1074005248
+  81              		.cfi_endproc
+  82              	.LFE0:
+  83              		.size	Pin_OA_NonInverting_Write, .-Pin_OA_NonInverting_Write
+  84              		.section	.text.Pin_OA_NonInverting_SetDriveMode,"ax",%progbits
+  85              		.align	2
+  86              		.global	Pin_OA_NonInverting_SetDriveMode
+  87              		.code	16
+  88              		.thumb_func
+  89              		.type	Pin_OA_NonInverting_SetDriveMode, %function
+  90              	Pin_OA_NonInverting_SetDriveMode:
+  91              	.LFB1:
+  48:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+  49:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+  50:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** /*******************************************************************************
+  51:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Function Name: Pin_OA_NonInverting_SetDriveMode
+  52:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** ********************************************************************************
+  53:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  54:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Summary:
+  55:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Change the drive mode on the pins of the port.
+  56:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * 
+  57:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Parameters:  
+  58:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  mode:  Change the pins to one of the following drive modes.
+  59:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  60:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Pin_OA_NonInverting_DM_STRONG     Strong Drive 
+  61:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Pin_OA_NonInverting_DM_OD_HI      Open Drain, Drives High 
+  62:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Pin_OA_NonInverting_DM_OD_LO      Open Drain, Drives Low 
+  63:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Pin_OA_NonInverting_DM_RES_UP     Resistive Pull Up 
+  64:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Pin_OA_NonInverting_DM_RES_DWN    Resistive Pull Down 
+  65:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Pin_OA_NonInverting_DM_RES_UPDWN  Resistive Pull Up/Down 
+  66:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Pin_OA_NonInverting_DM_DIG_HIZ    High Impedance Digital 
+  67:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Pin_OA_NonInverting_DM_ALG_HIZ    High Impedance Analog 
+  68:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  69:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Return: 
+  70:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  None
+  71:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  72:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *******************************************************************************/
+  73:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** void Pin_OA_NonInverting_SetDriveMode(uint8 mode) 
+  74:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** {
+  92              		.loc 1 74 0
+  93              		.cfi_startproc
+  94              		@ args = 0, pretend = 0, frame = 8
+  95              		@ frame_needed = 1, uses_anonymous_args = 0
+  96 0000 80B5     		push	{r7, lr}
+  97              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 4
+
+
+  98              		.cfi_offset 7, -8
+  99              		.cfi_offset 14, -4
+ 100 0002 82B0     		sub	sp, sp, #8
+ 101              		.cfi_def_cfa_offset 16
+ 102 0004 00AF     		add	r7, sp, #0
+ 103              		.cfi_def_cfa_register 7
+ 104 0006 0200     		movs	r2, r0
+ 105 0008 FB1D     		adds	r3, r7, #7
+ 106 000a 1A70     		strb	r2, [r3]
+  75:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 	SetP4PinDriveMode(Pin_OA_NonInverting__0__SHIFT, mode);
+ 107              		.loc 1 75 0
+ 108 000c 064B     		ldr	r3, .L5
+ 109 000e 064A     		ldr	r2, .L5
+ 110 0010 1268     		ldr	r2, [r2]
+ 111 0012 0721     		movs	r1, #7
+ 112 0014 8A43     		bics	r2, r1
+ 113 0016 1100     		movs	r1, r2
+ 114 0018 FA1D     		adds	r2, r7, #7
+ 115 001a 1278     		ldrb	r2, [r2]
+ 116 001c 0A43     		orrs	r2, r1
+ 117 001e 1A60     		str	r2, [r3]
+  76:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** }
+ 118              		.loc 1 76 0
+ 119 0020 C046     		nop
+ 120 0022 BD46     		mov	sp, r7
+ 121 0024 02B0     		add	sp, sp, #8
+ 122              		@ sp needed
+ 123 0026 80BD     		pop	{r7, pc}
+ 124              	.L6:
+ 125              		.align	2
+ 126              	.L5:
+ 127 0028 08050440 		.word	1074005256
+ 128              		.cfi_endproc
+ 129              	.LFE1:
+ 130              		.size	Pin_OA_NonInverting_SetDriveMode, .-Pin_OA_NonInverting_SetDriveMode
+ 131              		.section	.text.Pin_OA_NonInverting_Read,"ax",%progbits
+ 132              		.align	2
+ 133              		.global	Pin_OA_NonInverting_Read
+ 134              		.code	16
+ 135              		.thumb_func
+ 136              		.type	Pin_OA_NonInverting_Read, %function
+ 137              	Pin_OA_NonInverting_Read:
+ 138              	.LFB2:
+  77:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+  78:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+  79:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** /*******************************************************************************
+  80:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Function Name: Pin_OA_NonInverting_Read
+  81:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** ********************************************************************************
+  82:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  83:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Summary:
+  84:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Read the current value on the pins of the Digital Port in right justified 
+  85:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  form.
+  86:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  87:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Parameters:  
+  88:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  None 
+  89:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+  90:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Return: 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 5
+
+
+  91:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Returns the current value of the Digital Port as a right justified number
+  92:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  
+  93:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Note:
+  94:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Macro Pin_OA_NonInverting_ReadPS calls this function. 
+  95:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  
+  96:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *******************************************************************************/
+  97:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** uint8 Pin_OA_NonInverting_Read(void) 
+  98:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** {
+ 139              		.loc 1 98 0
+ 140              		.cfi_startproc
+ 141              		@ args = 0, pretend = 0, frame = 0
+ 142              		@ frame_needed = 1, uses_anonymous_args = 0
+ 143 0000 80B5     		push	{r7, lr}
+ 144              		.cfi_def_cfa_offset 8
+ 145              		.cfi_offset 7, -8
+ 146              		.cfi_offset 14, -4
+ 147 0002 00AF     		add	r7, sp, #0
+ 148              		.cfi_def_cfa_register 7
+  99:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     return (uint8)((Pin_OA_NonInverting_PS & Pin_OA_NonInverting_MASK) >> Pin_OA_NonInverting_SHIFT
+ 149              		.loc 1 99 0
+ 150 0004 044B     		ldr	r3, .L9
+ 151 0006 1B68     		ldr	r3, [r3]
+ 152 0008 DBB2     		uxtb	r3, r3
+ 153 000a 0122     		movs	r2, #1
+ 154 000c 1340     		ands	r3, r2
+ 155 000e DBB2     		uxtb	r3, r3
+ 100:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** }
+ 156              		.loc 1 100 0
+ 157 0010 1800     		movs	r0, r3
+ 158 0012 BD46     		mov	sp, r7
+ 159              		@ sp needed
+ 160 0014 80BD     		pop	{r7, pc}
+ 161              	.L10:
+ 162 0016 C046     		.align	2
+ 163              	.L9:
+ 164 0018 04050440 		.word	1074005252
+ 165              		.cfi_endproc
+ 166              	.LFE2:
+ 167              		.size	Pin_OA_NonInverting_Read, .-Pin_OA_NonInverting_Read
+ 168              		.section	.text.Pin_OA_NonInverting_ReadDataReg,"ax",%progbits
+ 169              		.align	2
+ 170              		.global	Pin_OA_NonInverting_ReadDataReg
+ 171              		.code	16
+ 172              		.thumb_func
+ 173              		.type	Pin_OA_NonInverting_ReadDataReg, %function
+ 174              	Pin_OA_NonInverting_ReadDataReg:
+ 175              	.LFB3:
+ 101:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+ 102:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+ 103:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** /*******************************************************************************
+ 104:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Function Name: Pin_OA_NonInverting_ReadDataReg
+ 105:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** ********************************************************************************
+ 106:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+ 107:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Summary:
+ 108:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Read the current value assigned to a Digital Port's data output register
+ 109:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+ 110:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Parameters:  
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 6
+
+
+ 111:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  None 
+ 112:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *
+ 113:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** * Return: 
+ 114:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  Returns the current value assigned to the Digital Port's data output register
+ 115:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *  
+ 116:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** *******************************************************************************/
+ 117:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** uint8 Pin_OA_NonInverting_ReadDataReg(void) 
+ 118:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** {
+ 176              		.loc 1 118 0
+ 177              		.cfi_startproc
+ 178              		@ args = 0, pretend = 0, frame = 0
+ 179              		@ frame_needed = 1, uses_anonymous_args = 0
+ 180 0000 80B5     		push	{r7, lr}
+ 181              		.cfi_def_cfa_offset 8
+ 182              		.cfi_offset 7, -8
+ 183              		.cfi_offset 14, -4
+ 184 0002 00AF     		add	r7, sp, #0
+ 185              		.cfi_def_cfa_register 7
+ 119:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     return (uint8)((Pin_OA_NonInverting_DR & Pin_OA_NonInverting_MASK) >> Pin_OA_NonInverting_SHIFT
+ 186              		.loc 1 119 0
+ 187 0004 044B     		ldr	r3, .L13
+ 188 0006 1B68     		ldr	r3, [r3]
+ 189 0008 DBB2     		uxtb	r3, r3
+ 190 000a 0122     		movs	r2, #1
+ 191 000c 1340     		ands	r3, r2
+ 192 000e DBB2     		uxtb	r3, r3
+ 120:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** }
+ 193              		.loc 1 120 0
+ 194 0010 1800     		movs	r0, r3
+ 195 0012 BD46     		mov	sp, r7
+ 196              		@ sp needed
+ 197 0014 80BD     		pop	{r7, pc}
+ 198              	.L14:
+ 199 0016 C046     		.align	2
+ 200              	.L13:
+ 201 0018 00050440 		.word	1074005248
+ 202              		.cfi_endproc
+ 203              	.LFE3:
+ 204              		.size	Pin_OA_NonInverting_ReadDataReg, .-Pin_OA_NonInverting_ReadDataReg
+ 205              		.section	.text.Pin_OA_NonInverting_ClearInterrupt,"ax",%progbits
+ 206              		.align	2
+ 207              		.global	Pin_OA_NonInverting_ClearInterrupt
+ 208              		.code	16
+ 209              		.thumb_func
+ 210              		.type	Pin_OA_NonInverting_ClearInterrupt, %function
+ 211              	Pin_OA_NonInverting_ClearInterrupt:
+ 212              	.LFB4:
+ 121:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+ 122:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+ 123:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** /* If Interrupts Are Enabled for this Pins component */ 
+ 124:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** #if defined(Pin_OA_NonInverting_INTSTAT) 
+ 125:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 
+ 126:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     /*******************************************************************************
+ 127:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     * Function Name: Pin_OA_NonInverting_ClearInterrupt
+ 128:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     ********************************************************************************
+ 129:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     *
+ 130:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     * Summary:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 7
+
+
+ 131:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     *  Clears any active interrupts attached to port and returns the value of the 
+ 132:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     *  interrupt status register.
+ 133:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     *
+ 134:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     * Parameters:  
+ 135:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     *  None 
+ 136:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     *
+ 137:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     * Return: 
+ 138:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     *  Returns the value of the interrupt status register
+ 139:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     *  
+ 140:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     *******************************************************************************/
+ 141:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     uint8 Pin_OA_NonInverting_ClearInterrupt(void) 
+ 142:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     {
+ 213              		.loc 1 142 0
+ 214              		.cfi_startproc
+ 215              		@ args = 0, pretend = 0, frame = 8
+ 216              		@ frame_needed = 1, uses_anonymous_args = 0
+ 217 0000 80B5     		push	{r7, lr}
+ 218              		.cfi_def_cfa_offset 8
+ 219              		.cfi_offset 7, -8
+ 220              		.cfi_offset 14, -4
+ 221 0002 82B0     		sub	sp, sp, #8
+ 222              		.cfi_def_cfa_offset 16
+ 223 0004 00AF     		add	r7, sp, #0
+ 224              		.cfi_def_cfa_register 7
+ 143:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 		uint8 maskedStatus = (uint8)(Pin_OA_NonInverting_INTSTAT & Pin_OA_NonInverting_MASK);
+ 225              		.loc 1 143 0
+ 226 0006 084B     		ldr	r3, .L17
+ 227 0008 1B68     		ldr	r3, [r3]
+ 228 000a DAB2     		uxtb	r2, r3
+ 229 000c FB1D     		adds	r3, r7, #7
+ 230 000e 0121     		movs	r1, #1
+ 231 0010 0A40     		ands	r2, r1
+ 232 0012 1A70     		strb	r2, [r3]
+ 144:Generated_Source\PSoC4/Pin_OA_NonInverting.c **** 		Pin_OA_NonInverting_INTSTAT = maskedStatus;
+ 233              		.loc 1 144 0
+ 234 0014 044B     		ldr	r3, .L17
+ 235 0016 FA1D     		adds	r2, r7, #7
+ 236 0018 1278     		ldrb	r2, [r2]
+ 237 001a 1A60     		str	r2, [r3]
+ 145:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****         return maskedStatus >> Pin_OA_NonInverting_SHIFT;
+ 238              		.loc 1 145 0
+ 239 001c FB1D     		adds	r3, r7, #7
+ 240 001e 1B78     		ldrb	r3, [r3]
+ 146:Generated_Source\PSoC4/Pin_OA_NonInverting.c ****     }
+ 241              		.loc 1 146 0
+ 242 0020 1800     		movs	r0, r3
+ 243 0022 BD46     		mov	sp, r7
+ 244 0024 02B0     		add	sp, sp, #8
+ 245              		@ sp needed
+ 246 0026 80BD     		pop	{r7, pc}
+ 247              	.L18:
+ 248              		.align	2
+ 249              	.L17:
+ 250 0028 10050440 		.word	1074005264
+ 251              		.cfi_endproc
+ 252              	.LFE4:
+ 253              		.size	Pin_OA_NonInverting_ClearInterrupt, .-Pin_OA_NonInverting_ClearInterrupt
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 8
+
+
+ 254              		.text
+ 255              	.Letext0:
+ 256              		.file 2 "Generated_Source\\PSoC4\\cytypes.h"
+ 257              		.section	.debug_info,"",%progbits
+ 258              	.Ldebug_info0:
+ 259 0000 48010000 		.4byte	0x148
+ 260 0004 0400     		.2byte	0x4
+ 261 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 262 000a 04       		.byte	0x4
+ 263 000b 01       		.uleb128 0x1
+ 264 000c D4000000 		.4byte	.LASF24
+ 265 0010 0C       		.byte	0xc
+ 266 0011 00000000 		.4byte	.LASF25
+ 267 0015 04020000 		.4byte	.LASF26
+ 268 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 269 001d 00000000 		.4byte	0
+ 270 0021 00000000 		.4byte	.Ldebug_line0
+ 271 0025 02       		.uleb128 0x2
+ 272 0026 01       		.byte	0x1
+ 273 0027 06       		.byte	0x6
+ 274 0028 67020000 		.4byte	.LASF0
+ 275 002c 02       		.uleb128 0x2
+ 276 002d 01       		.byte	0x1
+ 277 002e 08       		.byte	0x8
+ 278 002f 82000000 		.4byte	.LASF1
+ 279 0033 02       		.uleb128 0x2
+ 280 0034 02       		.byte	0x2
+ 281 0035 05       		.byte	0x5
+ 282 0036 D3010000 		.4byte	.LASF2
+ 283 003a 02       		.uleb128 0x2
+ 284 003b 02       		.byte	0x2
+ 285 003c 07       		.byte	0x7
+ 286 003d C1000000 		.4byte	.LASF3
+ 287 0041 02       		.uleb128 0x2
+ 288 0042 04       		.byte	0x4
+ 289 0043 05       		.byte	0x5
+ 290 0044 5E020000 		.4byte	.LASF4
+ 291 0048 02       		.uleb128 0x2
+ 292 0049 04       		.byte	0x4
+ 293 004a 07       		.byte	0x7
+ 294 004b 96000000 		.4byte	.LASF5
+ 295 004f 02       		.uleb128 0x2
+ 296 0050 08       		.byte	0x8
+ 297 0051 05       		.byte	0x5
+ 298 0052 B3010000 		.4byte	.LASF6
+ 299 0056 02       		.uleb128 0x2
+ 300 0057 08       		.byte	0x8
+ 301 0058 07       		.byte	0x7
+ 302 0059 97010000 		.4byte	.LASF7
+ 303 005d 03       		.uleb128 0x3
+ 304 005e 04       		.byte	0x4
+ 305 005f 05       		.byte	0x5
+ 306 0060 696E7400 		.ascii	"int\000"
+ 307 0064 02       		.uleb128 0x2
+ 308 0065 04       		.byte	0x4
+ 309 0066 07       		.byte	0x7
+ 310 0067 8A010000 		.4byte	.LASF8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 9
+
+
+ 311 006b 04       		.uleb128 0x4
+ 312 006c FE010000 		.4byte	.LASF9
+ 313 0070 02       		.byte	0x2
+ 314 0071 C2       		.byte	0xc2
+ 315 0072 2C000000 		.4byte	0x2c
+ 316 0076 04       		.uleb128 0x4
+ 317 0077 83010000 		.4byte	.LASF10
+ 318 007b 02       		.byte	0x2
+ 319 007c C4       		.byte	0xc4
+ 320 007d 48000000 		.4byte	0x48
+ 321 0081 02       		.uleb128 0x2
+ 322 0082 04       		.byte	0x4
+ 323 0083 04       		.byte	0x4
+ 324 0084 7C000000 		.4byte	.LASF11
+ 325 0088 02       		.uleb128 0x2
+ 326 0089 08       		.byte	0x8
+ 327 008a 04       		.byte	0x4
+ 328 008b 62010000 		.4byte	.LASF12
+ 329 008f 02       		.uleb128 0x2
+ 330 0090 01       		.byte	0x1
+ 331 0091 08       		.byte	0x8
+ 332 0092 CE010000 		.4byte	.LASF13
+ 333 0096 05       		.uleb128 0x5
+ 334 0097 2D000000 		.4byte	.LASF14
+ 335 009b 02       		.byte	0x2
+ 336 009c 6E01     		.2byte	0x16e
+ 337 009e A2000000 		.4byte	0xa2
+ 338 00a2 06       		.uleb128 0x6
+ 339 00a3 76000000 		.4byte	0x76
+ 340 00a7 07       		.uleb128 0x7
+ 341 00a8 69010000 		.4byte	.LASF15
+ 342 00ac 01       		.byte	0x1
+ 343 00ad 2A       		.byte	0x2a
+ 344 00ae 00000000 		.4byte	.LFB0
+ 345 00b2 4C000000 		.4byte	.LFE0-.LFB0
+ 346 00b6 01       		.uleb128 0x1
+ 347 00b7 9C       		.byte	0x9c
+ 348 00b8 D9000000 		.4byte	0xd9
+ 349 00bc 08       		.uleb128 0x8
+ 350 00bd 53000000 		.4byte	.LASF17
+ 351 00c1 01       		.byte	0x1
+ 352 00c2 2A       		.byte	0x2a
+ 353 00c3 6B000000 		.4byte	0x6b
+ 354 00c7 02       		.uleb128 0x2
+ 355 00c8 91       		.byte	0x91
+ 356 00c9 6F       		.sleb128 -17
+ 357 00ca 09       		.uleb128 0x9
+ 358 00cb 90000000 		.4byte	.LASF22
+ 359 00cf 01       		.byte	0x1
+ 360 00d0 2C       		.byte	0x2c
+ 361 00d1 6B000000 		.4byte	0x6b
+ 362 00d5 02       		.uleb128 0x2
+ 363 00d6 91       		.byte	0x91
+ 364 00d7 77       		.sleb128 -9
+ 365 00d8 00       		.byte	0
+ 366 00d9 07       		.uleb128 0x7
+ 367 00da DD010000 		.4byte	.LASF16
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 10
+
+
+ 368 00de 01       		.byte	0x1
+ 369 00df 49       		.byte	0x49
+ 370 00e0 00000000 		.4byte	.LFB1
+ 371 00e4 2C000000 		.4byte	.LFE1-.LFB1
+ 372 00e8 01       		.uleb128 0x1
+ 373 00e9 9C       		.byte	0x9c
+ 374 00ea FD000000 		.4byte	0xfd
+ 375 00ee 08       		.uleb128 0x8
+ 376 00ef AE010000 		.4byte	.LASF18
+ 377 00f3 01       		.byte	0x1
+ 378 00f4 49       		.byte	0x49
+ 379 00f5 6B000000 		.4byte	0x6b
+ 380 00f9 02       		.uleb128 0x2
+ 381 00fa 91       		.byte	0x91
+ 382 00fb 77       		.sleb128 -9
+ 383 00fc 00       		.byte	0
+ 384 00fd 0A       		.uleb128 0xa
+ 385 00fe A8000000 		.4byte	.LASF19
+ 386 0102 01       		.byte	0x1
+ 387 0103 61       		.byte	0x61
+ 388 0104 6B000000 		.4byte	0x6b
+ 389 0108 00000000 		.4byte	.LFB2
+ 390 010c 1C000000 		.4byte	.LFE2-.LFB2
+ 391 0110 01       		.uleb128 0x1
+ 392 0111 9C       		.byte	0x9c
+ 393 0112 0A       		.uleb128 0xa
+ 394 0113 33000000 		.4byte	.LASF20
+ 395 0117 01       		.byte	0x1
+ 396 0118 75       		.byte	0x75
+ 397 0119 6B000000 		.4byte	0x6b
+ 398 011d 00000000 		.4byte	.LFB3
+ 399 0121 1C000000 		.4byte	.LFE3-.LFB3
+ 400 0125 01       		.uleb128 0x1
+ 401 0126 9C       		.byte	0x9c
+ 402 0127 0B       		.uleb128 0xb
+ 403 0128 59000000 		.4byte	.LASF21
+ 404 012c 01       		.byte	0x1
+ 405 012d 8D       		.byte	0x8d
+ 406 012e 6B000000 		.4byte	0x6b
+ 407 0132 00000000 		.4byte	.LFB4
+ 408 0136 2C000000 		.4byte	.LFE4-.LFB4
+ 409 013a 01       		.uleb128 0x1
+ 410 013b 9C       		.byte	0x9c
+ 411 013c 09       		.uleb128 0x9
+ 412 013d C1010000 		.4byte	.LASF23
+ 413 0141 01       		.byte	0x1
+ 414 0142 8F       		.byte	0x8f
+ 415 0143 6B000000 		.4byte	0x6b
+ 416 0147 02       		.uleb128 0x2
+ 417 0148 91       		.byte	0x91
+ 418 0149 77       		.sleb128 -9
+ 419 014a 00       		.byte	0
+ 420 014b 00       		.byte	0
+ 421              		.section	.debug_abbrev,"",%progbits
+ 422              	.Ldebug_abbrev0:
+ 423 0000 01       		.uleb128 0x1
+ 424 0001 11       		.uleb128 0x11
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 11
+
+
+ 425 0002 01       		.byte	0x1
+ 426 0003 25       		.uleb128 0x25
+ 427 0004 0E       		.uleb128 0xe
+ 428 0005 13       		.uleb128 0x13
+ 429 0006 0B       		.uleb128 0xb
+ 430 0007 03       		.uleb128 0x3
+ 431 0008 0E       		.uleb128 0xe
+ 432 0009 1B       		.uleb128 0x1b
+ 433 000a 0E       		.uleb128 0xe
+ 434 000b 55       		.uleb128 0x55
+ 435 000c 17       		.uleb128 0x17
+ 436 000d 11       		.uleb128 0x11
+ 437 000e 01       		.uleb128 0x1
+ 438 000f 10       		.uleb128 0x10
+ 439 0010 17       		.uleb128 0x17
+ 440 0011 00       		.byte	0
+ 441 0012 00       		.byte	0
+ 442 0013 02       		.uleb128 0x2
+ 443 0014 24       		.uleb128 0x24
+ 444 0015 00       		.byte	0
+ 445 0016 0B       		.uleb128 0xb
+ 446 0017 0B       		.uleb128 0xb
+ 447 0018 3E       		.uleb128 0x3e
+ 448 0019 0B       		.uleb128 0xb
+ 449 001a 03       		.uleb128 0x3
+ 450 001b 0E       		.uleb128 0xe
+ 451 001c 00       		.byte	0
+ 452 001d 00       		.byte	0
+ 453 001e 03       		.uleb128 0x3
+ 454 001f 24       		.uleb128 0x24
+ 455 0020 00       		.byte	0
+ 456 0021 0B       		.uleb128 0xb
+ 457 0022 0B       		.uleb128 0xb
+ 458 0023 3E       		.uleb128 0x3e
+ 459 0024 0B       		.uleb128 0xb
+ 460 0025 03       		.uleb128 0x3
+ 461 0026 08       		.uleb128 0x8
+ 462 0027 00       		.byte	0
+ 463 0028 00       		.byte	0
+ 464 0029 04       		.uleb128 0x4
+ 465 002a 16       		.uleb128 0x16
+ 466 002b 00       		.byte	0
+ 467 002c 03       		.uleb128 0x3
+ 468 002d 0E       		.uleb128 0xe
+ 469 002e 3A       		.uleb128 0x3a
+ 470 002f 0B       		.uleb128 0xb
+ 471 0030 3B       		.uleb128 0x3b
+ 472 0031 0B       		.uleb128 0xb
+ 473 0032 49       		.uleb128 0x49
+ 474 0033 13       		.uleb128 0x13
+ 475 0034 00       		.byte	0
+ 476 0035 00       		.byte	0
+ 477 0036 05       		.uleb128 0x5
+ 478 0037 16       		.uleb128 0x16
+ 479 0038 00       		.byte	0
+ 480 0039 03       		.uleb128 0x3
+ 481 003a 0E       		.uleb128 0xe
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 12
+
+
+ 482 003b 3A       		.uleb128 0x3a
+ 483 003c 0B       		.uleb128 0xb
+ 484 003d 3B       		.uleb128 0x3b
+ 485 003e 05       		.uleb128 0x5
+ 486 003f 49       		.uleb128 0x49
+ 487 0040 13       		.uleb128 0x13
+ 488 0041 00       		.byte	0
+ 489 0042 00       		.byte	0
+ 490 0043 06       		.uleb128 0x6
+ 491 0044 35       		.uleb128 0x35
+ 492 0045 00       		.byte	0
+ 493 0046 49       		.uleb128 0x49
+ 494 0047 13       		.uleb128 0x13
+ 495 0048 00       		.byte	0
+ 496 0049 00       		.byte	0
+ 497 004a 07       		.uleb128 0x7
+ 498 004b 2E       		.uleb128 0x2e
+ 499 004c 01       		.byte	0x1
+ 500 004d 3F       		.uleb128 0x3f
+ 501 004e 19       		.uleb128 0x19
+ 502 004f 03       		.uleb128 0x3
+ 503 0050 0E       		.uleb128 0xe
+ 504 0051 3A       		.uleb128 0x3a
+ 505 0052 0B       		.uleb128 0xb
+ 506 0053 3B       		.uleb128 0x3b
+ 507 0054 0B       		.uleb128 0xb
+ 508 0055 27       		.uleb128 0x27
+ 509 0056 19       		.uleb128 0x19
+ 510 0057 11       		.uleb128 0x11
+ 511 0058 01       		.uleb128 0x1
+ 512 0059 12       		.uleb128 0x12
+ 513 005a 06       		.uleb128 0x6
+ 514 005b 40       		.uleb128 0x40
+ 515 005c 18       		.uleb128 0x18
+ 516 005d 9742     		.uleb128 0x2117
+ 517 005f 19       		.uleb128 0x19
+ 518 0060 01       		.uleb128 0x1
+ 519 0061 13       		.uleb128 0x13
+ 520 0062 00       		.byte	0
+ 521 0063 00       		.byte	0
+ 522 0064 08       		.uleb128 0x8
+ 523 0065 05       		.uleb128 0x5
+ 524 0066 00       		.byte	0
+ 525 0067 03       		.uleb128 0x3
+ 526 0068 0E       		.uleb128 0xe
+ 527 0069 3A       		.uleb128 0x3a
+ 528 006a 0B       		.uleb128 0xb
+ 529 006b 3B       		.uleb128 0x3b
+ 530 006c 0B       		.uleb128 0xb
+ 531 006d 49       		.uleb128 0x49
+ 532 006e 13       		.uleb128 0x13
+ 533 006f 02       		.uleb128 0x2
+ 534 0070 18       		.uleb128 0x18
+ 535 0071 00       		.byte	0
+ 536 0072 00       		.byte	0
+ 537 0073 09       		.uleb128 0x9
+ 538 0074 34       		.uleb128 0x34
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 13
+
+
+ 539 0075 00       		.byte	0
+ 540 0076 03       		.uleb128 0x3
+ 541 0077 0E       		.uleb128 0xe
+ 542 0078 3A       		.uleb128 0x3a
+ 543 0079 0B       		.uleb128 0xb
+ 544 007a 3B       		.uleb128 0x3b
+ 545 007b 0B       		.uleb128 0xb
+ 546 007c 49       		.uleb128 0x49
+ 547 007d 13       		.uleb128 0x13
+ 548 007e 02       		.uleb128 0x2
+ 549 007f 18       		.uleb128 0x18
+ 550 0080 00       		.byte	0
+ 551 0081 00       		.byte	0
+ 552 0082 0A       		.uleb128 0xa
+ 553 0083 2E       		.uleb128 0x2e
+ 554 0084 00       		.byte	0
+ 555 0085 3F       		.uleb128 0x3f
+ 556 0086 19       		.uleb128 0x19
+ 557 0087 03       		.uleb128 0x3
+ 558 0088 0E       		.uleb128 0xe
+ 559 0089 3A       		.uleb128 0x3a
+ 560 008a 0B       		.uleb128 0xb
+ 561 008b 3B       		.uleb128 0x3b
+ 562 008c 0B       		.uleb128 0xb
+ 563 008d 27       		.uleb128 0x27
+ 564 008e 19       		.uleb128 0x19
+ 565 008f 49       		.uleb128 0x49
+ 566 0090 13       		.uleb128 0x13
+ 567 0091 11       		.uleb128 0x11
+ 568 0092 01       		.uleb128 0x1
+ 569 0093 12       		.uleb128 0x12
+ 570 0094 06       		.uleb128 0x6
+ 571 0095 40       		.uleb128 0x40
+ 572 0096 18       		.uleb128 0x18
+ 573 0097 9742     		.uleb128 0x2117
+ 574 0099 19       		.uleb128 0x19
+ 575 009a 00       		.byte	0
+ 576 009b 00       		.byte	0
+ 577 009c 0B       		.uleb128 0xb
+ 578 009d 2E       		.uleb128 0x2e
+ 579 009e 01       		.byte	0x1
+ 580 009f 3F       		.uleb128 0x3f
+ 581 00a0 19       		.uleb128 0x19
+ 582 00a1 03       		.uleb128 0x3
+ 583 00a2 0E       		.uleb128 0xe
+ 584 00a3 3A       		.uleb128 0x3a
+ 585 00a4 0B       		.uleb128 0xb
+ 586 00a5 3B       		.uleb128 0x3b
+ 587 00a6 0B       		.uleb128 0xb
+ 588 00a7 27       		.uleb128 0x27
+ 589 00a8 19       		.uleb128 0x19
+ 590 00a9 49       		.uleb128 0x49
+ 591 00aa 13       		.uleb128 0x13
+ 592 00ab 11       		.uleb128 0x11
+ 593 00ac 01       		.uleb128 0x1
+ 594 00ad 12       		.uleb128 0x12
+ 595 00ae 06       		.uleb128 0x6
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 14
+
+
+ 596 00af 40       		.uleb128 0x40
+ 597 00b0 18       		.uleb128 0x18
+ 598 00b1 9742     		.uleb128 0x2117
+ 599 00b3 19       		.uleb128 0x19
+ 600 00b4 00       		.byte	0
+ 601 00b5 00       		.byte	0
+ 602 00b6 00       		.byte	0
+ 603              		.section	.debug_aranges,"",%progbits
+ 604 0000 3C000000 		.4byte	0x3c
+ 605 0004 0200     		.2byte	0x2
+ 606 0006 00000000 		.4byte	.Ldebug_info0
+ 607 000a 04       		.byte	0x4
+ 608 000b 00       		.byte	0
+ 609 000c 0000     		.2byte	0
+ 610 000e 0000     		.2byte	0
+ 611 0010 00000000 		.4byte	.LFB0
+ 612 0014 4C000000 		.4byte	.LFE0-.LFB0
+ 613 0018 00000000 		.4byte	.LFB1
+ 614 001c 2C000000 		.4byte	.LFE1-.LFB1
+ 615 0020 00000000 		.4byte	.LFB2
+ 616 0024 1C000000 		.4byte	.LFE2-.LFB2
+ 617 0028 00000000 		.4byte	.LFB3
+ 618 002c 1C000000 		.4byte	.LFE3-.LFB3
+ 619 0030 00000000 		.4byte	.LFB4
+ 620 0034 2C000000 		.4byte	.LFE4-.LFB4
+ 621 0038 00000000 		.4byte	0
+ 622 003c 00000000 		.4byte	0
+ 623              		.section	.debug_ranges,"",%progbits
+ 624              	.Ldebug_ranges0:
+ 625 0000 00000000 		.4byte	.LFB0
+ 626 0004 4C000000 		.4byte	.LFE0
+ 627 0008 00000000 		.4byte	.LFB1
+ 628 000c 2C000000 		.4byte	.LFE1
+ 629 0010 00000000 		.4byte	.LFB2
+ 630 0014 1C000000 		.4byte	.LFE2
+ 631 0018 00000000 		.4byte	.LFB3
+ 632 001c 1C000000 		.4byte	.LFE3
+ 633 0020 00000000 		.4byte	.LFB4
+ 634 0024 2C000000 		.4byte	.LFE4
+ 635 0028 00000000 		.4byte	0
+ 636 002c 00000000 		.4byte	0
+ 637              		.section	.debug_line,"",%progbits
+ 638              	.Ldebug_line0:
+ 639 0000 B3000000 		.section	.debug_str,"MS",%progbits,1
+ 639      02005000 
+ 639      00000201 
+ 639      FB0E0D00 
+ 639      01010101 
+ 640              	.LASF25:
+ 641 0000 47656E65 		.ascii	"Generated_Source\\PSoC4\\Pin_OA_NonInverting.c\000"
+ 641      72617465 
+ 641      645F536F 
+ 641      75726365 
+ 641      5C50536F 
+ 642              	.LASF14:
+ 643 002d 72656733 		.ascii	"reg32\000"
+ 643      3200
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 15
+
+
+ 644              	.LASF20:
+ 645 0033 50696E5F 		.ascii	"Pin_OA_NonInverting_ReadDataReg\000"
+ 645      4F415F4E 
+ 645      6F6E496E 
+ 645      76657274 
+ 645      696E675F 
+ 646              	.LASF17:
+ 647 0053 76616C75 		.ascii	"value\000"
+ 647      6500
+ 648              	.LASF21:
+ 649 0059 50696E5F 		.ascii	"Pin_OA_NonInverting_ClearInterrupt\000"
+ 649      4F415F4E 
+ 649      6F6E496E 
+ 649      76657274 
+ 649      696E675F 
+ 650              	.LASF11:
+ 651 007c 666C6F61 		.ascii	"float\000"
+ 651      7400
+ 652              	.LASF1:
+ 653 0082 756E7369 		.ascii	"unsigned char\000"
+ 653      676E6564 
+ 653      20636861 
+ 653      7200
+ 654              	.LASF22:
+ 655 0090 64725661 		.ascii	"drVal\000"
+ 655      6C00
+ 656              	.LASF5:
+ 657 0096 6C6F6E67 		.ascii	"long unsigned int\000"
+ 657      20756E73 
+ 657      69676E65 
+ 657      6420696E 
+ 657      7400
+ 658              	.LASF19:
+ 659 00a8 50696E5F 		.ascii	"Pin_OA_NonInverting_Read\000"
+ 659      4F415F4E 
+ 659      6F6E496E 
+ 659      76657274 
+ 659      696E675F 
+ 660              	.LASF3:
+ 661 00c1 73686F72 		.ascii	"short unsigned int\000"
+ 661      7420756E 
+ 661      7369676E 
+ 661      65642069 
+ 661      6E7400
+ 662              	.LASF24:
+ 663 00d4 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 663      43313120 
+ 663      352E342E 
+ 663      31203230 
+ 663      31363036 
+ 664 0107 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 664      20726576 
+ 664      6973696F 
+ 664      6E203233 
+ 664      37373135 
+ 665 013a 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 665      66756E63 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 16
+
+
+ 665      74696F6E 
+ 665      2D736563 
+ 665      74696F6E 
+ 666              	.LASF12:
+ 667 0162 646F7562 		.ascii	"double\000"
+ 667      6C6500
+ 668              	.LASF15:
+ 669 0169 50696E5F 		.ascii	"Pin_OA_NonInverting_Write\000"
+ 669      4F415F4E 
+ 669      6F6E496E 
+ 669      76657274 
+ 669      696E675F 
+ 670              	.LASF10:
+ 671 0183 75696E74 		.ascii	"uint32\000"
+ 671      333200
+ 672              	.LASF8:
+ 673 018a 756E7369 		.ascii	"unsigned int\000"
+ 673      676E6564 
+ 673      20696E74 
+ 673      00
+ 674              	.LASF7:
+ 675 0197 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 675      206C6F6E 
+ 675      6720756E 
+ 675      7369676E 
+ 675      65642069 
+ 676              	.LASF18:
+ 677 01ae 6D6F6465 		.ascii	"mode\000"
+ 677      00
+ 678              	.LASF6:
+ 679 01b3 6C6F6E67 		.ascii	"long long int\000"
+ 679      206C6F6E 
+ 679      6720696E 
+ 679      7400
+ 680              	.LASF23:
+ 681 01c1 6D61736B 		.ascii	"maskedStatus\000"
+ 681      65645374 
+ 681      61747573 
+ 681      00
+ 682              	.LASF13:
+ 683 01ce 63686172 		.ascii	"char\000"
+ 683      00
+ 684              	.LASF2:
+ 685 01d3 73686F72 		.ascii	"short int\000"
+ 685      7420696E 
+ 685      7400
+ 686              	.LASF16:
+ 687 01dd 50696E5F 		.ascii	"Pin_OA_NonInverting_SetDriveMode\000"
+ 687      4F415F4E 
+ 687      6F6E496E 
+ 687      76657274 
+ 687      696E675F 
+ 688              	.LASF9:
+ 689 01fe 75696E74 		.ascii	"uint8\000"
+ 689      3800
+ 690              	.LASF26:
+ 691 0204 443A5C43 		.ascii	"D:\\CYTEST\\Micrium_CY8CKIT-044_OS2\\Micrium\\Examp"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrJtMru.s 			page 17
+
+
+ 691      59544553 
+ 691      545C4D69 
+ 691      63726975 
+ 691      6D5F4359 
+ 692 0233 6C65735C 		.ascii	"les\\Cypress\\CY8CKIT-044\\OS2\\PSoC\\OS2.cydsn\000"
+ 692      43797072 
+ 692      6573735C 
+ 692      43593843 
+ 692      4B49542D 
+ 693              	.LASF4:
+ 694 025e 6C6F6E67 		.ascii	"long int\000"
+ 694      20696E74 
+ 694      00
+ 695              	.LASF0:
+ 696 0267 7369676E 		.ascii	"signed char\000"
+ 696      65642063 
+ 696      68617200 
+ 697              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

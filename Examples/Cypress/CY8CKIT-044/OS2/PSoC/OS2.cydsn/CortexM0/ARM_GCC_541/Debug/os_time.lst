@@ -1,0 +1,2362 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"os_time.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.OSTimeDly,"ax",%progbits
+  20              		.align	2
+  21              		.global	OSTimeDly
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	OSTimeDly, %function
+  25              	OSTimeDly:
+  26              	.LFB1:
+  27              		.file 1 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source\\os_time.c"
+   1:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** /*
+   2:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+   3:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                                uC/OS-II
+   4:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                          The Real-Time Kernel
+   5:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                             TIME MANAGEMENT
+   6:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+   7:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                              (c) Copyright 1992-2013, Micrium, Weston, FL
+   8:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                           All Rights Reserved
+   9:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+  10:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * File    : OS_TIME.C
+  11:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * By      : Jean J. Labrosse
+  12:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Version : V2.92.11
+  13:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+  14:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * LICENSING TERMS:
+  15:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * ---------------
+  16:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful re
+  17:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * If you plan on using  uC/OS-II  in a commercial product you need to contact Micrium to properly l
+  18:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * its use in your product. We provide ALL the source code for your convenience and to help you expe
+  19:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  pa
+  20:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * licensing fee.
+  21:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+  22:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** */
+  23:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+  24:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #define  MICRIUM_SOURCE
+  25:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+  26:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #ifndef  OS_MASTER_FILE
+  27:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #include <ucos_ii.h>
+  28:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #endif
+  29:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+  30:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** /*
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 2
+
+
+  31:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+  32:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                        DELAY TASK 'n' TICKS
+  33:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+  34:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Description: This function is called to delay execution of the currently running task until the
+  35:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              specified number of system ticks expires.  This, of course, directly equates to dela
+  36:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              the current task for some time to expire.  No delay will result If the specified del
+  37:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              0.  If the specified delay is greater than 0 then, a context switch will result.
+  38:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+  39:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Arguments  : ticks     is the time delay that the task will be suspended in number of clock 'tick
+  40:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                        Note that by specifying 0, the task will not be delayed.
+  41:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+  42:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Returns    : none
+  43:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+  44:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** */
+  45:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+  46:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** void  OSTimeDly (INT32U ticks)
+  47:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** {
+  28              		.loc 1 47 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 16
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 80B5     		push	{r7, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 84B0     		sub	sp, sp, #16
+  37              		.cfi_def_cfa_offset 24
+  38 0004 00AF     		add	r7, sp, #0
+  39              		.cfi_def_cfa_register 7
+  40 0006 7860     		str	r0, [r7, #4]
+  48:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     INT8U      y;
+  49:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #if OS_CRITICAL_METHOD == 3u                     /* Allocate storage for CPU status register       
+  50:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_CPU_SR  cpu_sr = 0u;
+  41              		.loc 1 50 0
+  42 0008 0023     		movs	r3, #0
+  43 000a FB60     		str	r3, [r7, #12]
+  51:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #endif
+  52:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+  53:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+  54:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+  55:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (OSIntNesting > 0u) {                     /* See if trying to call from an ISR              
+  44              		.loc 1 55 0
+  45 000c 254B     		ldr	r3, .L8
+  46 000e 1B78     		ldrb	r3, [r3]
+  47 0010 002B     		cmp	r3, #0
+  48 0012 41D1     		bne	.L6
+  56:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return;
+  57:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+  58:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (OSLockNesting > 0u) {                    /* See if called with scheduler locked            
+  49              		.loc 1 58 0
+  50 0014 244B     		ldr	r3, .L8+4
+  51 0016 1B78     		ldrb	r3, [r3]
+  52 0018 002B     		cmp	r3, #0
+  53 001a 3FD1     		bne	.L7
+  59:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return;
+  60:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+  61:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (ticks > 0u) {                            /* 0 means no delay!                              
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 3
+
+
+  54              		.loc 1 61 0
+  55 001c 7B68     		ldr	r3, [r7, #4]
+  56 001e 002B     		cmp	r3, #0
+  57 0020 3DD0     		beq	.L1
+  62:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OS_ENTER_CRITICAL();
+  58              		.loc 1 62 0
+  59 0022 FFF7FEFF 		bl	OS_CPU_SR_Save
+  60 0026 0300     		movs	r3, r0
+  61 0028 FB60     		str	r3, [r7, #12]
+  63:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         y            =  OSTCBCur->OSTCBY;        /* Delay current task                             
+  62              		.loc 1 63 0
+  63 002a 204B     		ldr	r3, .L8+8
+  64 002c 1A68     		ldr	r2, [r3]
+  65 002e 0B23     		movs	r3, #11
+  66 0030 FB18     		adds	r3, r7, r3
+  67 0032 3821     		movs	r1, #56
+  68 0034 525C     		ldrb	r2, [r2, r1]
+  69 0036 1A70     		strb	r2, [r3]
+  64:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OSRdyTbl[y] &= (OS_PRIO)~OSTCBCur->OSTCBBitX;
+  70              		.loc 1 64 0
+  71 0038 0B23     		movs	r3, #11
+  72 003a FB18     		adds	r3, r7, r3
+  73 003c 1A78     		ldrb	r2, [r3]
+  74 003e 0B23     		movs	r3, #11
+  75 0040 FB18     		adds	r3, r7, r3
+  76 0042 1B78     		ldrb	r3, [r3]
+  77 0044 1A49     		ldr	r1, .L8+12
+  78 0046 C95C     		ldrb	r1, [r1, r3]
+  79 0048 184B     		ldr	r3, .L8+8
+  80 004a 1B68     		ldr	r3, [r3]
+  81 004c 3920     		movs	r0, #57
+  82 004e 1B5C     		ldrb	r3, [r3, r0]
+  83 0050 DB43     		mvns	r3, r3
+  84 0052 DBB2     		uxtb	r3, r3
+  85 0054 0B40     		ands	r3, r1
+  86 0056 D9B2     		uxtb	r1, r3
+  87 0058 154B     		ldr	r3, .L8+12
+  88 005a 9954     		strb	r1, [r3, r2]
+  65:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         if (OSRdyTbl[y] == 0u) {
+  89              		.loc 1 65 0
+  90 005c 0B23     		movs	r3, #11
+  91 005e FB18     		adds	r3, r7, r3
+  92 0060 1B78     		ldrb	r3, [r3]
+  93 0062 134A     		ldr	r2, .L8+12
+  94 0064 D35C     		ldrb	r3, [r2, r3]
+  95 0066 002B     		cmp	r3, #0
+  96 0068 0BD1     		bne	.L5
+  66:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****             OSRdyGrp &= (OS_PRIO)~OSTCBCur->OSTCBBitY;
+  97              		.loc 1 66 0
+  98 006a 104B     		ldr	r3, .L8+8
+  99 006c 1B68     		ldr	r3, [r3]
+ 100 006e 3A22     		movs	r2, #58
+ 101 0070 9B5C     		ldrb	r3, [r3, r2]
+ 102 0072 DB43     		mvns	r3, r3
+ 103 0074 DBB2     		uxtb	r3, r3
+ 104 0076 0F4A     		ldr	r2, .L8+16
+ 105 0078 1278     		ldrb	r2, [r2]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 4
+
+
+ 106 007a 1340     		ands	r3, r2
+ 107 007c DAB2     		uxtb	r2, r3
+ 108 007e 0D4B     		ldr	r3, .L8+16
+ 109 0080 1A70     		strb	r2, [r3]
+ 110              	.L5:
+  67:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         }
+  68:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OSTCBCur->OSTCBDly = ticks;              /* Load ticks in TCB                              
+ 111              		.loc 1 68 0
+ 112 0082 0A4B     		ldr	r3, .L8+8
+ 113 0084 1B68     		ldr	r3, [r3]
+ 114 0086 7A68     		ldr	r2, [r7, #4]
+ 115 0088 1A63     		str	r2, [r3, #48]
+  69:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OS_EXIT_CRITICAL();
+ 116              		.loc 1 69 0
+ 117 008a FB68     		ldr	r3, [r7, #12]
+ 118 008c 1800     		movs	r0, r3
+ 119 008e FFF7FEFF 		bl	OS_CPU_SR_Restore
+  70:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OS_Sched();                              /* Find next task to run!                         
+ 120              		.loc 1 70 0
+ 121 0092 FFF7FEFF 		bl	OS_Sched
+ 122 0096 02E0     		b	.L1
+ 123              	.L6:
+  56:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 124              		.loc 1 56 0
+ 125 0098 C046     		nop
+ 126 009a 00E0     		b	.L1
+ 127              	.L7:
+  59:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 128              		.loc 1 59 0
+ 129 009c C046     		nop
+ 130              	.L1:
+  71:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+  72:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** }
+ 131              		.loc 1 72 0
+ 132 009e BD46     		mov	sp, r7
+ 133 00a0 04B0     		add	sp, sp, #16
+ 134              		@ sp needed
+ 135 00a2 80BD     		pop	{r7, pc}
+ 136              	.L9:
+ 137              		.align	2
+ 138              	.L8:
+ 139 00a4 00000000 		.word	OSIntNesting
+ 140 00a8 00000000 		.word	OSLockNesting
+ 141 00ac 00000000 		.word	OSTCBCur
+ 142 00b0 00000000 		.word	OSRdyTbl
+ 143 00b4 00000000 		.word	OSRdyGrp
+ 144              		.cfi_endproc
+ 145              	.LFE1:
+ 146              		.size	OSTimeDly, .-OSTimeDly
+ 147              		.global	__aeabi_uidiv
+ 148              		.section	.text.OSTimeDlyHMSM,"ax",%progbits
+ 149              		.align	2
+ 150              		.global	OSTimeDlyHMSM
+ 151              		.code	16
+ 152              		.thumb_func
+ 153              		.type	OSTimeDlyHMSM, %function
+ 154              	OSTimeDlyHMSM:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 5
+
+
+ 155              	.LFB2:
+  73:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** /*$PAGE*/
+  74:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** /*
+  75:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+  76:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                    DELAY TASK FOR SPECIFIED TIME
+  77:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+  78:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Description: This function is called to delay execution of the currently running task until some 
+  79:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              expires.  This call allows you to specify the delay time in HOURS, MINUTES, SECONDS 
+  80:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              MILLISECONDS instead of ticks.
+  81:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+  82:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Arguments  : hours     specifies the number of hours that the task will be delayed (max. is 255)
+  83:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              minutes   specifies the number of minutes (max. 59)
+  84:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              seconds   specifies the number of seconds (max. 59)
+  85:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              ms        specifies the number of milliseconds (max. 999)
+  86:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+  87:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Returns    : OS_ERR_NONE
+  88:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              OS_ERR_TIME_INVALID_MINUTES
+  89:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              OS_ERR_TIME_INVALID_SECONDS
+  90:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              OS_ERR_TIME_INVALID_MS
+  91:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              OS_ERR_TIME_ZERO_DLY
+  92:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              OS_ERR_TIME_DLY_ISR
+  93:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+  94:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Note(s)    : The resolution on the milliseconds depends on the tick rate.  For example, you can't
+  95:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              a 10 mS delay if the ticker interrupts every 100 mS.  In this case, the delay would 
+  96:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              set to 0.  The actual delay is rounded to the nearest tick.
+  97:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+  98:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** */
+  99:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 100:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #if OS_TIME_DLY_HMSM_EN > 0u
+ 101:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** INT8U  OSTimeDlyHMSM (INT8U   hours,
+ 102:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****                       INT8U   minutes,
+ 103:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****                       INT8U   seconds,
+ 104:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****                       INT16U  ms)
+ 105:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** {
+ 156              		.loc 1 105 0
+ 157              		.cfi_startproc
+ 158              		@ args = 0, pretend = 0, frame = 16
+ 159              		@ frame_needed = 1, uses_anonymous_args = 0
+ 160 0000 B0B5     		push	{r4, r5, r7, lr}
+ 161              		.cfi_def_cfa_offset 16
+ 162              		.cfi_offset 4, -16
+ 163              		.cfi_offset 5, -12
+ 164              		.cfi_offset 7, -8
+ 165              		.cfi_offset 14, -4
+ 166 0002 84B0     		sub	sp, sp, #16
+ 167              		.cfi_def_cfa_offset 32
+ 168 0004 00AF     		add	r7, sp, #0
+ 169              		.cfi_def_cfa_register 7
+ 170 0006 0500     		movs	r5, r0
+ 171 0008 0C00     		movs	r4, r1
+ 172 000a 1000     		movs	r0, r2
+ 173 000c 1900     		movs	r1, r3
+ 174 000e FB1D     		adds	r3, r7, #7
+ 175 0010 2A1C     		adds	r2, r5, #0
+ 176 0012 1A70     		strb	r2, [r3]
+ 177 0014 BB1D     		adds	r3, r7, #6
+ 178 0016 221C     		adds	r2, r4, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 6
+
+
+ 179 0018 1A70     		strb	r2, [r3]
+ 180 001a 7B1D     		adds	r3, r7, #5
+ 181 001c 021C     		adds	r2, r0, #0
+ 182 001e 1A70     		strb	r2, [r3]
+ 183 0020 BB1C     		adds	r3, r7, #2
+ 184 0022 0A1C     		adds	r2, r1, #0
+ 185 0024 1A80     		strh	r2, [r3]
+ 106:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     INT32U ticks;
+ 107:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 108:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 109:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (OSIntNesting > 0u) {                     /* See if trying to call from an ISR              
+ 186              		.loc 1 109 0
+ 187 0026 2D4B     		ldr	r3, .L18
+ 188 0028 1B78     		ldrb	r3, [r3]
+ 189 002a 002B     		cmp	r3, #0
+ 190 002c 01D0     		beq	.L11
+ 110:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return (OS_ERR_TIME_DLY_ISR);
+ 191              		.loc 1 110 0
+ 192 002e 5523     		movs	r3, #85
+ 193 0030 50E0     		b	.L12
+ 194              	.L11:
+ 111:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 112:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (OSLockNesting > 0u) {                    /* See if called with scheduler locked            
+ 195              		.loc 1 112 0
+ 196 0032 2B4B     		ldr	r3, .L18+4
+ 197 0034 1B78     		ldrb	r3, [r3]
+ 198 0036 002B     		cmp	r3, #0
+ 199 0038 01D0     		beq	.L13
+ 113:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return (OS_ERR_SCHED_LOCKED);
+ 200              		.loc 1 113 0
+ 201 003a 3223     		movs	r3, #50
+ 202 003c 4AE0     		b	.L12
+ 203              	.L13:
+ 114:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 115:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #if OS_ARG_CHK_EN > 0u
+ 116:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (hours == 0u) {
+ 204              		.loc 1 116 0
+ 205 003e FB1D     		adds	r3, r7, #7
+ 206 0040 1B78     		ldrb	r3, [r3]
+ 207 0042 002B     		cmp	r3, #0
+ 208 0044 0DD1     		bne	.L14
+ 117:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         if (minutes == 0u) {
+ 209              		.loc 1 117 0
+ 210 0046 BB1D     		adds	r3, r7, #6
+ 211 0048 1B78     		ldrb	r3, [r3]
+ 212 004a 002B     		cmp	r3, #0
+ 213 004c 09D1     		bne	.L14
+ 118:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****             if (seconds == 0u) {
+ 214              		.loc 1 118 0
+ 215 004e 7B1D     		adds	r3, r7, #5
+ 216 0050 1B78     		ldrb	r3, [r3]
+ 217 0052 002B     		cmp	r3, #0
+ 218 0054 05D1     		bne	.L14
+ 119:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****                 if (ms == 0u) {
+ 219              		.loc 1 119 0
+ 220 0056 BB1C     		adds	r3, r7, #2
+ 221 0058 1B88     		ldrh	r3, [r3]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 7
+
+
+ 222 005a 002B     		cmp	r3, #0
+ 223 005c 01D1     		bne	.L14
+ 120:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****                     return (OS_ERR_TIME_ZERO_DLY);
+ 224              		.loc 1 120 0
+ 225 005e 5423     		movs	r3, #84
+ 226 0060 38E0     		b	.L12
+ 227              	.L14:
+ 121:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****                 }
+ 122:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****             }
+ 123:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         }
+ 124:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 125:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (minutes > 59u) {
+ 228              		.loc 1 125 0
+ 229 0062 BB1D     		adds	r3, r7, #6
+ 230 0064 1B78     		ldrb	r3, [r3]
+ 231 0066 3B2B     		cmp	r3, #59
+ 232 0068 01D9     		bls	.L15
+ 126:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return (OS_ERR_TIME_INVALID_MINUTES);    /* Validate arguments to be within range          
+ 233              		.loc 1 126 0
+ 234 006a 5123     		movs	r3, #81
+ 235 006c 32E0     		b	.L12
+ 236              	.L15:
+ 127:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 128:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (seconds > 59u) {
+ 237              		.loc 1 128 0
+ 238 006e 7B1D     		adds	r3, r7, #5
+ 239 0070 1B78     		ldrb	r3, [r3]
+ 240 0072 3B2B     		cmp	r3, #59
+ 241 0074 01D9     		bls	.L16
+ 129:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return (OS_ERR_TIME_INVALID_SECONDS);
+ 242              		.loc 1 129 0
+ 243 0076 5223     		movs	r3, #82
+ 244 0078 2CE0     		b	.L12
+ 245              	.L16:
+ 130:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 131:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (ms > 999u) {
+ 246              		.loc 1 131 0
+ 247 007a BB1C     		adds	r3, r7, #2
+ 248 007c 1B88     		ldrh	r3, [r3]
+ 249 007e 194A     		ldr	r2, .L18+8
+ 250 0080 9342     		cmp	r3, r2
+ 251 0082 01D9     		bls	.L17
+ 132:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return (OS_ERR_TIME_INVALID_MS);
+ 252              		.loc 1 132 0
+ 253 0084 5323     		movs	r3, #83
+ 254 0086 25E0     		b	.L12
+ 255              	.L17:
+ 133:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 134:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #endif
+ 135:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****                                                  /* Compute the total number of clock ticks require
+ 136:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****                                                  /* .. (rounded to the nearest tick)               
+ 137:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     ticks = ((INT32U)hours * 3600uL + (INT32U)minutes * 60uL + (INT32U)seconds) * OS_TICKS_PER_SEC
+ 256              		.loc 1 137 0
+ 257 0088 FB1D     		adds	r3, r7, #7
+ 258 008a 1B78     		ldrb	r3, [r3]
+ 259 008c E122     		movs	r2, #225
+ 260 008e 1201     		lsls	r2, r2, #4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 8
+
+
+ 261 0090 5A43     		muls	r2, r3
+ 262 0092 1100     		movs	r1, r2
+ 263 0094 BB1D     		adds	r3, r7, #6
+ 264 0096 1A78     		ldrb	r2, [r3]
+ 265 0098 1300     		movs	r3, r2
+ 266 009a 1B01     		lsls	r3, r3, #4
+ 267 009c 9B1A     		subs	r3, r3, r2
+ 268 009e 9B00     		lsls	r3, r3, #2
+ 269 00a0 CA18     		adds	r2, r1, r3
+ 270 00a2 7B1D     		adds	r3, r7, #5
+ 271 00a4 1B78     		ldrb	r3, [r3]
+ 272 00a6 D318     		adds	r3, r2, r3
+ 273 00a8 FA22     		movs	r2, #250
+ 274 00aa 9200     		lsls	r2, r2, #2
+ 275 00ac 5A43     		muls	r2, r3
+ 276 00ae 1400     		movs	r4, r2
+ 138:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****           + OS_TICKS_PER_SEC * ((INT32U)ms + 500uL / OS_TICKS_PER_SEC) / 1000uL;
+ 277              		.loc 1 138 0
+ 278 00b0 BB1C     		adds	r3, r7, #2
+ 279 00b2 1B88     		ldrh	r3, [r3]
+ 280 00b4 FA22     		movs	r2, #250
+ 281 00b6 9200     		lsls	r2, r2, #2
+ 282 00b8 5A43     		muls	r2, r3
+ 283 00ba FA23     		movs	r3, #250
+ 284 00bc 9900     		lsls	r1, r3, #2
+ 285 00be 1000     		movs	r0, r2
+ 286 00c0 FFF7FEFF 		bl	__aeabi_uidiv
+ 287 00c4 0300     		movs	r3, r0
+ 137:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****           + OS_TICKS_PER_SEC * ((INT32U)ms + 500uL / OS_TICKS_PER_SEC) / 1000uL;
+ 288              		.loc 1 137 0
+ 289 00c6 E318     		adds	r3, r4, r3
+ 290 00c8 FB60     		str	r3, [r7, #12]
+ 139:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OSTimeDly(ticks);
+ 291              		.loc 1 139 0
+ 292 00ca FB68     		ldr	r3, [r7, #12]
+ 293 00cc 1800     		movs	r0, r3
+ 294 00ce FFF7FEFF 		bl	OSTimeDly
+ 140:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     return (OS_ERR_NONE);
+ 295              		.loc 1 140 0
+ 296 00d2 0023     		movs	r3, #0
+ 297              	.L12:
+ 141:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** }
+ 298              		.loc 1 141 0
+ 299 00d4 1800     		movs	r0, r3
+ 300 00d6 BD46     		mov	sp, r7
+ 301 00d8 04B0     		add	sp, sp, #16
+ 302              		@ sp needed
+ 303 00da B0BD     		pop	{r4, r5, r7, pc}
+ 304              	.L19:
+ 305              		.align	2
+ 306              	.L18:
+ 307 00dc 00000000 		.word	OSIntNesting
+ 308 00e0 00000000 		.word	OSLockNesting
+ 309 00e4 E7030000 		.word	999
+ 310              		.cfi_endproc
+ 311              	.LFE2:
+ 312              		.size	OSTimeDlyHMSM, .-OSTimeDlyHMSM
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 9
+
+
+ 313              		.section	.text.OSTimeDlyResume,"ax",%progbits
+ 314              		.align	2
+ 315              		.global	OSTimeDlyResume
+ 316              		.code	16
+ 317              		.thumb_func
+ 318              		.type	OSTimeDlyResume, %function
+ 319              	OSTimeDlyResume:
+ 320              	.LFB3:
+ 142:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #endif
+ 143:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** /*$PAGE*/
+ 144:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** /*
+ 145:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+ 146:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                        RESUME A DELAYED TASK
+ 147:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+ 148:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Description: This function is used resume a task that has been delayed through a call to either
+ 149:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              OSTimeDly() or OSTimeDlyHMSM().  Note that you can call this function to resume a
+ 150:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              task that is waiting for an event with timeout.  This would make the task look
+ 151:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              like a timeout occurred.
+ 152:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+ 153:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Arguments  : prio                      specifies the priority of the task to resume
+ 154:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+ 155:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Returns    : OS_ERR_NONE               Task has been resumed
+ 156:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              OS_ERR_PRIO_INVALID       if the priority you specify is higher that the maximum all
+ 157:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                        (i.e. >= OS_LOWEST_PRIO)
+ 158:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              OS_ERR_TIME_NOT_DLY       Task is not waiting for time to expire
+ 159:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              OS_ERR_TASK_NOT_EXIST     The desired task has not been created or has been assigned
+ 160:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+ 161:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** */
+ 162:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 163:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #if OS_TIME_DLY_RESUME_EN > 0u
+ 164:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** INT8U  OSTimeDlyResume (INT8U prio)
+ 165:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** {
+ 321              		.loc 1 165 0
+ 322              		.cfi_startproc
+ 323              		@ args = 0, pretend = 0, frame = 16
+ 324              		@ frame_needed = 1, uses_anonymous_args = 0
+ 325 0000 80B5     		push	{r7, lr}
+ 326              		.cfi_def_cfa_offset 8
+ 327              		.cfi_offset 7, -8
+ 328              		.cfi_offset 14, -4
+ 329 0002 84B0     		sub	sp, sp, #16
+ 330              		.cfi_def_cfa_offset 24
+ 331 0004 00AF     		add	r7, sp, #0
+ 332              		.cfi_def_cfa_register 7
+ 333 0006 0200     		movs	r2, r0
+ 334 0008 FB1D     		adds	r3, r7, #7
+ 335 000a 1A70     		strb	r2, [r3]
+ 166:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_TCB    *ptcb;
+ 167:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #if OS_CRITICAL_METHOD == 3u                                   /* Storage for CPU status register  
+ 168:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 336              		.loc 1 168 0
+ 337 000c 0023     		movs	r3, #0
+ 338 000e FB60     		str	r3, [r7, #12]
+ 169:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #endif
+ 170:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 171:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 172:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 10
+
+
+ 173:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (prio >= OS_LOWEST_PRIO) {
+ 339              		.loc 1 173 0
+ 340 0010 FB1D     		adds	r3, r7, #7
+ 341 0012 1B78     		ldrb	r3, [r3]
+ 342 0014 3E2B     		cmp	r3, #62
+ 343 0016 01D9     		bls	.L21
+ 174:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return (OS_ERR_PRIO_INVALID);
+ 344              		.loc 1 174 0
+ 345 0018 2A23     		movs	r3, #42
+ 346 001a 6EE0     		b	.L22
+ 347              	.L21:
+ 175:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 176:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_ENTER_CRITICAL();
+ 348              		.loc 1 176 0
+ 349 001c FFF7FEFF 		bl	OS_CPU_SR_Save
+ 350 0020 0300     		movs	r3, r0
+ 351 0022 FB60     		str	r3, [r7, #12]
+ 177:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     ptcb = OSTCBPrioTbl[prio];                                 /* Make sure that task exist        
+ 352              		.loc 1 177 0
+ 353 0024 FB1D     		adds	r3, r7, #7
+ 354 0026 1A78     		ldrb	r2, [r3]
+ 355 0028 364B     		ldr	r3, .L30
+ 356 002a 9200     		lsls	r2, r2, #2
+ 357 002c D358     		ldr	r3, [r2, r3]
+ 358 002e BB60     		str	r3, [r7, #8]
+ 178:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (ptcb == (OS_TCB *)0) {
+ 359              		.loc 1 178 0
+ 360 0030 BB68     		ldr	r3, [r7, #8]
+ 361 0032 002B     		cmp	r3, #0
+ 362 0034 05D1     		bne	.L23
+ 179:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OS_EXIT_CRITICAL();
+ 363              		.loc 1 179 0
+ 364 0036 FB68     		ldr	r3, [r7, #12]
+ 365 0038 1800     		movs	r0, r3
+ 366 003a FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 180:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return (OS_ERR_TASK_NOT_EXIST);                        /* The task does not exist          
+ 367              		.loc 1 180 0
+ 368 003e 4323     		movs	r3, #67
+ 369 0040 5BE0     		b	.L22
+ 370              	.L23:
+ 181:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 182:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (ptcb == OS_TCB_RESERVED) {
+ 371              		.loc 1 182 0
+ 372 0042 BB68     		ldr	r3, [r7, #8]
+ 373 0044 012B     		cmp	r3, #1
+ 374 0046 05D1     		bne	.L24
+ 183:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OS_EXIT_CRITICAL();
+ 375              		.loc 1 183 0
+ 376 0048 FB68     		ldr	r3, [r7, #12]
+ 377 004a 1800     		movs	r0, r3
+ 378 004c FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 184:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return (OS_ERR_TASK_NOT_EXIST);                        /* The task does not exist          
+ 379              		.loc 1 184 0
+ 380 0050 4323     		movs	r3, #67
+ 381 0052 52E0     		b	.L22
+ 382              	.L24:
+ 185:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 11
+
+
+ 186:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if (ptcb->OSTCBDly == 0u) {                                /* See if task is delayed           
+ 383              		.loc 1 186 0
+ 384 0054 BB68     		ldr	r3, [r7, #8]
+ 385 0056 1B6B     		ldr	r3, [r3, #48]
+ 386 0058 002B     		cmp	r3, #0
+ 387 005a 05D1     		bne	.L25
+ 187:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OS_EXIT_CRITICAL();
+ 388              		.loc 1 187 0
+ 389 005c FB68     		ldr	r3, [r7, #12]
+ 390 005e 1800     		movs	r0, r3
+ 391 0060 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 188:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         return (OS_ERR_TIME_NOT_DLY);                          /* Indicate that task was not delaye
+ 392              		.loc 1 188 0
+ 393 0064 5023     		movs	r3, #80
+ 394 0066 48E0     		b	.L22
+ 395              	.L25:
+ 189:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 190:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 191:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     ptcb->OSTCBDly = 0u;                                       /* Clear the time delay             
+ 396              		.loc 1 191 0
+ 397 0068 BB68     		ldr	r3, [r7, #8]
+ 398 006a 0022     		movs	r2, #0
+ 399 006c 1A63     		str	r2, [r3, #48]
+ 192:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if ((ptcb->OSTCBStat & OS_STAT_PEND_ANY) != OS_STAT_RDY) {
+ 400              		.loc 1 192 0
+ 401 006e BB68     		ldr	r3, [r7, #8]
+ 402 0070 3422     		movs	r2, #52
+ 403 0072 9B5C     		ldrb	r3, [r3, r2]
+ 404 0074 1A00     		movs	r2, r3
+ 405 0076 3723     		movs	r3, #55
+ 406 0078 1340     		ands	r3, r2
+ 407 007a 0DD0     		beq	.L26
+ 193:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         ptcb->OSTCBStat     &= ~OS_STAT_PEND_ANY;              /* Yes, Clear status flag           
+ 408              		.loc 1 193 0
+ 409 007c BB68     		ldr	r3, [r7, #8]
+ 410 007e 3422     		movs	r2, #52
+ 411 0080 9B5C     		ldrb	r3, [r3, r2]
+ 412 0082 3722     		movs	r2, #55
+ 413 0084 9343     		bics	r3, r2
+ 414 0086 D9B2     		uxtb	r1, r3
+ 415 0088 BB68     		ldr	r3, [r7, #8]
+ 416 008a 3422     		movs	r2, #52
+ 417 008c 9954     		strb	r1, [r3, r2]
+ 194:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         ptcb->OSTCBStatPend  =  OS_STAT_PEND_TO;               /* Indicate PEND timeout            
+ 418              		.loc 1 194 0
+ 419 008e BB68     		ldr	r3, [r7, #8]
+ 420 0090 3522     		movs	r2, #53
+ 421 0092 0121     		movs	r1, #1
+ 422 0094 9954     		strb	r1, [r3, r2]
+ 423 0096 03E0     		b	.L27
+ 424              	.L26:
+ 195:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     } else {
+ 196:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         ptcb->OSTCBStatPend  =  OS_STAT_PEND_OK;
+ 425              		.loc 1 196 0
+ 426 0098 BB68     		ldr	r3, [r7, #8]
+ 427 009a 3522     		movs	r2, #53
+ 428 009c 0021     		movs	r1, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 12
+
+
+ 429 009e 9954     		strb	r1, [r3, r2]
+ 430              	.L27:
+ 197:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 198:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?               
+ 431              		.loc 1 198 0
+ 432 00a0 BB68     		ldr	r3, [r7, #8]
+ 433 00a2 3422     		movs	r2, #52
+ 434 00a4 9B5C     		ldrb	r3, [r3, r2]
+ 435 00a6 1A00     		movs	r2, r3
+ 436 00a8 0823     		movs	r3, #8
+ 437 00aa 1340     		ands	r3, r2
+ 438 00ac 20D1     		bne	.L28
+ 199:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OSRdyGrp               |= ptcb->OSTCBBitY;             /* No,  Make ready                  
+ 439              		.loc 1 199 0
+ 440 00ae BB68     		ldr	r3, [r7, #8]
+ 441 00b0 3A22     		movs	r2, #58
+ 442 00b2 9A5C     		ldrb	r2, [r3, r2]
+ 443 00b4 144B     		ldr	r3, .L30+4
+ 444 00b6 1B78     		ldrb	r3, [r3]
+ 445 00b8 1343     		orrs	r3, r2
+ 446 00ba DAB2     		uxtb	r2, r3
+ 447 00bc 124B     		ldr	r3, .L30+4
+ 448 00be 1A70     		strb	r2, [r3]
+ 200:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
+ 449              		.loc 1 200 0
+ 450 00c0 BB68     		ldr	r3, [r7, #8]
+ 451 00c2 3822     		movs	r2, #56
+ 452 00c4 9B5C     		ldrb	r3, [r3, r2]
+ 453 00c6 1800     		movs	r0, r3
+ 454 00c8 BB68     		ldr	r3, [r7, #8]
+ 455 00ca 3822     		movs	r2, #56
+ 456 00cc 9B5C     		ldrb	r3, [r3, r2]
+ 457 00ce 1A00     		movs	r2, r3
+ 458 00d0 0E4B     		ldr	r3, .L30+8
+ 459 00d2 9A5C     		ldrb	r2, [r3, r2]
+ 460 00d4 BB68     		ldr	r3, [r7, #8]
+ 461 00d6 3921     		movs	r1, #57
+ 462 00d8 5B5C     		ldrb	r3, [r3, r1]
+ 463 00da 1343     		orrs	r3, r2
+ 464 00dc DAB2     		uxtb	r2, r3
+ 465 00de 0B4B     		ldr	r3, .L30+8
+ 466 00e0 1A54     		strb	r2, [r3, r0]
+ 201:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OS_EXIT_CRITICAL();
+ 467              		.loc 1 201 0
+ 468 00e2 FB68     		ldr	r3, [r7, #12]
+ 469 00e4 1800     		movs	r0, r3
+ 470 00e6 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 202:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OS_Sched();                                            /* See if this is new highest priori
+ 471              		.loc 1 202 0
+ 472 00ea FFF7FEFF 		bl	OS_Sched
+ 473 00ee 03E0     		b	.L29
+ 474              	.L28:
+ 203:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     } else {
+ 204:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****         OS_EXIT_CRITICAL();                                    /* Task may be suspended            
+ 475              		.loc 1 204 0
+ 476 00f0 FB68     		ldr	r3, [r7, #12]
+ 477 00f2 1800     		movs	r0, r3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 13
+
+
+ 478 00f4 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 479              	.L29:
+ 205:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     }
+ 206:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     return (OS_ERR_NONE);
+ 480              		.loc 1 206 0
+ 481 00f8 0023     		movs	r3, #0
+ 482              	.L22:
+ 207:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** }
+ 483              		.loc 1 207 0
+ 484 00fa 1800     		movs	r0, r3
+ 485 00fc BD46     		mov	sp, r7
+ 486 00fe 04B0     		add	sp, sp, #16
+ 487              		@ sp needed
+ 488 0100 80BD     		pop	{r7, pc}
+ 489              	.L31:
+ 490 0102 C046     		.align	2
+ 491              	.L30:
+ 492 0104 00000000 		.word	OSTCBPrioTbl
+ 493 0108 00000000 		.word	OSRdyGrp
+ 494 010c 00000000 		.word	OSRdyTbl
+ 495              		.cfi_endproc
+ 496              	.LFE3:
+ 497              		.size	OSTimeDlyResume, .-OSTimeDlyResume
+ 498              		.section	.text.OSTimeGet,"ax",%progbits
+ 499              		.align	2
+ 500              		.global	OSTimeGet
+ 501              		.code	16
+ 502              		.thumb_func
+ 503              		.type	OSTimeGet, %function
+ 504              	OSTimeGet:
+ 505              	.LFB4:
+ 208:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #endif
+ 209:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** /*$PAGE*/
+ 210:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** /*
+ 211:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+ 212:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                       GET CURRENT SYSTEM TIME
+ 213:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+ 214:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Description: This function is used by your application to obtain the current value of the 32-bit
+ 215:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *              counter which keeps track of the number of clock ticks.
+ 216:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+ 217:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Arguments  : none
+ 218:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+ 219:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Returns    : The current value of OSTime
+ 220:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+ 221:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** */
+ 222:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 223:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #if OS_TIME_GET_SET_EN > 0u
+ 224:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** INT32U  OSTimeGet (void)
+ 225:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** {
+ 506              		.loc 1 225 0
+ 507              		.cfi_startproc
+ 508              		@ args = 0, pretend = 0, frame = 8
+ 509              		@ frame_needed = 1, uses_anonymous_args = 0
+ 510 0000 80B5     		push	{r7, lr}
+ 511              		.cfi_def_cfa_offset 8
+ 512              		.cfi_offset 7, -8
+ 513              		.cfi_offset 14, -4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 14
+
+
+ 514 0002 82B0     		sub	sp, sp, #8
+ 515              		.cfi_def_cfa_offset 16
+ 516 0004 00AF     		add	r7, sp, #0
+ 517              		.cfi_def_cfa_register 7
+ 226:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     INT32U     ticks;
+ 227:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #if OS_CRITICAL_METHOD == 3u                     /* Allocate storage for CPU status register       
+ 228:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 518              		.loc 1 228 0
+ 519 0006 0023     		movs	r3, #0
+ 520 0008 7B60     		str	r3, [r7, #4]
+ 229:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #endif
+ 230:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 231:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 232:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 233:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_ENTER_CRITICAL();
+ 521              		.loc 1 233 0
+ 522 000a FFF7FEFF 		bl	OS_CPU_SR_Save
+ 523 000e 0300     		movs	r3, r0
+ 524 0010 7B60     		str	r3, [r7, #4]
+ 234:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     ticks = OSTime;
+ 525              		.loc 1 234 0
+ 526 0012 064B     		ldr	r3, .L34
+ 527 0014 1B68     		ldr	r3, [r3]
+ 528 0016 3B60     		str	r3, [r7]
+ 235:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_EXIT_CRITICAL();
+ 529              		.loc 1 235 0
+ 530 0018 7B68     		ldr	r3, [r7, #4]
+ 531 001a 1800     		movs	r0, r3
+ 532 001c FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 236:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     return (ticks);
+ 533              		.loc 1 236 0
+ 534 0020 3B68     		ldr	r3, [r7]
+ 237:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** }
+ 535              		.loc 1 237 0
+ 536 0022 1800     		movs	r0, r3
+ 537 0024 BD46     		mov	sp, r7
+ 538 0026 02B0     		add	sp, sp, #8
+ 539              		@ sp needed
+ 540 0028 80BD     		pop	{r7, pc}
+ 541              	.L35:
+ 542 002a C046     		.align	2
+ 543              	.L34:
+ 544 002c 00000000 		.word	OSTime
+ 545              		.cfi_endproc
+ 546              	.LFE4:
+ 547              		.size	OSTimeGet, .-OSTimeGet
+ 548              		.section	.text.OSTimeSet,"ax",%progbits
+ 549              		.align	2
+ 550              		.global	OSTimeSet
+ 551              		.code	16
+ 552              		.thumb_func
+ 553              		.type	OSTimeSet, %function
+ 554              	OSTimeSet:
+ 555              	.LFB5:
+ 238:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #endif
+ 239:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 240:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** /*
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 15
+
+
+ 241:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+ 242:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *                                          SET SYSTEM CLOCK
+ 243:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+ 244:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Description: This function sets the 32-bit counter which keeps track of the number of clock ticks
+ 245:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+ 246:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Arguments  : ticks      specifies the new value that OSTime needs to take.
+ 247:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** *
+ 248:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** * Returns    : none
+ 249:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** ***************************************************************************************************
+ 250:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** */
+ 251:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 252:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #if OS_TIME_GET_SET_EN > 0u
+ 253:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** void  OSTimeSet (INT32U ticks)
+ 254:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** {
+ 556              		.loc 1 254 0
+ 557              		.cfi_startproc
+ 558              		@ args = 0, pretend = 0, frame = 16
+ 559              		@ frame_needed = 1, uses_anonymous_args = 0
+ 560 0000 80B5     		push	{r7, lr}
+ 561              		.cfi_def_cfa_offset 8
+ 562              		.cfi_offset 7, -8
+ 563              		.cfi_offset 14, -4
+ 564 0002 84B0     		sub	sp, sp, #16
+ 565              		.cfi_def_cfa_offset 24
+ 566 0004 00AF     		add	r7, sp, #0
+ 567              		.cfi_def_cfa_register 7
+ 568 0006 7860     		str	r0, [r7, #4]
+ 255:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #if OS_CRITICAL_METHOD == 3u                     /* Allocate storage for CPU status register       
+ 256:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 569              		.loc 1 256 0
+ 570 0008 0023     		movs	r3, #0
+ 571 000a FB60     		str	r3, [r7, #12]
+ 257:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** #endif
+ 258:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 259:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 260:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** 
+ 261:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_ENTER_CRITICAL();
+ 572              		.loc 1 261 0
+ 573 000c FFF7FEFF 		bl	OS_CPU_SR_Save
+ 574 0010 0300     		movs	r3, r0
+ 575 0012 FB60     		str	r3, [r7, #12]
+ 262:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OSTime = ticks;
+ 576              		.loc 1 262 0
+ 577 0014 054B     		ldr	r3, .L37
+ 578 0016 7A68     		ldr	r2, [r7, #4]
+ 579 0018 1A60     		str	r2, [r3]
+ 263:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c ****     OS_EXIT_CRITICAL();
+ 580              		.loc 1 263 0
+ 581 001a FB68     		ldr	r3, [r7, #12]
+ 582 001c 1800     		movs	r0, r3
+ 583 001e FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 264:..\..\..\..\..\..\Software\uCOS-II\Source/os_time.c **** }
+ 584              		.loc 1 264 0
+ 585 0022 C046     		nop
+ 586 0024 BD46     		mov	sp, r7
+ 587 0026 04B0     		add	sp, sp, #16
+ 588              		@ sp needed
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 16
+
+
+ 589 0028 80BD     		pop	{r7, pc}
+ 590              	.L38:
+ 591 002a C046     		.align	2
+ 592              	.L37:
+ 593 002c 00000000 		.word	OSTime
+ 594              		.cfi_endproc
+ 595              	.LFE5:
+ 596              		.size	OSTimeSet, .-OSTimeSet
+ 597              		.text
+ 598              	.Letext0:
+ 599              		.file 2 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Ports\\ARM-Cortex-M0\\Generic\\GNU/os_cpu.h"
+ 600              		.file 3 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source/ucos_ii.h"
+ 601              		.section	.debug_info,"",%progbits
+ 602              	.Ldebug_info0:
+ 603 0000 3C050000 		.4byte	0x53c
+ 604 0004 0400     		.2byte	0x4
+ 605 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 606 000a 04       		.byte	0x4
+ 607 000b 01       		.uleb128 0x1
+ 608 000c A1010000 		.4byte	.LASF87
+ 609 0010 0C       		.byte	0xc
+ 610 0011 5D030000 		.4byte	.LASF88
+ 611 0015 F3030000 		.4byte	.LASF89
+ 612 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 613 001d 00000000 		.4byte	0
+ 614 0021 00000000 		.4byte	.Ldebug_line0
+ 615 0025 02       		.uleb128 0x2
+ 616 0026 01       		.byte	0x1
+ 617 0027 06       		.byte	0x6
+ 618 0028 18010000 		.4byte	.LASF0
+ 619 002c 02       		.uleb128 0x2
+ 620 002d 01       		.byte	0x1
+ 621 002e 08       		.byte	0x8
+ 622 002f 40020000 		.4byte	.LASF1
+ 623 0033 02       		.uleb128 0x2
+ 624 0034 02       		.byte	0x2
+ 625 0035 05       		.byte	0x5
+ 626 0036 5D000000 		.4byte	.LASF2
+ 627 003a 02       		.uleb128 0x2
+ 628 003b 02       		.byte	0x2
+ 629 003c 07       		.byte	0x7
+ 630 003d B6030000 		.4byte	.LASF3
+ 631 0041 02       		.uleb128 0x2
+ 632 0042 04       		.byte	0x4
+ 633 0043 05       		.byte	0x5
+ 634 0044 66010000 		.4byte	.LASF4
+ 635 0048 02       		.uleb128 0x2
+ 636 0049 04       		.byte	0x4
+ 637 004a 07       		.byte	0x7
+ 638 004b E1030000 		.4byte	.LASF5
+ 639 004f 02       		.uleb128 0x2
+ 640 0050 08       		.byte	0x8
+ 641 0051 05       		.byte	0x5
+ 642 0052 4F010000 		.4byte	.LASF6
+ 643 0056 02       		.uleb128 0x2
+ 644 0057 08       		.byte	0x8
+ 645 0058 07       		.byte	0x7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 17
+
+
+ 646 0059 B9020000 		.4byte	.LASF7
+ 647 005d 03       		.uleb128 0x3
+ 648 005e 04       		.byte	0x4
+ 649 005f 05       		.byte	0x5
+ 650 0060 696E7400 		.ascii	"int\000"
+ 651 0064 02       		.uleb128 0x2
+ 652 0065 04       		.byte	0x4
+ 653 0066 07       		.byte	0x7
+ 654 0067 D0020000 		.4byte	.LASF8
+ 655 006b 02       		.uleb128 0x2
+ 656 006c 08       		.byte	0x8
+ 657 006d 04       		.byte	0x4
+ 658 006e 4E020000 		.4byte	.LASF9
+ 659 0072 04       		.uleb128 0x4
+ 660 0073 04       		.byte	0x4
+ 661 0074 02       		.uleb128 0x2
+ 662 0075 04       		.byte	0x4
+ 663 0076 07       		.byte	0x7
+ 664 0077 73000000 		.4byte	.LASF10
+ 665 007b 02       		.uleb128 0x2
+ 666 007c 01       		.byte	0x1
+ 667 007d 08       		.byte	0x8
+ 668 007e 41030000 		.4byte	.LASF11
+ 669 0082 05       		.uleb128 0x5
+ 670 0083 9B010000 		.4byte	.LASF12
+ 671 0087 02       		.byte	0x2
+ 672 0088 73       		.byte	0x73
+ 673 0089 2C000000 		.4byte	0x2c
+ 674 008d 05       		.uleb128 0x5
+ 675 008e A6020000 		.4byte	.LASF13
+ 676 0092 02       		.byte	0x2
+ 677 0093 75       		.byte	0x75
+ 678 0094 3A000000 		.4byte	0x3a
+ 679 0098 05       		.uleb128 0x5
+ 680 0099 EB000000 		.4byte	.LASF14
+ 681 009d 02       		.byte	0x2
+ 682 009e 77       		.byte	0x77
+ 683 009f 64000000 		.4byte	0x64
+ 684 00a3 02       		.uleb128 0x2
+ 685 00a4 04       		.byte	0x4
+ 686 00a5 04       		.byte	0x4
+ 687 00a6 24010000 		.4byte	.LASF15
+ 688 00aa 02       		.uleb128 0x2
+ 689 00ab 08       		.byte	0x8
+ 690 00ac 04       		.byte	0x4
+ 691 00ad 1D000000 		.4byte	.LASF16
+ 692 00b1 05       		.uleb128 0x5
+ 693 00b2 7C000000 		.4byte	.LASF17
+ 694 00b6 02       		.byte	0x2
+ 695 00b7 7C       		.byte	0x7c
+ 696 00b8 64000000 		.4byte	0x64
+ 697 00bc 05       		.uleb128 0x5
+ 698 00bd 83000000 		.4byte	.LASF18
+ 699 00c1 02       		.byte	0x2
+ 700 00c2 7D       		.byte	0x7d
+ 701 00c3 64000000 		.4byte	0x64
+ 702 00c7 06       		.uleb128 0x6
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 18
+
+
+ 703 00c8 55030000 		.4byte	.LASF19
+ 704 00cc 03       		.byte	0x3
+ 705 00cd 7201     		.2byte	0x172
+ 706 00cf 82000000 		.4byte	0x82
+ 707 00d3 07       		.uleb128 0x7
+ 708 00d4 9A000000 		.4byte	.LASF28
+ 709 00d8 18       		.byte	0x18
+ 710 00d9 03       		.byte	0x3
+ 711 00da 7801     		.2byte	0x178
+ 712 00dc 2F010000 		.4byte	0x12f
+ 713 00e0 08       		.uleb128 0x8
+ 714 00e1 91030000 		.4byte	.LASF20
+ 715 00e5 03       		.byte	0x3
+ 716 00e6 7901     		.2byte	0x179
+ 717 00e8 82000000 		.4byte	0x82
+ 718 00ec 00       		.byte	0
+ 719 00ed 08       		.uleb128 0x8
+ 720 00ee 0D010000 		.4byte	.LASF21
+ 721 00f2 03       		.byte	0x3
+ 722 00f3 7A01     		.2byte	0x17a
+ 723 00f5 72000000 		.4byte	0x72
+ 724 00f9 04       		.byte	0x4
+ 725 00fa 08       		.uleb128 0x8
+ 726 00fb BA000000 		.4byte	.LASF22
+ 727 00ff 03       		.byte	0x3
+ 728 0100 7B01     		.2byte	0x17b
+ 729 0102 8D000000 		.4byte	0x8d
+ 730 0106 08       		.byte	0x8
+ 731 0107 08       		.uleb128 0x8
+ 732 0108 5B040000 		.4byte	.LASF23
+ 733 010c 03       		.byte	0x3
+ 734 010d 7C01     		.2byte	0x17c
+ 735 010f C7000000 		.4byte	0xc7
+ 736 0113 0A       		.byte	0xa
+ 737 0114 08       		.uleb128 0x8
+ 738 0115 DE040000 		.4byte	.LASF24
+ 739 0119 03       		.byte	0x3
+ 740 011a 7D01     		.2byte	0x17d
+ 741 011c 2F010000 		.4byte	0x12f
+ 742 0120 0B       		.byte	0xb
+ 743 0121 08       		.uleb128 0x8
+ 744 0122 67000000 		.4byte	.LASF25
+ 745 0126 03       		.byte	0x3
+ 746 0127 8001     		.2byte	0x180
+ 747 0129 3F010000 		.4byte	0x13f
+ 748 012d 14       		.byte	0x14
+ 749 012e 00       		.byte	0
+ 750 012f 09       		.uleb128 0x9
+ 751 0130 C7000000 		.4byte	0xc7
+ 752 0134 3F010000 		.4byte	0x13f
+ 753 0138 0A       		.uleb128 0xa
+ 754 0139 74000000 		.4byte	0x74
+ 755 013d 07       		.byte	0x7
+ 756 013e 00       		.byte	0
+ 757 013f 0B       		.uleb128 0xb
+ 758 0140 04       		.byte	0x4
+ 759 0141 82000000 		.4byte	0x82
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 19
+
+
+ 760 0145 06       		.uleb128 0x6
+ 761 0146 5D010000 		.4byte	.LASF26
+ 762 014a 03       		.byte	0x3
+ 763 014b 8201     		.2byte	0x182
+ 764 014d D3000000 		.4byte	0xd3
+ 765 0151 06       		.uleb128 0x6
+ 766 0152 06000000 		.4byte	.LASF27
+ 767 0156 03       		.byte	0x3
+ 768 0157 9301     		.2byte	0x193
+ 769 0159 8D000000 		.4byte	0x8d
+ 770 015d 07       		.uleb128 0x7
+ 771 015e B4040000 		.4byte	.LASF29
+ 772 0162 14       		.byte	0x14
+ 773 0163 03       		.byte	0x3
+ 774 0164 A601     		.2byte	0x1a6
+ 775 0166 B9010000 		.4byte	0x1b9
+ 776 016a 08       		.uleb128 0x8
+ 777 016b 46030000 		.4byte	.LASF30
+ 778 016f 03       		.byte	0x3
+ 779 0170 A701     		.2byte	0x1a7
+ 780 0172 72000000 		.4byte	0x72
+ 781 0176 00       		.byte	0
+ 782 0177 08       		.uleb128 0x8
+ 783 0178 18030000 		.4byte	.LASF31
+ 784 017c 03       		.byte	0x3
+ 785 017d A801     		.2byte	0x1a8
+ 786 017f 72000000 		.4byte	0x72
+ 787 0183 04       		.byte	0x4
+ 788 0184 08       		.uleb128 0x8
+ 789 0185 74040000 		.4byte	.LASF32
+ 790 0189 03       		.byte	0x3
+ 791 018a A901     		.2byte	0x1a9
+ 792 018c 72000000 		.4byte	0x72
+ 793 0190 08       		.byte	0x8
+ 794 0191 08       		.uleb128 0x8
+ 795 0192 31000000 		.4byte	.LASF33
+ 796 0196 03       		.byte	0x3
+ 797 0197 AA01     		.2byte	0x1aa
+ 798 0199 72000000 		.4byte	0x72
+ 799 019d 0C       		.byte	0xc
+ 800 019e 08       		.uleb128 0x8
+ 801 019f 68020000 		.4byte	.LASF34
+ 802 01a3 03       		.byte	0x3
+ 803 01a4 AB01     		.2byte	0x1ab
+ 804 01a6 51010000 		.4byte	0x151
+ 805 01aa 10       		.byte	0x10
+ 806 01ab 08       		.uleb128 0x8
+ 807 01ac 78020000 		.4byte	.LASF35
+ 808 01b0 03       		.byte	0x3
+ 809 01b1 AC01     		.2byte	0x1ac
+ 810 01b3 82000000 		.4byte	0x82
+ 811 01b7 12       		.byte	0x12
+ 812 01b8 00       		.byte	0
+ 813 01b9 06       		.uleb128 0x6
+ 814 01ba 93040000 		.4byte	.LASF36
+ 815 01be 03       		.byte	0x3
+ 816 01bf B101     		.2byte	0x1b1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 20
+
+
+ 817 01c1 5D010000 		.4byte	0x15d
+ 818 01c5 07       		.uleb128 0x7
+ 819 01c6 94010000 		.4byte	.LASF37
+ 820 01ca 58       		.byte	0x58
+ 821 01cb 03       		.byte	0x3
+ 822 01cc 2E02     		.2byte	0x22e
+ 823 01ce 4C030000 		.4byte	0x34c
+ 824 01d2 08       		.uleb128 0x8
+ 825 01d3 C5000000 		.4byte	.LASF38
+ 826 01d7 03       		.byte	0x3
+ 827 01d8 2F02     		.2byte	0x22f
+ 828 01da 4C030000 		.4byte	0x34c
+ 829 01de 00       		.byte	0
+ 830 01df 08       		.uleb128 0x8
+ 831 01e0 AD020000 		.4byte	.LASF39
+ 832 01e4 03       		.byte	0x3
+ 833 01e5 3202     		.2byte	0x232
+ 834 01e7 72000000 		.4byte	0x72
+ 835 01eb 04       		.byte	0x4
+ 836 01ec 08       		.uleb128 0x8
+ 837 01ed D2030000 		.4byte	.LASF40
+ 838 01f1 03       		.byte	0x3
+ 839 01f2 3302     		.2byte	0x233
+ 840 01f4 4C030000 		.4byte	0x34c
+ 841 01f8 08       		.byte	0x8
+ 842 01f9 08       		.uleb128 0x8
+ 843 01fa 87010000 		.4byte	.LASF41
+ 844 01fe 03       		.byte	0x3
+ 845 01ff 3402     		.2byte	0x234
+ 846 0201 98000000 		.4byte	0x98
+ 847 0205 0C       		.byte	0xc
+ 848 0206 08       		.uleb128 0x8
+ 849 0207 C9030000 		.4byte	.LASF42
+ 850 020b 03       		.byte	0x3
+ 851 020c 3502     		.2byte	0x235
+ 852 020e 8D000000 		.4byte	0x8d
+ 853 0212 10       		.byte	0x10
+ 854 0213 08       		.uleb128 0x8
+ 855 0214 7F010000 		.4byte	.LASF43
+ 856 0218 03       		.byte	0x3
+ 857 0219 3602     		.2byte	0x236
+ 858 021b 8D000000 		.4byte	0x8d
+ 859 021f 12       		.byte	0x12
+ 860 0220 08       		.uleb128 0x8
+ 861 0221 03010000 		.4byte	.LASF44
+ 862 0225 03       		.byte	0x3
+ 863 0226 3902     		.2byte	0x239
+ 864 0228 52030000 		.4byte	0x352
+ 865 022c 14       		.byte	0x14
+ 866 022d 08       		.uleb128 0x8
+ 867 022e E1000000 		.4byte	.LASF45
+ 868 0232 03       		.byte	0x3
+ 869 0233 3A02     		.2byte	0x23a
+ 870 0235 52030000 		.4byte	0x352
+ 871 0239 18       		.byte	0x18
+ 872 023a 08       		.uleb128 0x8
+ 873 023b E7020000 		.4byte	.LASF46
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 21
+
+
+ 874 023f 03       		.byte	0x3
+ 875 0240 4302     		.2byte	0x243
+ 876 0242 58030000 		.4byte	0x358
+ 877 0246 1C       		.byte	0x1c
+ 878 0247 08       		.uleb128 0x8
+ 879 0248 F5020000 		.4byte	.LASF47
+ 880 024c 03       		.byte	0x3
+ 881 024d 4702     		.2byte	0x247
+ 882 024f 5E030000 		.4byte	0x35e
+ 883 0253 20       		.byte	0x20
+ 884 0254 08       		.uleb128 0x8
+ 885 0255 4F000000 		.4byte	.LASF48
+ 886 0259 03       		.byte	0x3
+ 887 025a 4B02     		.2byte	0x24b
+ 888 025c 72000000 		.4byte	0x72
+ 889 0260 24       		.byte	0x24
+ 890 0261 08       		.uleb128 0x8
+ 891 0262 38010000 		.4byte	.LASF49
+ 892 0266 03       		.byte	0x3
+ 893 0267 5002     		.2byte	0x250
+ 894 0269 64030000 		.4byte	0x364
+ 895 026d 28       		.byte	0x28
+ 896 026e 08       		.uleb128 0x8
+ 897 026f 4D040000 		.4byte	.LASF50
+ 898 0273 03       		.byte	0x3
+ 899 0274 5202     		.2byte	0x252
+ 900 0276 51010000 		.4byte	0x151
+ 901 027a 2C       		.byte	0x2c
+ 902 027b 08       		.uleb128 0x8
+ 903 027c 46010000 		.4byte	.LASF51
+ 904 0280 03       		.byte	0x3
+ 905 0281 5502     		.2byte	0x255
+ 906 0283 98000000 		.4byte	0x98
+ 907 0287 30       		.byte	0x30
+ 908 0288 08       		.uleb128 0x8
+ 909 0289 9D030000 		.4byte	.LASF52
+ 910 028d 03       		.byte	0x3
+ 911 028e 5602     		.2byte	0x256
+ 912 0290 82000000 		.4byte	0x82
+ 913 0294 34       		.byte	0x34
+ 914 0295 08       		.uleb128 0x8
+ 915 0296 0F000000 		.4byte	.LASF53
+ 916 029a 03       		.byte	0x3
+ 917 029b 5702     		.2byte	0x257
+ 918 029d 82000000 		.4byte	0x82
+ 919 02a1 35       		.byte	0x35
+ 920 02a2 08       		.uleb128 0x8
+ 921 02a3 F9000000 		.4byte	.LASF54
+ 922 02a7 03       		.byte	0x3
+ 923 02a8 5802     		.2byte	0x258
+ 924 02aa 82000000 		.4byte	0x82
+ 925 02ae 36       		.byte	0x36
+ 926 02af 08       		.uleb128 0x8
+ 927 02b0 6F010000 		.4byte	.LASF55
+ 928 02b4 03       		.byte	0x3
+ 929 02b5 5A02     		.2byte	0x25a
+ 930 02b7 82000000 		.4byte	0x82
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 22
+
+
+ 931 02bb 37       		.byte	0x37
+ 932 02bc 08       		.uleb128 0x8
+ 933 02bd 11030000 		.4byte	.LASF56
+ 934 02c1 03       		.byte	0x3
+ 935 02c2 5B02     		.2byte	0x25b
+ 936 02c4 82000000 		.4byte	0x82
+ 937 02c8 38       		.byte	0x38
+ 938 02c9 08       		.uleb128 0x8
+ 939 02ca 92020000 		.4byte	.LASF57
+ 940 02ce 03       		.byte	0x3
+ 941 02cf 5C02     		.2byte	0x25c
+ 942 02d1 C7000000 		.4byte	0xc7
+ 943 02d5 39       		.byte	0x39
+ 944 02d6 08       		.uleb128 0x8
+ 945 02d7 9C020000 		.4byte	.LASF58
+ 946 02db 03       		.byte	0x3
+ 947 02dc 5D02     		.2byte	0x25d
+ 948 02de C7000000 		.4byte	0xc7
+ 949 02e2 3A       		.byte	0x3a
+ 950 02e3 08       		.uleb128 0x8
+ 951 02e4 43000000 		.4byte	.LASF59
+ 952 02e8 03       		.byte	0x3
+ 953 02e9 6002     		.2byte	0x260
+ 954 02eb 82000000 		.4byte	0x82
+ 955 02ef 3B       		.byte	0x3b
+ 956 02f0 08       		.uleb128 0x8
+ 957 02f1 5A020000 		.4byte	.LASF60
+ 958 02f5 03       		.byte	0x3
+ 959 02f6 6402     		.2byte	0x264
+ 960 02f8 98000000 		.4byte	0x98
+ 961 02fc 3C       		.byte	0x3c
+ 962 02fd 08       		.uleb128 0x8
+ 963 02fe A7030000 		.4byte	.LASF61
+ 964 0302 03       		.byte	0x3
+ 965 0303 6502     		.2byte	0x265
+ 966 0305 98000000 		.4byte	0x98
+ 967 0309 40       		.byte	0x40
+ 968 030a 08       		.uleb128 0x8
+ 969 030b 2F020000 		.4byte	.LASF62
+ 970 030f 03       		.byte	0x3
+ 971 0310 6602     		.2byte	0x266
+ 972 0312 98000000 		.4byte	0x98
+ 973 0316 44       		.byte	0x44
+ 974 0317 08       		.uleb128 0x8
+ 975 0318 24000000 		.4byte	.LASF63
+ 976 031c 03       		.byte	0x3
+ 977 031d 6702     		.2byte	0x267
+ 978 031f 4C030000 		.4byte	0x34c
+ 979 0323 48       		.byte	0x48
+ 980 0324 08       		.uleb128 0x8
+ 981 0325 8D000000 		.4byte	.LASF64
+ 982 0329 03       		.byte	0x3
+ 983 032a 6802     		.2byte	0x268
+ 984 032c 98000000 		.4byte	0x98
+ 985 0330 4C       		.byte	0x4c
+ 986 0331 08       		.uleb128 0x8
+ 987 0332 CB040000 		.4byte	.LASF65
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 23
+
+
+ 988 0336 03       		.byte	0x3
+ 989 0337 6C02     		.2byte	0x26c
+ 990 0339 3F010000 		.4byte	0x13f
+ 991 033d 50       		.byte	0x50
+ 992 033e 08       		.uleb128 0x8
+ 993 033f 27030000 		.4byte	.LASF66
+ 994 0343 03       		.byte	0x3
+ 995 0344 7002     		.2byte	0x270
+ 996 0346 6A030000 		.4byte	0x36a
+ 997 034a 54       		.byte	0x54
+ 998 034b 00       		.byte	0
+ 999 034c 0B       		.uleb128 0xb
+ 1000 034d 04       		.byte	0x4
+ 1001 034e B1000000 		.4byte	0xb1
+ 1002 0352 0B       		.uleb128 0xb
+ 1003 0353 04       		.byte	0x4
+ 1004 0354 C5010000 		.4byte	0x1c5
+ 1005 0358 0B       		.uleb128 0xb
+ 1006 0359 04       		.byte	0x4
+ 1007 035a 45010000 		.4byte	0x145
+ 1008 035e 0B       		.uleb128 0xb
+ 1009 035f 04       		.byte	0x4
+ 1010 0360 58030000 		.4byte	0x358
+ 1011 0364 0B       		.uleb128 0xb
+ 1012 0365 04       		.byte	0x4
+ 1013 0366 B9010000 		.4byte	0x1b9
+ 1014 036a 09       		.uleb128 0x9
+ 1015 036b 98000000 		.4byte	0x98
+ 1016 036f 7A030000 		.4byte	0x37a
+ 1017 0373 0A       		.uleb128 0xa
+ 1018 0374 74000000 		.4byte	0x74
+ 1019 0378 00       		.byte	0
+ 1020 0379 00       		.byte	0
+ 1021 037a 06       		.uleb128 0x6
+ 1022 037b F2000000 		.4byte	.LASF67
+ 1023 037f 03       		.byte	0x3
+ 1024 0380 7202     		.2byte	0x272
+ 1025 0382 C5010000 		.4byte	0x1c5
+ 1026 0386 0C       		.uleb128 0xc
+ 1027 0387 B0000000 		.4byte	.LASF78
+ 1028 038b 01       		.byte	0x1
+ 1029 038c 2E       		.byte	0x2e
+ 1030 038d 00000000 		.4byte	.LFB1
+ 1031 0391 B8000000 		.4byte	.LFE1-.LFB1
+ 1032 0395 01       		.uleb128 0x1
+ 1033 0396 9C       		.byte	0x9c
+ 1034 0397 C4030000 		.4byte	0x3c4
+ 1035 039b 0D       		.uleb128 0xd
+ 1036 039c 00000000 		.4byte	.LASF69
+ 1037 03a0 01       		.byte	0x1
+ 1038 03a1 2E       		.byte	0x2e
+ 1039 03a2 98000000 		.4byte	0x98
+ 1040 03a6 02       		.uleb128 0x2
+ 1041 03a7 91       		.byte	0x91
+ 1042 03a8 6C       		.sleb128 -20
+ 1043 03a9 0E       		.uleb128 0xe
+ 1044 03aa 7900     		.ascii	"y\000"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 24
+
+
+ 1045 03ac 01       		.byte	0x1
+ 1046 03ad 30       		.byte	0x30
+ 1047 03ae 82000000 		.4byte	0x82
+ 1048 03b2 02       		.uleb128 0x2
+ 1049 03b3 91       		.byte	0x91
+ 1050 03b4 73       		.sleb128 -13
+ 1051 03b5 0F       		.uleb128 0xf
+ 1052 03b6 AD040000 		.4byte	.LASF68
+ 1053 03ba 01       		.byte	0x1
+ 1054 03bb 32       		.byte	0x32
+ 1055 03bc BC000000 		.4byte	0xbc
+ 1056 03c0 02       		.uleb128 0x2
+ 1057 03c1 91       		.byte	0x91
+ 1058 03c2 74       		.sleb128 -12
+ 1059 03c3 00       		.byte	0
+ 1060 03c4 10       		.uleb128 0x10
+ 1061 03c5 2A010000 		.4byte	.LASF73
+ 1062 03c9 01       		.byte	0x1
+ 1063 03ca 65       		.byte	0x65
+ 1064 03cb 82000000 		.4byte	0x82
+ 1065 03cf 00000000 		.4byte	.LFB2
+ 1066 03d3 E8000000 		.4byte	.LFE2-.LFB2
+ 1067 03d7 01       		.uleb128 0x1
+ 1068 03d8 9C       		.byte	0x9c
+ 1069 03d9 23040000 		.4byte	0x423
+ 1070 03dd 0D       		.uleb128 0xd
+ 1071 03de 3B030000 		.4byte	.LASF70
+ 1072 03e2 01       		.byte	0x1
+ 1073 03e3 65       		.byte	0x65
+ 1074 03e4 82000000 		.4byte	0x82
+ 1075 03e8 02       		.uleb128 0x2
+ 1076 03e9 91       		.byte	0x91
+ 1077 03ea 67       		.sleb128 -25
+ 1078 03eb 0D       		.uleb128 0xd
+ 1079 03ec 8B040000 		.4byte	.LASF71
+ 1080 03f0 01       		.byte	0x1
+ 1081 03f1 66       		.byte	0x66
+ 1082 03f2 82000000 		.4byte	0x82
+ 1083 03f6 02       		.uleb128 0x2
+ 1084 03f7 91       		.byte	0x91
+ 1085 03f8 66       		.sleb128 -26
+ 1086 03f9 0D       		.uleb128 0xd
+ 1087 03fa 33030000 		.4byte	.LASF72
+ 1088 03fe 01       		.byte	0x1
+ 1089 03ff 67       		.byte	0x67
+ 1090 0400 82000000 		.4byte	0x82
+ 1091 0404 02       		.uleb128 0x2
+ 1092 0405 91       		.byte	0x91
+ 1093 0406 65       		.sleb128 -27
+ 1094 0407 11       		.uleb128 0x11
+ 1095 0408 6D7300   		.ascii	"ms\000"
+ 1096 040b 01       		.byte	0x1
+ 1097 040c 68       		.byte	0x68
+ 1098 040d 8D000000 		.4byte	0x8d
+ 1099 0411 02       		.uleb128 0x2
+ 1100 0412 91       		.byte	0x91
+ 1101 0413 62       		.sleb128 -30
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 25
+
+
+ 1102 0414 0F       		.uleb128 0xf
+ 1103 0415 00000000 		.4byte	.LASF69
+ 1104 0419 01       		.byte	0x1
+ 1105 041a 6A       		.byte	0x6a
+ 1106 041b 98000000 		.4byte	0x98
+ 1107 041f 02       		.uleb128 0x2
+ 1108 0420 91       		.byte	0x91
+ 1109 0421 6C       		.sleb128 -20
+ 1110 0422 00       		.byte	0
+ 1111 0423 10       		.uleb128 0x10
+ 1112 0424 D1000000 		.4byte	.LASF74
+ 1113 0428 01       		.byte	0x1
+ 1114 0429 A4       		.byte	0xa4
+ 1115 042a 82000000 		.4byte	0x82
+ 1116 042e 00000000 		.4byte	.LFB3
+ 1117 0432 10010000 		.4byte	.LFE3-.LFB3
+ 1118 0436 01       		.uleb128 0x1
+ 1119 0437 9C       		.byte	0x9c
+ 1120 0438 67040000 		.4byte	0x467
+ 1121 043c 0D       		.uleb128 0xd
+ 1122 043d D9040000 		.4byte	.LASF75
+ 1123 0441 01       		.byte	0x1
+ 1124 0442 A4       		.byte	0xa4
+ 1125 0443 82000000 		.4byte	0x82
+ 1126 0447 02       		.uleb128 0x2
+ 1127 0448 91       		.byte	0x91
+ 1128 0449 6F       		.sleb128 -17
+ 1129 044a 0F       		.uleb128 0xf
+ 1130 044b 58000000 		.4byte	.LASF76
+ 1131 044f 01       		.byte	0x1
+ 1132 0450 A6       		.byte	0xa6
+ 1133 0451 67040000 		.4byte	0x467
+ 1134 0455 02       		.uleb128 0x2
+ 1135 0456 91       		.byte	0x91
+ 1136 0457 70       		.sleb128 -16
+ 1137 0458 0F       		.uleb128 0xf
+ 1138 0459 AD040000 		.4byte	.LASF68
+ 1139 045d 01       		.byte	0x1
+ 1140 045e A8       		.byte	0xa8
+ 1141 045f BC000000 		.4byte	0xbc
+ 1142 0463 02       		.uleb128 0x2
+ 1143 0464 91       		.byte	0x91
+ 1144 0465 74       		.sleb128 -12
+ 1145 0466 00       		.byte	0
+ 1146 0467 0B       		.uleb128 0xb
+ 1147 0468 04       		.byte	0x4
+ 1148 0469 7A030000 		.4byte	0x37a
+ 1149 046d 10       		.uleb128 0x10
+ 1150 046e C1040000 		.4byte	.LASF77
+ 1151 0472 01       		.byte	0x1
+ 1152 0473 E0       		.byte	0xe0
+ 1153 0474 98000000 		.4byte	0x98
+ 1154 0478 00000000 		.4byte	.LFB4
+ 1155 047c 30000000 		.4byte	.LFE4-.LFB4
+ 1156 0480 01       		.uleb128 0x1
+ 1157 0481 9C       		.byte	0x9c
+ 1158 0482 A3040000 		.4byte	0x4a3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 26
+
+
+ 1159 0486 0F       		.uleb128 0xf
+ 1160 0487 00000000 		.4byte	.LASF69
+ 1161 048b 01       		.byte	0x1
+ 1162 048c E2       		.byte	0xe2
+ 1163 048d 98000000 		.4byte	0x98
+ 1164 0491 02       		.uleb128 0x2
+ 1165 0492 91       		.byte	0x91
+ 1166 0493 70       		.sleb128 -16
+ 1167 0494 0F       		.uleb128 0xf
+ 1168 0495 AD040000 		.4byte	.LASF68
+ 1169 0499 01       		.byte	0x1
+ 1170 049a E4       		.byte	0xe4
+ 1171 049b BC000000 		.4byte	0xbc
+ 1172 049f 02       		.uleb128 0x2
+ 1173 04a0 91       		.byte	0x91
+ 1174 04a1 74       		.sleb128 -12
+ 1175 04a2 00       		.byte	0
+ 1176 04a3 0C       		.uleb128 0xc
+ 1177 04a4 DD020000 		.4byte	.LASF79
+ 1178 04a8 01       		.byte	0x1
+ 1179 04a9 FD       		.byte	0xfd
+ 1180 04aa 00000000 		.4byte	.LFB5
+ 1181 04ae 30000000 		.4byte	.LFE5-.LFB5
+ 1182 04b2 01       		.uleb128 0x1
+ 1183 04b3 9C       		.byte	0x9c
+ 1184 04b4 D6040000 		.4byte	0x4d6
+ 1185 04b8 0D       		.uleb128 0xd
+ 1186 04b9 00000000 		.4byte	.LASF69
+ 1187 04bd 01       		.byte	0x1
+ 1188 04be FD       		.byte	0xfd
+ 1189 04bf 98000000 		.4byte	0x98
+ 1190 04c3 02       		.uleb128 0x2
+ 1191 04c4 91       		.byte	0x91
+ 1192 04c5 6C       		.sleb128 -20
+ 1193 04c6 12       		.uleb128 0x12
+ 1194 04c7 AD040000 		.4byte	.LASF68
+ 1195 04cb 01       		.byte	0x1
+ 1196 04cc 0001     		.2byte	0x100
+ 1197 04ce BC000000 		.4byte	0xbc
+ 1198 04d2 02       		.uleb128 0x2
+ 1199 04d3 91       		.byte	0x91
+ 1200 04d4 74       		.sleb128 -12
+ 1201 04d5 00       		.byte	0
+ 1202 04d6 13       		.uleb128 0x13
+ 1203 04d7 A3000000 		.4byte	.LASF80
+ 1204 04db 03       		.byte	0x3
+ 1205 04dc C402     		.2byte	0x2c4
+ 1206 04de 82000000 		.4byte	0x82
+ 1207 04e2 13       		.uleb128 0x13
+ 1208 04e3 66040000 		.4byte	.LASF81
+ 1209 04e7 03       		.byte	0x3
+ 1210 04e8 C602     		.2byte	0x2c6
+ 1211 04ea 82000000 		.4byte	0x82
+ 1212 04ee 13       		.uleb128 0x13
+ 1213 04ef 76010000 		.4byte	.LASF82
+ 1214 04f3 03       		.byte	0x3
+ 1215 04f4 CB02     		.2byte	0x2cb
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 27
+
+
+ 1216 04f6 C7000000 		.4byte	0xc7
+ 1217 04fa 13       		.uleb128 0x13
+ 1218 04fb 08030000 		.4byte	.LASF83
+ 1219 04ff 03       		.byte	0x3
+ 1220 0500 CC02     		.2byte	0x2cc
+ 1221 0502 2F010000 		.4byte	0x12f
+ 1222 0506 13       		.uleb128 0x13
+ 1223 0507 82040000 		.4byte	.LASF84
+ 1224 050b 03       		.byte	0x3
+ 1225 050c DB02     		.2byte	0x2db
+ 1226 050e 67040000 		.4byte	0x467
+ 1227 0512 09       		.uleb128 0x9
+ 1228 0513 67040000 		.4byte	0x467
+ 1229 0517 22050000 		.4byte	0x522
+ 1230 051b 0A       		.uleb128 0xa
+ 1231 051c 74000000 		.4byte	0x74
+ 1232 0520 3F       		.byte	0x3f
+ 1233 0521 00       		.byte	0
+ 1234 0522 13       		.uleb128 0x13
+ 1235 0523 A0040000 		.4byte	.LASF85
+ 1236 0527 03       		.byte	0x3
+ 1237 0528 DF02     		.2byte	0x2df
+ 1238 052a 12050000 		.4byte	0x512
+ 1239 052e 13       		.uleb128 0x13
+ 1240 052f 8B020000 		.4byte	.LASF86
+ 1241 0533 03       		.byte	0x3
+ 1242 0534 F502     		.2byte	0x2f5
+ 1243 0536 3A050000 		.4byte	0x53a
+ 1244 053a 14       		.uleb128 0x14
+ 1245 053b 98000000 		.4byte	0x98
+ 1246 053f 00       		.byte	0
+ 1247              		.section	.debug_abbrev,"",%progbits
+ 1248              	.Ldebug_abbrev0:
+ 1249 0000 01       		.uleb128 0x1
+ 1250 0001 11       		.uleb128 0x11
+ 1251 0002 01       		.byte	0x1
+ 1252 0003 25       		.uleb128 0x25
+ 1253 0004 0E       		.uleb128 0xe
+ 1254 0005 13       		.uleb128 0x13
+ 1255 0006 0B       		.uleb128 0xb
+ 1256 0007 03       		.uleb128 0x3
+ 1257 0008 0E       		.uleb128 0xe
+ 1258 0009 1B       		.uleb128 0x1b
+ 1259 000a 0E       		.uleb128 0xe
+ 1260 000b 55       		.uleb128 0x55
+ 1261 000c 17       		.uleb128 0x17
+ 1262 000d 11       		.uleb128 0x11
+ 1263 000e 01       		.uleb128 0x1
+ 1264 000f 10       		.uleb128 0x10
+ 1265 0010 17       		.uleb128 0x17
+ 1266 0011 00       		.byte	0
+ 1267 0012 00       		.byte	0
+ 1268 0013 02       		.uleb128 0x2
+ 1269 0014 24       		.uleb128 0x24
+ 1270 0015 00       		.byte	0
+ 1271 0016 0B       		.uleb128 0xb
+ 1272 0017 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 28
+
+
+ 1273 0018 3E       		.uleb128 0x3e
+ 1274 0019 0B       		.uleb128 0xb
+ 1275 001a 03       		.uleb128 0x3
+ 1276 001b 0E       		.uleb128 0xe
+ 1277 001c 00       		.byte	0
+ 1278 001d 00       		.byte	0
+ 1279 001e 03       		.uleb128 0x3
+ 1280 001f 24       		.uleb128 0x24
+ 1281 0020 00       		.byte	0
+ 1282 0021 0B       		.uleb128 0xb
+ 1283 0022 0B       		.uleb128 0xb
+ 1284 0023 3E       		.uleb128 0x3e
+ 1285 0024 0B       		.uleb128 0xb
+ 1286 0025 03       		.uleb128 0x3
+ 1287 0026 08       		.uleb128 0x8
+ 1288 0027 00       		.byte	0
+ 1289 0028 00       		.byte	0
+ 1290 0029 04       		.uleb128 0x4
+ 1291 002a 0F       		.uleb128 0xf
+ 1292 002b 00       		.byte	0
+ 1293 002c 0B       		.uleb128 0xb
+ 1294 002d 0B       		.uleb128 0xb
+ 1295 002e 00       		.byte	0
+ 1296 002f 00       		.byte	0
+ 1297 0030 05       		.uleb128 0x5
+ 1298 0031 16       		.uleb128 0x16
+ 1299 0032 00       		.byte	0
+ 1300 0033 03       		.uleb128 0x3
+ 1301 0034 0E       		.uleb128 0xe
+ 1302 0035 3A       		.uleb128 0x3a
+ 1303 0036 0B       		.uleb128 0xb
+ 1304 0037 3B       		.uleb128 0x3b
+ 1305 0038 0B       		.uleb128 0xb
+ 1306 0039 49       		.uleb128 0x49
+ 1307 003a 13       		.uleb128 0x13
+ 1308 003b 00       		.byte	0
+ 1309 003c 00       		.byte	0
+ 1310 003d 06       		.uleb128 0x6
+ 1311 003e 16       		.uleb128 0x16
+ 1312 003f 00       		.byte	0
+ 1313 0040 03       		.uleb128 0x3
+ 1314 0041 0E       		.uleb128 0xe
+ 1315 0042 3A       		.uleb128 0x3a
+ 1316 0043 0B       		.uleb128 0xb
+ 1317 0044 3B       		.uleb128 0x3b
+ 1318 0045 05       		.uleb128 0x5
+ 1319 0046 49       		.uleb128 0x49
+ 1320 0047 13       		.uleb128 0x13
+ 1321 0048 00       		.byte	0
+ 1322 0049 00       		.byte	0
+ 1323 004a 07       		.uleb128 0x7
+ 1324 004b 13       		.uleb128 0x13
+ 1325 004c 01       		.byte	0x1
+ 1326 004d 03       		.uleb128 0x3
+ 1327 004e 0E       		.uleb128 0xe
+ 1328 004f 0B       		.uleb128 0xb
+ 1329 0050 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 29
+
+
+ 1330 0051 3A       		.uleb128 0x3a
+ 1331 0052 0B       		.uleb128 0xb
+ 1332 0053 3B       		.uleb128 0x3b
+ 1333 0054 05       		.uleb128 0x5
+ 1334 0055 01       		.uleb128 0x1
+ 1335 0056 13       		.uleb128 0x13
+ 1336 0057 00       		.byte	0
+ 1337 0058 00       		.byte	0
+ 1338 0059 08       		.uleb128 0x8
+ 1339 005a 0D       		.uleb128 0xd
+ 1340 005b 00       		.byte	0
+ 1341 005c 03       		.uleb128 0x3
+ 1342 005d 0E       		.uleb128 0xe
+ 1343 005e 3A       		.uleb128 0x3a
+ 1344 005f 0B       		.uleb128 0xb
+ 1345 0060 3B       		.uleb128 0x3b
+ 1346 0061 05       		.uleb128 0x5
+ 1347 0062 49       		.uleb128 0x49
+ 1348 0063 13       		.uleb128 0x13
+ 1349 0064 38       		.uleb128 0x38
+ 1350 0065 0B       		.uleb128 0xb
+ 1351 0066 00       		.byte	0
+ 1352 0067 00       		.byte	0
+ 1353 0068 09       		.uleb128 0x9
+ 1354 0069 01       		.uleb128 0x1
+ 1355 006a 01       		.byte	0x1
+ 1356 006b 49       		.uleb128 0x49
+ 1357 006c 13       		.uleb128 0x13
+ 1358 006d 01       		.uleb128 0x1
+ 1359 006e 13       		.uleb128 0x13
+ 1360 006f 00       		.byte	0
+ 1361 0070 00       		.byte	0
+ 1362 0071 0A       		.uleb128 0xa
+ 1363 0072 21       		.uleb128 0x21
+ 1364 0073 00       		.byte	0
+ 1365 0074 49       		.uleb128 0x49
+ 1366 0075 13       		.uleb128 0x13
+ 1367 0076 2F       		.uleb128 0x2f
+ 1368 0077 0B       		.uleb128 0xb
+ 1369 0078 00       		.byte	0
+ 1370 0079 00       		.byte	0
+ 1371 007a 0B       		.uleb128 0xb
+ 1372 007b 0F       		.uleb128 0xf
+ 1373 007c 00       		.byte	0
+ 1374 007d 0B       		.uleb128 0xb
+ 1375 007e 0B       		.uleb128 0xb
+ 1376 007f 49       		.uleb128 0x49
+ 1377 0080 13       		.uleb128 0x13
+ 1378 0081 00       		.byte	0
+ 1379 0082 00       		.byte	0
+ 1380 0083 0C       		.uleb128 0xc
+ 1381 0084 2E       		.uleb128 0x2e
+ 1382 0085 01       		.byte	0x1
+ 1383 0086 3F       		.uleb128 0x3f
+ 1384 0087 19       		.uleb128 0x19
+ 1385 0088 03       		.uleb128 0x3
+ 1386 0089 0E       		.uleb128 0xe
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 30
+
+
+ 1387 008a 3A       		.uleb128 0x3a
+ 1388 008b 0B       		.uleb128 0xb
+ 1389 008c 3B       		.uleb128 0x3b
+ 1390 008d 0B       		.uleb128 0xb
+ 1391 008e 27       		.uleb128 0x27
+ 1392 008f 19       		.uleb128 0x19
+ 1393 0090 11       		.uleb128 0x11
+ 1394 0091 01       		.uleb128 0x1
+ 1395 0092 12       		.uleb128 0x12
+ 1396 0093 06       		.uleb128 0x6
+ 1397 0094 40       		.uleb128 0x40
+ 1398 0095 18       		.uleb128 0x18
+ 1399 0096 9642     		.uleb128 0x2116
+ 1400 0098 19       		.uleb128 0x19
+ 1401 0099 01       		.uleb128 0x1
+ 1402 009a 13       		.uleb128 0x13
+ 1403 009b 00       		.byte	0
+ 1404 009c 00       		.byte	0
+ 1405 009d 0D       		.uleb128 0xd
+ 1406 009e 05       		.uleb128 0x5
+ 1407 009f 00       		.byte	0
+ 1408 00a0 03       		.uleb128 0x3
+ 1409 00a1 0E       		.uleb128 0xe
+ 1410 00a2 3A       		.uleb128 0x3a
+ 1411 00a3 0B       		.uleb128 0xb
+ 1412 00a4 3B       		.uleb128 0x3b
+ 1413 00a5 0B       		.uleb128 0xb
+ 1414 00a6 49       		.uleb128 0x49
+ 1415 00a7 13       		.uleb128 0x13
+ 1416 00a8 02       		.uleb128 0x2
+ 1417 00a9 18       		.uleb128 0x18
+ 1418 00aa 00       		.byte	0
+ 1419 00ab 00       		.byte	0
+ 1420 00ac 0E       		.uleb128 0xe
+ 1421 00ad 34       		.uleb128 0x34
+ 1422 00ae 00       		.byte	0
+ 1423 00af 03       		.uleb128 0x3
+ 1424 00b0 08       		.uleb128 0x8
+ 1425 00b1 3A       		.uleb128 0x3a
+ 1426 00b2 0B       		.uleb128 0xb
+ 1427 00b3 3B       		.uleb128 0x3b
+ 1428 00b4 0B       		.uleb128 0xb
+ 1429 00b5 49       		.uleb128 0x49
+ 1430 00b6 13       		.uleb128 0x13
+ 1431 00b7 02       		.uleb128 0x2
+ 1432 00b8 18       		.uleb128 0x18
+ 1433 00b9 00       		.byte	0
+ 1434 00ba 00       		.byte	0
+ 1435 00bb 0F       		.uleb128 0xf
+ 1436 00bc 34       		.uleb128 0x34
+ 1437 00bd 00       		.byte	0
+ 1438 00be 03       		.uleb128 0x3
+ 1439 00bf 0E       		.uleb128 0xe
+ 1440 00c0 3A       		.uleb128 0x3a
+ 1441 00c1 0B       		.uleb128 0xb
+ 1442 00c2 3B       		.uleb128 0x3b
+ 1443 00c3 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 31
+
+
+ 1444 00c4 49       		.uleb128 0x49
+ 1445 00c5 13       		.uleb128 0x13
+ 1446 00c6 02       		.uleb128 0x2
+ 1447 00c7 18       		.uleb128 0x18
+ 1448 00c8 00       		.byte	0
+ 1449 00c9 00       		.byte	0
+ 1450 00ca 10       		.uleb128 0x10
+ 1451 00cb 2E       		.uleb128 0x2e
+ 1452 00cc 01       		.byte	0x1
+ 1453 00cd 3F       		.uleb128 0x3f
+ 1454 00ce 19       		.uleb128 0x19
+ 1455 00cf 03       		.uleb128 0x3
+ 1456 00d0 0E       		.uleb128 0xe
+ 1457 00d1 3A       		.uleb128 0x3a
+ 1458 00d2 0B       		.uleb128 0xb
+ 1459 00d3 3B       		.uleb128 0x3b
+ 1460 00d4 0B       		.uleb128 0xb
+ 1461 00d5 27       		.uleb128 0x27
+ 1462 00d6 19       		.uleb128 0x19
+ 1463 00d7 49       		.uleb128 0x49
+ 1464 00d8 13       		.uleb128 0x13
+ 1465 00d9 11       		.uleb128 0x11
+ 1466 00da 01       		.uleb128 0x1
+ 1467 00db 12       		.uleb128 0x12
+ 1468 00dc 06       		.uleb128 0x6
+ 1469 00dd 40       		.uleb128 0x40
+ 1470 00de 18       		.uleb128 0x18
+ 1471 00df 9642     		.uleb128 0x2116
+ 1472 00e1 19       		.uleb128 0x19
+ 1473 00e2 01       		.uleb128 0x1
+ 1474 00e3 13       		.uleb128 0x13
+ 1475 00e4 00       		.byte	0
+ 1476 00e5 00       		.byte	0
+ 1477 00e6 11       		.uleb128 0x11
+ 1478 00e7 05       		.uleb128 0x5
+ 1479 00e8 00       		.byte	0
+ 1480 00e9 03       		.uleb128 0x3
+ 1481 00ea 08       		.uleb128 0x8
+ 1482 00eb 3A       		.uleb128 0x3a
+ 1483 00ec 0B       		.uleb128 0xb
+ 1484 00ed 3B       		.uleb128 0x3b
+ 1485 00ee 0B       		.uleb128 0xb
+ 1486 00ef 49       		.uleb128 0x49
+ 1487 00f0 13       		.uleb128 0x13
+ 1488 00f1 02       		.uleb128 0x2
+ 1489 00f2 18       		.uleb128 0x18
+ 1490 00f3 00       		.byte	0
+ 1491 00f4 00       		.byte	0
+ 1492 00f5 12       		.uleb128 0x12
+ 1493 00f6 34       		.uleb128 0x34
+ 1494 00f7 00       		.byte	0
+ 1495 00f8 03       		.uleb128 0x3
+ 1496 00f9 0E       		.uleb128 0xe
+ 1497 00fa 3A       		.uleb128 0x3a
+ 1498 00fb 0B       		.uleb128 0xb
+ 1499 00fc 3B       		.uleb128 0x3b
+ 1500 00fd 05       		.uleb128 0x5
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 32
+
+
+ 1501 00fe 49       		.uleb128 0x49
+ 1502 00ff 13       		.uleb128 0x13
+ 1503 0100 02       		.uleb128 0x2
+ 1504 0101 18       		.uleb128 0x18
+ 1505 0102 00       		.byte	0
+ 1506 0103 00       		.byte	0
+ 1507 0104 13       		.uleb128 0x13
+ 1508 0105 34       		.uleb128 0x34
+ 1509 0106 00       		.byte	0
+ 1510 0107 03       		.uleb128 0x3
+ 1511 0108 0E       		.uleb128 0xe
+ 1512 0109 3A       		.uleb128 0x3a
+ 1513 010a 0B       		.uleb128 0xb
+ 1514 010b 3B       		.uleb128 0x3b
+ 1515 010c 05       		.uleb128 0x5
+ 1516 010d 49       		.uleb128 0x49
+ 1517 010e 13       		.uleb128 0x13
+ 1518 010f 3F       		.uleb128 0x3f
+ 1519 0110 19       		.uleb128 0x19
+ 1520 0111 3C       		.uleb128 0x3c
+ 1521 0112 19       		.uleb128 0x19
+ 1522 0113 00       		.byte	0
+ 1523 0114 00       		.byte	0
+ 1524 0115 14       		.uleb128 0x14
+ 1525 0116 35       		.uleb128 0x35
+ 1526 0117 00       		.byte	0
+ 1527 0118 49       		.uleb128 0x49
+ 1528 0119 13       		.uleb128 0x13
+ 1529 011a 00       		.byte	0
+ 1530 011b 00       		.byte	0
+ 1531 011c 00       		.byte	0
+ 1532              		.section	.debug_aranges,"",%progbits
+ 1533 0000 3C000000 		.4byte	0x3c
+ 1534 0004 0200     		.2byte	0x2
+ 1535 0006 00000000 		.4byte	.Ldebug_info0
+ 1536 000a 04       		.byte	0x4
+ 1537 000b 00       		.byte	0
+ 1538 000c 0000     		.2byte	0
+ 1539 000e 0000     		.2byte	0
+ 1540 0010 00000000 		.4byte	.LFB1
+ 1541 0014 B8000000 		.4byte	.LFE1-.LFB1
+ 1542 0018 00000000 		.4byte	.LFB2
+ 1543 001c E8000000 		.4byte	.LFE2-.LFB2
+ 1544 0020 00000000 		.4byte	.LFB3
+ 1545 0024 10010000 		.4byte	.LFE3-.LFB3
+ 1546 0028 00000000 		.4byte	.LFB4
+ 1547 002c 30000000 		.4byte	.LFE4-.LFB4
+ 1548 0030 00000000 		.4byte	.LFB5
+ 1549 0034 30000000 		.4byte	.LFE5-.LFB5
+ 1550 0038 00000000 		.4byte	0
+ 1551 003c 00000000 		.4byte	0
+ 1552              		.section	.debug_ranges,"",%progbits
+ 1553              	.Ldebug_ranges0:
+ 1554 0000 00000000 		.4byte	.LFB1
+ 1555 0004 B8000000 		.4byte	.LFE1
+ 1556 0008 00000000 		.4byte	.LFB2
+ 1557 000c E8000000 		.4byte	.LFE2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 33
+
+
+ 1558 0010 00000000 		.4byte	.LFB3
+ 1559 0014 10010000 		.4byte	.LFE3
+ 1560 0018 00000000 		.4byte	.LFB4
+ 1561 001c 30000000 		.4byte	.LFE4
+ 1562 0020 00000000 		.4byte	.LFB5
+ 1563 0024 30000000 		.4byte	.LFE5
+ 1564 0028 00000000 		.4byte	0
+ 1565 002c 00000000 		.4byte	0
+ 1566              		.section	.debug_line,"",%progbits
+ 1567              	.Ldebug_line0:
+ 1568 0000 4D010000 		.section	.debug_str,"MS",%progbits,1
+ 1568      0200A600 
+ 1568      00000201 
+ 1568      FB0E0D00 
+ 1568      01010101 
+ 1569              	.LASF69:
+ 1570 0000 7469636B 		.ascii	"ticks\000"
+ 1570      7300
+ 1571              	.LASF27:
+ 1572 0006 4F535F46 		.ascii	"OS_FLAGS\000"
+ 1572      4C414753 
+ 1572      00
+ 1573              	.LASF53:
+ 1574 000f 4F535443 		.ascii	"OSTCBStatPend\000"
+ 1574      42537461 
+ 1574      7450656E 
+ 1574      6400
+ 1575              	.LASF16:
+ 1576 001d 646F7562 		.ascii	"double\000"
+ 1576      6C6500
+ 1577              	.LASF63:
+ 1578 0024 4F535443 		.ascii	"OSTCBStkBase\000"
+ 1578      4253746B 
+ 1578      42617365 
+ 1578      00
+ 1579              	.LASF33:
+ 1580 0031 4F53466C 		.ascii	"OSFlagNodeFlagGrp\000"
+ 1580      61674E6F 
+ 1580      6465466C 
+ 1580      61674772 
+ 1580      7000
+ 1581              	.LASF59:
+ 1582 0043 4F535443 		.ascii	"OSTCBDelReq\000"
+ 1582      4244656C 
+ 1582      52657100 
+ 1583              	.LASF48:
+ 1584 004f 4F535443 		.ascii	"OSTCBMsg\000"
+ 1584      424D7367 
+ 1584      00
+ 1585              	.LASF76:
+ 1586 0058 70746362 		.ascii	"ptcb\000"
+ 1586      00
+ 1587              	.LASF2:
+ 1588 005d 73686F72 		.ascii	"short int\000"
+ 1588      7420696E 
+ 1588      7400
+ 1589              	.LASF25:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 34
+
+
+ 1590 0067 4F534576 		.ascii	"OSEventName\000"
+ 1590      656E744E 
+ 1590      616D6500 
+ 1591              	.LASF10:
+ 1592 0073 73697A65 		.ascii	"sizetype\000"
+ 1592      74797065 
+ 1592      00
+ 1593              	.LASF17:
+ 1594 007c 4F535F53 		.ascii	"OS_STK\000"
+ 1594      544B00
+ 1595              	.LASF18:
+ 1596 0083 4F535F43 		.ascii	"OS_CPU_SR\000"
+ 1596      50555F53 
+ 1596      5200
+ 1597              	.LASF64:
+ 1598 008d 4F535443 		.ascii	"OSTCBStkUsed\000"
+ 1598      4253746B 
+ 1598      55736564 
+ 1598      00
+ 1599              	.LASF28:
+ 1600 009a 6F735F65 		.ascii	"os_event\000"
+ 1600      76656E74 
+ 1600      00
+ 1601              	.LASF80:
+ 1602 00a3 4F53496E 		.ascii	"OSIntNesting\000"
+ 1602      744E6573 
+ 1602      74696E67 
+ 1602      00
+ 1603              	.LASF78:
+ 1604 00b0 4F535469 		.ascii	"OSTimeDly\000"
+ 1604      6D65446C 
+ 1604      7900
+ 1605              	.LASF22:
+ 1606 00ba 4F534576 		.ascii	"OSEventCnt\000"
+ 1606      656E7443 
+ 1606      6E7400
+ 1607              	.LASF38:
+ 1608 00c5 4F535443 		.ascii	"OSTCBStkPtr\000"
+ 1608      4253746B 
+ 1608      50747200 
+ 1609              	.LASF74:
+ 1610 00d1 4F535469 		.ascii	"OSTimeDlyResume\000"
+ 1610      6D65446C 
+ 1610      79526573 
+ 1610      756D6500 
+ 1611              	.LASF45:
+ 1612 00e1 4F535443 		.ascii	"OSTCBPrev\000"
+ 1612      42507265 
+ 1612      7600
+ 1613              	.LASF14:
+ 1614 00eb 494E5433 		.ascii	"INT32U\000"
+ 1614      325500
+ 1615              	.LASF67:
+ 1616 00f2 4F535F54 		.ascii	"OS_TCB\000"
+ 1616      434200
+ 1617              	.LASF54:
+ 1618 00f9 4F535443 		.ascii	"OSTCBPrio\000"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 35
+
+
+ 1618      42507269 
+ 1618      6F00
+ 1619              	.LASF44:
+ 1620 0103 4F535443 		.ascii	"OSTCBNext\000"
+ 1620      424E6578 
+ 1620      7400
+ 1621              	.LASF21:
+ 1622 010d 4F534576 		.ascii	"OSEventPtr\000"
+ 1622      656E7450 
+ 1622      747200
+ 1623              	.LASF0:
+ 1624 0118 7369676E 		.ascii	"signed char\000"
+ 1624      65642063 
+ 1624      68617200 
+ 1625              	.LASF15:
+ 1626 0124 666C6F61 		.ascii	"float\000"
+ 1626      7400
+ 1627              	.LASF73:
+ 1628 012a 4F535469 		.ascii	"OSTimeDlyHMSM\000"
+ 1628      6D65446C 
+ 1628      79484D53 
+ 1628      4D00
+ 1629              	.LASF49:
+ 1630 0138 4F535443 		.ascii	"OSTCBFlagNode\000"
+ 1630      42466C61 
+ 1630      674E6F64 
+ 1630      6500
+ 1631              	.LASF51:
+ 1632 0146 4F535443 		.ascii	"OSTCBDly\000"
+ 1632      42446C79 
+ 1632      00
+ 1633              	.LASF6:
+ 1634 014f 6C6F6E67 		.ascii	"long long int\000"
+ 1634      206C6F6E 
+ 1634      6720696E 
+ 1634      7400
+ 1635              	.LASF26:
+ 1636 015d 4F535F45 		.ascii	"OS_EVENT\000"
+ 1636      56454E54 
+ 1636      00
+ 1637              	.LASF4:
+ 1638 0166 6C6F6E67 		.ascii	"long int\000"
+ 1638      20696E74 
+ 1638      00
+ 1639              	.LASF55:
+ 1640 016f 4F535443 		.ascii	"OSTCBX\000"
+ 1640      425800
+ 1641              	.LASF82:
+ 1642 0176 4F535264 		.ascii	"OSRdyGrp\000"
+ 1642      79477270 
+ 1642      00
+ 1643              	.LASF43:
+ 1644 017f 4F535443 		.ascii	"OSTCBId\000"
+ 1644      42496400 
+ 1645              	.LASF41:
+ 1646 0187 4F535443 		.ascii	"OSTCBStkSize\000"
+ 1646      4253746B 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 36
+
+
+ 1646      53697A65 
+ 1646      00
+ 1647              	.LASF37:
+ 1648 0194 6F735F74 		.ascii	"os_tcb\000"
+ 1648      636200
+ 1649              	.LASF12:
+ 1650 019b 494E5438 		.ascii	"INT8U\000"
+ 1650      5500
+ 1651              	.LASF87:
+ 1652 01a1 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1652      43313120 
+ 1652      352E342E 
+ 1652      31203230 
+ 1652      31363036 
+ 1653 01d4 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 1653      20726576 
+ 1653      6973696F 
+ 1653      6E203233 
+ 1653      37373135 
+ 1654 0207 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 1654      66756E63 
+ 1654      74696F6E 
+ 1654      2D736563 
+ 1654      74696F6E 
+ 1655              	.LASF62:
+ 1656 022f 4F535443 		.ascii	"OSTCBCyclesStart\000"
+ 1656      42437963 
+ 1656      6C657353 
+ 1656      74617274 
+ 1656      00
+ 1657              	.LASF1:
+ 1658 0240 756E7369 		.ascii	"unsigned char\000"
+ 1658      676E6564 
+ 1658      20636861 
+ 1658      7200
+ 1659              	.LASF9:
+ 1660 024e 6C6F6E67 		.ascii	"long double\000"
+ 1660      20646F75 
+ 1660      626C6500 
+ 1661              	.LASF60:
+ 1662 025a 4F535443 		.ascii	"OSTCBCtxSwCtr\000"
+ 1662      42437478 
+ 1662      53774374 
+ 1662      7200
+ 1663              	.LASF34:
+ 1664 0268 4F53466C 		.ascii	"OSFlagNodeFlags\000"
+ 1664      61674E6F 
+ 1664      6465466C 
+ 1664      61677300 
+ 1665              	.LASF35:
+ 1666 0278 4F53466C 		.ascii	"OSFlagNodeWaitType\000"
+ 1666      61674E6F 
+ 1666      64655761 
+ 1666      69745479 
+ 1666      706500
+ 1667              	.LASF86:
+ 1668 028b 4F535469 		.ascii	"OSTime\000"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 37
+
+
+ 1668      6D6500
+ 1669              	.LASF57:
+ 1670 0292 4F535443 		.ascii	"OSTCBBitX\000"
+ 1670      42426974 
+ 1670      5800
+ 1671              	.LASF58:
+ 1672 029c 4F535443 		.ascii	"OSTCBBitY\000"
+ 1672      42426974 
+ 1672      5900
+ 1673              	.LASF13:
+ 1674 02a6 494E5431 		.ascii	"INT16U\000"
+ 1674      365500
+ 1675              	.LASF39:
+ 1676 02ad 4F535443 		.ascii	"OSTCBExtPtr\000"
+ 1676      42457874 
+ 1676      50747200 
+ 1677              	.LASF7:
+ 1678 02b9 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1678      206C6F6E 
+ 1678      6720756E 
+ 1678      7369676E 
+ 1678      65642069 
+ 1679              	.LASF8:
+ 1680 02d0 756E7369 		.ascii	"unsigned int\000"
+ 1680      676E6564 
+ 1680      20696E74 
+ 1680      00
+ 1681              	.LASF79:
+ 1682 02dd 4F535469 		.ascii	"OSTimeSet\000"
+ 1682      6D655365 
+ 1682      7400
+ 1683              	.LASF46:
+ 1684 02e7 4F535443 		.ascii	"OSTCBEventPtr\000"
+ 1684      42457665 
+ 1684      6E745074 
+ 1684      7200
+ 1685              	.LASF47:
+ 1686 02f5 4F535443 		.ascii	"OSTCBEventMultiPtr\000"
+ 1686      42457665 
+ 1686      6E744D75 
+ 1686      6C746950 
+ 1686      747200
+ 1687              	.LASF83:
+ 1688 0308 4F535264 		.ascii	"OSRdyTbl\000"
+ 1688      7954626C 
+ 1688      00
+ 1689              	.LASF56:
+ 1690 0311 4F535443 		.ascii	"OSTCBY\000"
+ 1690      425900
+ 1691              	.LASF31:
+ 1692 0318 4F53466C 		.ascii	"OSFlagNodePrev\000"
+ 1692      61674E6F 
+ 1692      64655072 
+ 1692      657600
+ 1693              	.LASF66:
+ 1694 0327 4F535443 		.ascii	"OSTCBRegTbl\000"
+ 1694      42526567 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 38
+
+
+ 1694      54626C00 
+ 1695              	.LASF72:
+ 1696 0333 7365636F 		.ascii	"seconds\000"
+ 1696      6E647300 
+ 1697              	.LASF70:
+ 1698 033b 686F7572 		.ascii	"hours\000"
+ 1698      7300
+ 1699              	.LASF11:
+ 1700 0341 63686172 		.ascii	"char\000"
+ 1700      00
+ 1701              	.LASF30:
+ 1702 0346 4F53466C 		.ascii	"OSFlagNodeNext\000"
+ 1702      61674E6F 
+ 1702      64654E65 
+ 1702      787400
+ 1703              	.LASF19:
+ 1704 0355 4F535F50 		.ascii	"OS_PRIO\000"
+ 1704      52494F00 
+ 1705              	.LASF88:
+ 1706 035d 2E2E5C2E 		.ascii	"..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source\\"
+ 1706      2E5C2E2E 
+ 1706      5C2E2E5C 
+ 1706      2E2E5C2E 
+ 1706      2E5C536F 
+ 1707 0387 6F735F74 		.ascii	"os_time.c\000"
+ 1707      696D652E 
+ 1707      6300
+ 1708              	.LASF20:
+ 1709 0391 4F534576 		.ascii	"OSEventType\000"
+ 1709      656E7454 
+ 1709      79706500 
+ 1710              	.LASF52:
+ 1711 039d 4F535443 		.ascii	"OSTCBStat\000"
+ 1711      42537461 
+ 1711      7400
+ 1712              	.LASF61:
+ 1713 03a7 4F535443 		.ascii	"OSTCBCyclesTot\000"
+ 1713      42437963 
+ 1713      6C657354 
+ 1713      6F7400
+ 1714              	.LASF3:
+ 1715 03b6 73686F72 		.ascii	"short unsigned int\000"
+ 1715      7420756E 
+ 1715      7369676E 
+ 1715      65642069 
+ 1715      6E7400
+ 1716              	.LASF42:
+ 1717 03c9 4F535443 		.ascii	"OSTCBOpt\000"
+ 1717      424F7074 
+ 1717      00
+ 1718              	.LASF40:
+ 1719 03d2 4F535443 		.ascii	"OSTCBStkBottom\000"
+ 1719      4253746B 
+ 1719      426F7474 
+ 1719      6F6D00
+ 1720              	.LASF5:
+ 1721 03e1 6C6F6E67 		.ascii	"long unsigned int\000"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 39
+
+
+ 1721      20756E73 
+ 1721      69676E65 
+ 1721      6420696E 
+ 1721      7400
+ 1722              	.LASF89:
+ 1723 03f3 443A5C43 		.ascii	"D:\\CYTEST\\Micrium_CY8CKIT-044_OS2\\Micrium\\Examp"
+ 1723      59544553 
+ 1723      545C4D69 
+ 1723      63726975 
+ 1723      6D5F4359 
+ 1724 0422 6C65735C 		.ascii	"les\\Cypress\\CY8CKIT-044\\OS2\\PSoC\\OS2.cydsn\000"
+ 1724      43797072 
+ 1724      6573735C 
+ 1724      43593843 
+ 1724      4B49542D 
+ 1725              	.LASF50:
+ 1726 044d 4F535443 		.ascii	"OSTCBFlagsRdy\000"
+ 1726      42466C61 
+ 1726      67735264 
+ 1726      7900
+ 1727              	.LASF23:
+ 1728 045b 4F534576 		.ascii	"OSEventGrp\000"
+ 1728      656E7447 
+ 1728      727000
+ 1729              	.LASF81:
+ 1730 0466 4F534C6F 		.ascii	"OSLockNesting\000"
+ 1730      636B4E65 
+ 1730      7374696E 
+ 1730      6700
+ 1731              	.LASF32:
+ 1732 0474 4F53466C 		.ascii	"OSFlagNodeTCB\000"
+ 1732      61674E6F 
+ 1732      64655443 
+ 1732      4200
+ 1733              	.LASF84:
+ 1734 0482 4F535443 		.ascii	"OSTCBCur\000"
+ 1734      42437572 
+ 1734      00
+ 1735              	.LASF71:
+ 1736 048b 6D696E75 		.ascii	"minutes\000"
+ 1736      74657300 
+ 1737              	.LASF36:
+ 1738 0493 4F535F46 		.ascii	"OS_FLAG_NODE\000"
+ 1738      4C41475F 
+ 1738      4E4F4445 
+ 1738      00
+ 1739              	.LASF85:
+ 1740 04a0 4F535443 		.ascii	"OSTCBPrioTbl\000"
+ 1740      42507269 
+ 1740      6F54626C 
+ 1740      00
+ 1741              	.LASF68:
+ 1742 04ad 6370755F 		.ascii	"cpu_sr\000"
+ 1742      737200
+ 1743              	.LASF29:
+ 1744 04b4 6F735F66 		.ascii	"os_flag_node\000"
+ 1744      6C61675F 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc57hZut.s 			page 40
+
+
+ 1744      6E6F6465 
+ 1744      00
+ 1745              	.LASF77:
+ 1746 04c1 4F535469 		.ascii	"OSTimeGet\000"
+ 1746      6D654765 
+ 1746      7400
+ 1747              	.LASF65:
+ 1748 04cb 4F535443 		.ascii	"OSTCBTaskName\000"
+ 1748      42546173 
+ 1748      6B4E616D 
+ 1748      6500
+ 1749              	.LASF75:
+ 1750 04d9 7072696F 		.ascii	"prio\000"
+ 1750      00
+ 1751              	.LASF24:
+ 1752 04de 4F534576 		.ascii	"OSEventTbl\000"
+ 1752      656E7454 
+ 1752      626C00
+ 1753              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

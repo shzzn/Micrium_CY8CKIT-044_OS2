@@ -1,0 +1,978 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"SW2.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.SW2_Write,"ax",%progbits
+  20              		.align	2
+  21              		.global	SW2_Write
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	SW2_Write, %function
+  25              	SW2_Write:
+  26              	.LFB0:
+  27              		.file 1 "Generated_Source\\PSoC4\\SW2.c"
+   1:Generated_Source\PSoC4/SW2.c **** /*******************************************************************************
+   2:Generated_Source\PSoC4/SW2.c **** * File Name: SW2.c  
+   3:Generated_Source\PSoC4/SW2.c **** * Version 2.10
+   4:Generated_Source\PSoC4/SW2.c **** *
+   5:Generated_Source\PSoC4/SW2.c **** * Description:
+   6:Generated_Source\PSoC4/SW2.c **** *  This file contains API to enable firmware control of a Pins component.
+   7:Generated_Source\PSoC4/SW2.c **** *
+   8:Generated_Source\PSoC4/SW2.c **** * Note:
+   9:Generated_Source\PSoC4/SW2.c **** *
+  10:Generated_Source\PSoC4/SW2.c **** ********************************************************************************
+  11:Generated_Source\PSoC4/SW2.c **** * Copyright 2008-2014, Cypress Semiconductor Corporation.  All rights reserved.
+  12:Generated_Source\PSoC4/SW2.c **** * You may use this file only in accordance with the license, terms, conditions, 
+  13:Generated_Source\PSoC4/SW2.c **** * disclaimers, and limitations in the end user license agreement accompanying 
+  14:Generated_Source\PSoC4/SW2.c **** * the software package with which this file was provided.
+  15:Generated_Source\PSoC4/SW2.c **** *******************************************************************************/
+  16:Generated_Source\PSoC4/SW2.c **** 
+  17:Generated_Source\PSoC4/SW2.c **** #include "cytypes.h"
+  18:Generated_Source\PSoC4/SW2.c **** #include "SW2.h"
+  19:Generated_Source\PSoC4/SW2.c **** 
+  20:Generated_Source\PSoC4/SW2.c **** #define SetP4PinDriveMode(shift, mode)  \
+  21:Generated_Source\PSoC4/SW2.c ****     do { \
+  22:Generated_Source\PSoC4/SW2.c ****         SW2_PC =   (SW2_PC & \
+  23:Generated_Source\PSoC4/SW2.c ****                                 (uint32)(~(uint32)(SW2_DRIVE_MODE_IND_MASK << (SW2_DRIVE_MODE_BITS 
+  24:Generated_Source\PSoC4/SW2.c ****                                 (uint32)((uint32)(mode) << (SW2_DRIVE_MODE_BITS * (shift))); \
+  25:Generated_Source\PSoC4/SW2.c ****     } while (0)
+  26:Generated_Source\PSoC4/SW2.c **** 
+  27:Generated_Source\PSoC4/SW2.c **** 
+  28:Generated_Source\PSoC4/SW2.c **** /*******************************************************************************
+  29:Generated_Source\PSoC4/SW2.c **** * Function Name: SW2_Write
+  30:Generated_Source\PSoC4/SW2.c **** ********************************************************************************
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 2
+
+
+  31:Generated_Source\PSoC4/SW2.c **** *
+  32:Generated_Source\PSoC4/SW2.c **** * Summary:
+  33:Generated_Source\PSoC4/SW2.c **** *  Assign a new value to the digital port's data output register.  
+  34:Generated_Source\PSoC4/SW2.c **** *
+  35:Generated_Source\PSoC4/SW2.c **** * Parameters:  
+  36:Generated_Source\PSoC4/SW2.c **** *  prtValue:  The value to be assigned to the Digital Port. 
+  37:Generated_Source\PSoC4/SW2.c **** *
+  38:Generated_Source\PSoC4/SW2.c **** * Return: 
+  39:Generated_Source\PSoC4/SW2.c **** *  None 
+  40:Generated_Source\PSoC4/SW2.c **** *  
+  41:Generated_Source\PSoC4/SW2.c **** *******************************************************************************/
+  42:Generated_Source\PSoC4/SW2.c **** void SW2_Write(uint8 value) 
+  43:Generated_Source\PSoC4/SW2.c **** {
+  28              		.loc 1 43 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 16
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 80B5     		push	{r7, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 84B0     		sub	sp, sp, #16
+  37              		.cfi_def_cfa_offset 24
+  38 0004 00AF     		add	r7, sp, #0
+  39              		.cfi_def_cfa_register 7
+  40 0006 0200     		movs	r2, r0
+  41 0008 FB1D     		adds	r3, r7, #7
+  42 000a 1A70     		strb	r2, [r3]
+  44:Generated_Source\PSoC4/SW2.c ****     uint8 drVal = (uint8)(SW2_DR & (uint8)(~SW2_MASK));
+  43              		.loc 1 44 0
+  44 000c 0D4B     		ldr	r3, .L2
+  45 000e 1B68     		ldr	r3, [r3]
+  46 0010 DAB2     		uxtb	r2, r3
+  47 0012 0F23     		movs	r3, #15
+  48 0014 FB18     		adds	r3, r7, r3
+  49 0016 7F21     		movs	r1, #127
+  50 0018 0A40     		ands	r2, r1
+  51 001a 1A70     		strb	r2, [r3]
+  45:Generated_Source\PSoC4/SW2.c ****     drVal = (drVal | ((uint8)(value << SW2_SHIFT) & SW2_MASK));
+  52              		.loc 1 45 0
+  53 001c FB1D     		adds	r3, r7, #7
+  54 001e 1B78     		ldrb	r3, [r3]
+  55 0020 DB01     		lsls	r3, r3, #7
+  56 0022 D9B2     		uxtb	r1, r3
+  57 0024 0F23     		movs	r3, #15
+  58 0026 FB18     		adds	r3, r7, r3
+  59 0028 0F22     		movs	r2, #15
+  60 002a BA18     		adds	r2, r7, r2
+  61 002c 1278     		ldrb	r2, [r2]
+  62 002e 0A43     		orrs	r2, r1
+  63 0030 1A70     		strb	r2, [r3]
+  46:Generated_Source\PSoC4/SW2.c ****     SW2_DR = (uint32)drVal;
+  64              		.loc 1 46 0
+  65 0032 044B     		ldr	r3, .L2
+  66 0034 0F22     		movs	r2, #15
+  67 0036 BA18     		adds	r2, r7, r2
+  68 0038 1278     		ldrb	r2, [r2]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 3
+
+
+  69 003a 1A60     		str	r2, [r3]
+  47:Generated_Source\PSoC4/SW2.c **** }
+  70              		.loc 1 47 0
+  71 003c C046     		nop
+  72 003e BD46     		mov	sp, r7
+  73 0040 04B0     		add	sp, sp, #16
+  74              		@ sp needed
+  75 0042 80BD     		pop	{r7, pc}
+  76              	.L3:
+  77              		.align	2
+  78              	.L2:
+  79 0044 00000440 		.word	1074003968
+  80              		.cfi_endproc
+  81              	.LFE0:
+  82              		.size	SW2_Write, .-SW2_Write
+  83              		.section	.text.SW2_SetDriveMode,"ax",%progbits
+  84              		.align	2
+  85              		.global	SW2_SetDriveMode
+  86              		.code	16
+  87              		.thumb_func
+  88              		.type	SW2_SetDriveMode, %function
+  89              	SW2_SetDriveMode:
+  90              	.LFB1:
+  48:Generated_Source\PSoC4/SW2.c **** 
+  49:Generated_Source\PSoC4/SW2.c **** 
+  50:Generated_Source\PSoC4/SW2.c **** /*******************************************************************************
+  51:Generated_Source\PSoC4/SW2.c **** * Function Name: SW2_SetDriveMode
+  52:Generated_Source\PSoC4/SW2.c **** ********************************************************************************
+  53:Generated_Source\PSoC4/SW2.c **** *
+  54:Generated_Source\PSoC4/SW2.c **** * Summary:
+  55:Generated_Source\PSoC4/SW2.c **** *  Change the drive mode on the pins of the port.
+  56:Generated_Source\PSoC4/SW2.c **** * 
+  57:Generated_Source\PSoC4/SW2.c **** * Parameters:  
+  58:Generated_Source\PSoC4/SW2.c **** *  mode:  Change the pins to one of the following drive modes.
+  59:Generated_Source\PSoC4/SW2.c **** *
+  60:Generated_Source\PSoC4/SW2.c **** *  SW2_DM_STRONG     Strong Drive 
+  61:Generated_Source\PSoC4/SW2.c **** *  SW2_DM_OD_HI      Open Drain, Drives High 
+  62:Generated_Source\PSoC4/SW2.c **** *  SW2_DM_OD_LO      Open Drain, Drives Low 
+  63:Generated_Source\PSoC4/SW2.c **** *  SW2_DM_RES_UP     Resistive Pull Up 
+  64:Generated_Source\PSoC4/SW2.c **** *  SW2_DM_RES_DWN    Resistive Pull Down 
+  65:Generated_Source\PSoC4/SW2.c **** *  SW2_DM_RES_UPDWN  Resistive Pull Up/Down 
+  66:Generated_Source\PSoC4/SW2.c **** *  SW2_DM_DIG_HIZ    High Impedance Digital 
+  67:Generated_Source\PSoC4/SW2.c **** *  SW2_DM_ALG_HIZ    High Impedance Analog 
+  68:Generated_Source\PSoC4/SW2.c **** *
+  69:Generated_Source\PSoC4/SW2.c **** * Return: 
+  70:Generated_Source\PSoC4/SW2.c **** *  None
+  71:Generated_Source\PSoC4/SW2.c **** *
+  72:Generated_Source\PSoC4/SW2.c **** *******************************************************************************/
+  73:Generated_Source\PSoC4/SW2.c **** void SW2_SetDriveMode(uint8 mode) 
+  74:Generated_Source\PSoC4/SW2.c **** {
+  91              		.loc 1 74 0
+  92              		.cfi_startproc
+  93              		@ args = 0, pretend = 0, frame = 8
+  94              		@ frame_needed = 1, uses_anonymous_args = 0
+  95 0000 80B5     		push	{r7, lr}
+  96              		.cfi_def_cfa_offset 8
+  97              		.cfi_offset 7, -8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 4
+
+
+  98              		.cfi_offset 14, -4
+  99 0002 82B0     		sub	sp, sp, #8
+ 100              		.cfi_def_cfa_offset 16
+ 101 0004 00AF     		add	r7, sp, #0
+ 102              		.cfi_def_cfa_register 7
+ 103 0006 0200     		movs	r2, r0
+ 104 0008 FB1D     		adds	r3, r7, #7
+ 105 000a 1A70     		strb	r2, [r3]
+  75:Generated_Source\PSoC4/SW2.c **** 	SetP4PinDriveMode(SW2__0__SHIFT, mode);
+ 106              		.loc 1 75 0
+ 107 000c 064B     		ldr	r3, .L5
+ 108 000e 064A     		ldr	r2, .L5
+ 109 0010 1268     		ldr	r2, [r2]
+ 110 0012 0649     		ldr	r1, .L5+4
+ 111 0014 1140     		ands	r1, r2
+ 112 0016 FA1D     		adds	r2, r7, #7
+ 113 0018 1278     		ldrb	r2, [r2]
+ 114 001a 5205     		lsls	r2, r2, #21
+ 115 001c 0A43     		orrs	r2, r1
+ 116 001e 1A60     		str	r2, [r3]
+  76:Generated_Source\PSoC4/SW2.c **** }
+ 117              		.loc 1 76 0
+ 118 0020 C046     		nop
+ 119 0022 BD46     		mov	sp, r7
+ 120 0024 02B0     		add	sp, sp, #8
+ 121              		@ sp needed
+ 122 0026 80BD     		pop	{r7, pc}
+ 123              	.L6:
+ 124              		.align	2
+ 125              	.L5:
+ 126 0028 08000440 		.word	1074003976
+ 127 002c FFFF1FFF 		.word	-14680065
+ 128              		.cfi_endproc
+ 129              	.LFE1:
+ 130              		.size	SW2_SetDriveMode, .-SW2_SetDriveMode
+ 131              		.section	.text.SW2_Read,"ax",%progbits
+ 132              		.align	2
+ 133              		.global	SW2_Read
+ 134              		.code	16
+ 135              		.thumb_func
+ 136              		.type	SW2_Read, %function
+ 137              	SW2_Read:
+ 138              	.LFB2:
+  77:Generated_Source\PSoC4/SW2.c **** 
+  78:Generated_Source\PSoC4/SW2.c **** 
+  79:Generated_Source\PSoC4/SW2.c **** /*******************************************************************************
+  80:Generated_Source\PSoC4/SW2.c **** * Function Name: SW2_Read
+  81:Generated_Source\PSoC4/SW2.c **** ********************************************************************************
+  82:Generated_Source\PSoC4/SW2.c **** *
+  83:Generated_Source\PSoC4/SW2.c **** * Summary:
+  84:Generated_Source\PSoC4/SW2.c **** *  Read the current value on the pins of the Digital Port in right justified 
+  85:Generated_Source\PSoC4/SW2.c **** *  form.
+  86:Generated_Source\PSoC4/SW2.c **** *
+  87:Generated_Source\PSoC4/SW2.c **** * Parameters:  
+  88:Generated_Source\PSoC4/SW2.c **** *  None 
+  89:Generated_Source\PSoC4/SW2.c **** *
+  90:Generated_Source\PSoC4/SW2.c **** * Return: 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 5
+
+
+  91:Generated_Source\PSoC4/SW2.c **** *  Returns the current value of the Digital Port as a right justified number
+  92:Generated_Source\PSoC4/SW2.c **** *  
+  93:Generated_Source\PSoC4/SW2.c **** * Note:
+  94:Generated_Source\PSoC4/SW2.c **** *  Macro SW2_ReadPS calls this function. 
+  95:Generated_Source\PSoC4/SW2.c **** *  
+  96:Generated_Source\PSoC4/SW2.c **** *******************************************************************************/
+  97:Generated_Source\PSoC4/SW2.c **** uint8 SW2_Read(void) 
+  98:Generated_Source\PSoC4/SW2.c **** {
+ 139              		.loc 1 98 0
+ 140              		.cfi_startproc
+ 141              		@ args = 0, pretend = 0, frame = 0
+ 142              		@ frame_needed = 1, uses_anonymous_args = 0
+ 143 0000 80B5     		push	{r7, lr}
+ 144              		.cfi_def_cfa_offset 8
+ 145              		.cfi_offset 7, -8
+ 146              		.cfi_offset 14, -4
+ 147 0002 00AF     		add	r7, sp, #0
+ 148              		.cfi_def_cfa_register 7
+  99:Generated_Source\PSoC4/SW2.c ****     return (uint8)((SW2_PS & SW2_MASK) >> SW2_SHIFT);
+ 149              		.loc 1 99 0
+ 150 0004 044B     		ldr	r3, .L9
+ 151 0006 1B68     		ldr	r3, [r3]
+ 152 0008 8022     		movs	r2, #128
+ 153 000a 1340     		ands	r3, r2
+ 154 000c DB09     		lsrs	r3, r3, #7
+ 155 000e DBB2     		uxtb	r3, r3
+ 100:Generated_Source\PSoC4/SW2.c **** }
+ 156              		.loc 1 100 0
+ 157 0010 1800     		movs	r0, r3
+ 158 0012 BD46     		mov	sp, r7
+ 159              		@ sp needed
+ 160 0014 80BD     		pop	{r7, pc}
+ 161              	.L10:
+ 162 0016 C046     		.align	2
+ 163              	.L9:
+ 164 0018 04000440 		.word	1074003972
+ 165              		.cfi_endproc
+ 166              	.LFE2:
+ 167              		.size	SW2_Read, .-SW2_Read
+ 168              		.section	.text.SW2_ReadDataReg,"ax",%progbits
+ 169              		.align	2
+ 170              		.global	SW2_ReadDataReg
+ 171              		.code	16
+ 172              		.thumb_func
+ 173              		.type	SW2_ReadDataReg, %function
+ 174              	SW2_ReadDataReg:
+ 175              	.LFB3:
+ 101:Generated_Source\PSoC4/SW2.c **** 
+ 102:Generated_Source\PSoC4/SW2.c **** 
+ 103:Generated_Source\PSoC4/SW2.c **** /*******************************************************************************
+ 104:Generated_Source\PSoC4/SW2.c **** * Function Name: SW2_ReadDataReg
+ 105:Generated_Source\PSoC4/SW2.c **** ********************************************************************************
+ 106:Generated_Source\PSoC4/SW2.c **** *
+ 107:Generated_Source\PSoC4/SW2.c **** * Summary:
+ 108:Generated_Source\PSoC4/SW2.c **** *  Read the current value assigned to a Digital Port's data output register
+ 109:Generated_Source\PSoC4/SW2.c **** *
+ 110:Generated_Source\PSoC4/SW2.c **** * Parameters:  
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 6
+
+
+ 111:Generated_Source\PSoC4/SW2.c **** *  None 
+ 112:Generated_Source\PSoC4/SW2.c **** *
+ 113:Generated_Source\PSoC4/SW2.c **** * Return: 
+ 114:Generated_Source\PSoC4/SW2.c **** *  Returns the current value assigned to the Digital Port's data output register
+ 115:Generated_Source\PSoC4/SW2.c **** *  
+ 116:Generated_Source\PSoC4/SW2.c **** *******************************************************************************/
+ 117:Generated_Source\PSoC4/SW2.c **** uint8 SW2_ReadDataReg(void) 
+ 118:Generated_Source\PSoC4/SW2.c **** {
+ 176              		.loc 1 118 0
+ 177              		.cfi_startproc
+ 178              		@ args = 0, pretend = 0, frame = 0
+ 179              		@ frame_needed = 1, uses_anonymous_args = 0
+ 180 0000 80B5     		push	{r7, lr}
+ 181              		.cfi_def_cfa_offset 8
+ 182              		.cfi_offset 7, -8
+ 183              		.cfi_offset 14, -4
+ 184 0002 00AF     		add	r7, sp, #0
+ 185              		.cfi_def_cfa_register 7
+ 119:Generated_Source\PSoC4/SW2.c ****     return (uint8)((SW2_DR & SW2_MASK) >> SW2_SHIFT);
+ 186              		.loc 1 119 0
+ 187 0004 044B     		ldr	r3, .L13
+ 188 0006 1B68     		ldr	r3, [r3]
+ 189 0008 8022     		movs	r2, #128
+ 190 000a 1340     		ands	r3, r2
+ 191 000c DB09     		lsrs	r3, r3, #7
+ 192 000e DBB2     		uxtb	r3, r3
+ 120:Generated_Source\PSoC4/SW2.c **** }
+ 193              		.loc 1 120 0
+ 194 0010 1800     		movs	r0, r3
+ 195 0012 BD46     		mov	sp, r7
+ 196              		@ sp needed
+ 197 0014 80BD     		pop	{r7, pc}
+ 198              	.L14:
+ 199 0016 C046     		.align	2
+ 200              	.L13:
+ 201 0018 00000440 		.word	1074003968
+ 202              		.cfi_endproc
+ 203              	.LFE3:
+ 204              		.size	SW2_ReadDataReg, .-SW2_ReadDataReg
+ 205              		.section	.text.SW2_ClearInterrupt,"ax",%progbits
+ 206              		.align	2
+ 207              		.global	SW2_ClearInterrupt
+ 208              		.code	16
+ 209              		.thumb_func
+ 210              		.type	SW2_ClearInterrupt, %function
+ 211              	SW2_ClearInterrupt:
+ 212              	.LFB4:
+ 121:Generated_Source\PSoC4/SW2.c **** 
+ 122:Generated_Source\PSoC4/SW2.c **** 
+ 123:Generated_Source\PSoC4/SW2.c **** /* If Interrupts Are Enabled for this Pins component */ 
+ 124:Generated_Source\PSoC4/SW2.c **** #if defined(SW2_INTSTAT) 
+ 125:Generated_Source\PSoC4/SW2.c **** 
+ 126:Generated_Source\PSoC4/SW2.c ****     /*******************************************************************************
+ 127:Generated_Source\PSoC4/SW2.c ****     * Function Name: SW2_ClearInterrupt
+ 128:Generated_Source\PSoC4/SW2.c ****     ********************************************************************************
+ 129:Generated_Source\PSoC4/SW2.c ****     *
+ 130:Generated_Source\PSoC4/SW2.c ****     * Summary:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 7
+
+
+ 131:Generated_Source\PSoC4/SW2.c ****     *  Clears any active interrupts attached to port and returns the value of the 
+ 132:Generated_Source\PSoC4/SW2.c ****     *  interrupt status register.
+ 133:Generated_Source\PSoC4/SW2.c ****     *
+ 134:Generated_Source\PSoC4/SW2.c ****     * Parameters:  
+ 135:Generated_Source\PSoC4/SW2.c ****     *  None 
+ 136:Generated_Source\PSoC4/SW2.c ****     *
+ 137:Generated_Source\PSoC4/SW2.c ****     * Return: 
+ 138:Generated_Source\PSoC4/SW2.c ****     *  Returns the value of the interrupt status register
+ 139:Generated_Source\PSoC4/SW2.c ****     *  
+ 140:Generated_Source\PSoC4/SW2.c ****     *******************************************************************************/
+ 141:Generated_Source\PSoC4/SW2.c ****     uint8 SW2_ClearInterrupt(void) 
+ 142:Generated_Source\PSoC4/SW2.c ****     {
+ 213              		.loc 1 142 0
+ 214              		.cfi_startproc
+ 215              		@ args = 0, pretend = 0, frame = 8
+ 216              		@ frame_needed = 1, uses_anonymous_args = 0
+ 217 0000 80B5     		push	{r7, lr}
+ 218              		.cfi_def_cfa_offset 8
+ 219              		.cfi_offset 7, -8
+ 220              		.cfi_offset 14, -4
+ 221 0002 82B0     		sub	sp, sp, #8
+ 222              		.cfi_def_cfa_offset 16
+ 223 0004 00AF     		add	r7, sp, #0
+ 224              		.cfi_def_cfa_register 7
+ 143:Generated_Source\PSoC4/SW2.c **** 		uint8 maskedStatus = (uint8)(SW2_INTSTAT & SW2_MASK);
+ 225              		.loc 1 143 0
+ 226 0006 094B     		ldr	r3, .L17
+ 227 0008 1B68     		ldr	r3, [r3]
+ 228 000a DAB2     		uxtb	r2, r3
+ 229 000c FB1D     		adds	r3, r7, #7
+ 230 000e 7F21     		movs	r1, #127
+ 231 0010 8A43     		bics	r2, r1
+ 232 0012 1A70     		strb	r2, [r3]
+ 144:Generated_Source\PSoC4/SW2.c **** 		SW2_INTSTAT = maskedStatus;
+ 233              		.loc 1 144 0
+ 234 0014 054B     		ldr	r3, .L17
+ 235 0016 FA1D     		adds	r2, r7, #7
+ 236 0018 1278     		ldrb	r2, [r2]
+ 237 001a 1A60     		str	r2, [r3]
+ 145:Generated_Source\PSoC4/SW2.c ****         return maskedStatus >> SW2_SHIFT;
+ 238              		.loc 1 145 0
+ 239 001c FB1D     		adds	r3, r7, #7
+ 240 001e 1B78     		ldrb	r3, [r3]
+ 241 0020 DB09     		lsrs	r3, r3, #7
+ 242 0022 DBB2     		uxtb	r3, r3
+ 146:Generated_Source\PSoC4/SW2.c ****     }
+ 243              		.loc 1 146 0
+ 244 0024 1800     		movs	r0, r3
+ 245 0026 BD46     		mov	sp, r7
+ 246 0028 02B0     		add	sp, sp, #8
+ 247              		@ sp needed
+ 248 002a 80BD     		pop	{r7, pc}
+ 249              	.L18:
+ 250              		.align	2
+ 251              	.L17:
+ 252 002c 10000440 		.word	1074003984
+ 253              		.cfi_endproc
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 8
+
+
+ 254              	.LFE4:
+ 255              		.size	SW2_ClearInterrupt, .-SW2_ClearInterrupt
+ 256              		.text
+ 257              	.Letext0:
+ 258              		.file 2 "Generated_Source\\PSoC4\\cytypes.h"
+ 259              		.section	.debug_info,"",%progbits
+ 260              	.Ldebug_info0:
+ 261 0000 48010000 		.4byte	0x148
+ 262 0004 0400     		.2byte	0x4
+ 263 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 264 000a 04       		.byte	0x4
+ 265 000b 01       		.uleb128 0x1
+ 266 000c 71000000 		.4byte	.LASF24
+ 267 0010 0C       		.byte	0xc
+ 268 0011 1B000000 		.4byte	.LASF25
+ 269 0015 83010000 		.4byte	.LASF26
+ 270 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 271 001d 00000000 		.4byte	0
+ 272 0021 00000000 		.4byte	.Ldebug_line0
+ 273 0025 02       		.uleb128 0x2
+ 274 0026 01       		.byte	0x1
+ 275 0027 06       		.byte	0x6
+ 276 0028 F6010000 		.4byte	.LASF0
+ 277 002c 02       		.uleb128 0x2
+ 278 002d 01       		.byte	0x1
+ 279 002e 08       		.byte	0x8
+ 280 002f 38000000 		.4byte	.LASF1
+ 281 0033 02       		.uleb128 0x2
+ 282 0034 02       		.byte	0x2
+ 283 0035 05       		.byte	0x5
+ 284 0036 69010000 		.4byte	.LASF2
+ 285 003a 02       		.uleb128 0x2
+ 286 003b 02       		.byte	0x2
+ 287 003c 07       		.byte	0x7
+ 288 003d 5E000000 		.4byte	.LASF3
+ 289 0041 02       		.uleb128 0x2
+ 290 0042 04       		.byte	0x4
+ 291 0043 05       		.byte	0x5
+ 292 0044 ED010000 		.4byte	.LASF4
+ 293 0048 02       		.uleb128 0x2
+ 294 0049 04       		.byte	0x4
+ 295 004a 07       		.byte	0x7
+ 296 004b 4C000000 		.4byte	.LASF5
+ 297 004f 02       		.uleb128 0x2
+ 298 0050 08       		.byte	0x8
+ 299 0051 05       		.byte	0x5
+ 300 0052 49010000 		.4byte	.LASF6
+ 301 0056 02       		.uleb128 0x2
+ 302 0057 08       		.byte	0x8
+ 303 0058 07       		.byte	0x7
+ 304 0059 2D010000 		.4byte	.LASF7
+ 305 005d 03       		.uleb128 0x3
+ 306 005e 04       		.byte	0x4
+ 307 005f 05       		.byte	0x5
+ 308 0060 696E7400 		.ascii	"int\000"
+ 309 0064 02       		.uleb128 0x2
+ 310 0065 04       		.byte	0x4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 9
+
+
+ 311 0066 07       		.byte	0x7
+ 312 0067 20010000 		.4byte	.LASF8
+ 313 006b 04       		.uleb128 0x4
+ 314 006c 7D010000 		.4byte	.LASF9
+ 315 0070 02       		.byte	0x2
+ 316 0071 C2       		.byte	0xc2
+ 317 0072 2C000000 		.4byte	0x2c
+ 318 0076 04       		.uleb128 0x4
+ 319 0077 19010000 		.4byte	.LASF10
+ 320 007b 02       		.byte	0x2
+ 321 007c C4       		.byte	0xc4
+ 322 007d 48000000 		.4byte	0x48
+ 323 0081 02       		.uleb128 0x2
+ 324 0082 04       		.byte	0x4
+ 325 0083 04       		.byte	0x4
+ 326 0084 0F000000 		.4byte	.LASF11
+ 327 0088 02       		.uleb128 0x2
+ 328 0089 08       		.byte	0x8
+ 329 008a 04       		.byte	0x4
+ 330 008b FF000000 		.4byte	.LASF12
+ 331 008f 02       		.uleb128 0x2
+ 332 0090 01       		.byte	0x1
+ 333 0091 08       		.byte	0x8
+ 334 0092 64010000 		.4byte	.LASF13
+ 335 0096 05       		.uleb128 0x5
+ 336 0097 09000000 		.4byte	.LASF14
+ 337 009b 02       		.byte	0x2
+ 338 009c 6E01     		.2byte	0x16e
+ 339 009e A2000000 		.4byte	0xa2
+ 340 00a2 06       		.uleb128 0x6
+ 341 00a3 76000000 		.4byte	0x76
+ 342 00a7 07       		.uleb128 0x7
+ 343 00a8 73010000 		.4byte	.LASF15
+ 344 00ac 01       		.byte	0x1
+ 345 00ad 2A       		.byte	0x2a
+ 346 00ae 00000000 		.4byte	.LFB0
+ 347 00b2 48000000 		.4byte	.LFE0-.LFB0
+ 348 00b6 01       		.uleb128 0x1
+ 349 00b7 9C       		.byte	0x9c
+ 350 00b8 D9000000 		.4byte	0xd9
+ 351 00bc 08       		.uleb128 0x8
+ 352 00bd 15000000 		.4byte	.LASF17
+ 353 00c1 01       		.byte	0x1
+ 354 00c2 2A       		.byte	0x2a
+ 355 00c3 6B000000 		.4byte	0x6b
+ 356 00c7 02       		.uleb128 0x2
+ 357 00c8 91       		.byte	0x91
+ 358 00c9 6F       		.sleb128 -17
+ 359 00ca 09       		.uleb128 0x9
+ 360 00cb 46000000 		.4byte	.LASF22
+ 361 00cf 01       		.byte	0x1
+ 362 00d0 2C       		.byte	0x2c
+ 363 00d1 6B000000 		.4byte	0x6b
+ 364 00d5 02       		.uleb128 0x2
+ 365 00d6 91       		.byte	0x91
+ 366 00d7 77       		.sleb128 -9
+ 367 00d8 00       		.byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 10
+
+
+ 368 00d9 07       		.uleb128 0x7
+ 369 00da 02020000 		.4byte	.LASF16
+ 370 00de 01       		.byte	0x1
+ 371 00df 49       		.byte	0x49
+ 372 00e0 00000000 		.4byte	.LFB1
+ 373 00e4 30000000 		.4byte	.LFE1-.LFB1
+ 374 00e8 01       		.uleb128 0x1
+ 375 00e9 9C       		.byte	0x9c
+ 376 00ea FD000000 		.4byte	0xfd
+ 377 00ee 08       		.uleb128 0x8
+ 378 00ef 44010000 		.4byte	.LASF18
+ 379 00f3 01       		.byte	0x1
+ 380 00f4 49       		.byte	0x49
+ 381 00f5 6B000000 		.4byte	0x6b
+ 382 00f9 02       		.uleb128 0x2
+ 383 00fa 91       		.byte	0x91
+ 384 00fb 77       		.sleb128 -9
+ 385 00fc 00       		.byte	0
+ 386 00fd 0A       		.uleb128 0xa
+ 387 00fe 00000000 		.4byte	.LASF19
+ 388 0102 01       		.byte	0x1
+ 389 0103 61       		.byte	0x61
+ 390 0104 6B000000 		.4byte	0x6b
+ 391 0108 00000000 		.4byte	.LFB2
+ 392 010c 1C000000 		.4byte	.LFE2-.LFB2
+ 393 0110 01       		.uleb128 0x1
+ 394 0111 9C       		.byte	0x9c
+ 395 0112 0A       		.uleb128 0xa
+ 396 0113 DD010000 		.4byte	.LASF20
+ 397 0117 01       		.byte	0x1
+ 398 0118 75       		.byte	0x75
+ 399 0119 6B000000 		.4byte	0x6b
+ 400 011d 00000000 		.4byte	.LFB3
+ 401 0121 1C000000 		.4byte	.LFE3-.LFB3
+ 402 0125 01       		.uleb128 0x1
+ 403 0126 9C       		.byte	0x9c
+ 404 0127 0B       		.uleb128 0xb
+ 405 0128 06010000 		.4byte	.LASF21
+ 406 012c 01       		.byte	0x1
+ 407 012d 8D       		.byte	0x8d
+ 408 012e 6B000000 		.4byte	0x6b
+ 409 0132 00000000 		.4byte	.LFB4
+ 410 0136 30000000 		.4byte	.LFE4-.LFB4
+ 411 013a 01       		.uleb128 0x1
+ 412 013b 9C       		.byte	0x9c
+ 413 013c 09       		.uleb128 0x9
+ 414 013d 57010000 		.4byte	.LASF23
+ 415 0141 01       		.byte	0x1
+ 416 0142 8F       		.byte	0x8f
+ 417 0143 6B000000 		.4byte	0x6b
+ 418 0147 02       		.uleb128 0x2
+ 419 0148 91       		.byte	0x91
+ 420 0149 77       		.sleb128 -9
+ 421 014a 00       		.byte	0
+ 422 014b 00       		.byte	0
+ 423              		.section	.debug_abbrev,"",%progbits
+ 424              	.Ldebug_abbrev0:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 11
+
+
+ 425 0000 01       		.uleb128 0x1
+ 426 0001 11       		.uleb128 0x11
+ 427 0002 01       		.byte	0x1
+ 428 0003 25       		.uleb128 0x25
+ 429 0004 0E       		.uleb128 0xe
+ 430 0005 13       		.uleb128 0x13
+ 431 0006 0B       		.uleb128 0xb
+ 432 0007 03       		.uleb128 0x3
+ 433 0008 0E       		.uleb128 0xe
+ 434 0009 1B       		.uleb128 0x1b
+ 435 000a 0E       		.uleb128 0xe
+ 436 000b 55       		.uleb128 0x55
+ 437 000c 17       		.uleb128 0x17
+ 438 000d 11       		.uleb128 0x11
+ 439 000e 01       		.uleb128 0x1
+ 440 000f 10       		.uleb128 0x10
+ 441 0010 17       		.uleb128 0x17
+ 442 0011 00       		.byte	0
+ 443 0012 00       		.byte	0
+ 444 0013 02       		.uleb128 0x2
+ 445 0014 24       		.uleb128 0x24
+ 446 0015 00       		.byte	0
+ 447 0016 0B       		.uleb128 0xb
+ 448 0017 0B       		.uleb128 0xb
+ 449 0018 3E       		.uleb128 0x3e
+ 450 0019 0B       		.uleb128 0xb
+ 451 001a 03       		.uleb128 0x3
+ 452 001b 0E       		.uleb128 0xe
+ 453 001c 00       		.byte	0
+ 454 001d 00       		.byte	0
+ 455 001e 03       		.uleb128 0x3
+ 456 001f 24       		.uleb128 0x24
+ 457 0020 00       		.byte	0
+ 458 0021 0B       		.uleb128 0xb
+ 459 0022 0B       		.uleb128 0xb
+ 460 0023 3E       		.uleb128 0x3e
+ 461 0024 0B       		.uleb128 0xb
+ 462 0025 03       		.uleb128 0x3
+ 463 0026 08       		.uleb128 0x8
+ 464 0027 00       		.byte	0
+ 465 0028 00       		.byte	0
+ 466 0029 04       		.uleb128 0x4
+ 467 002a 16       		.uleb128 0x16
+ 468 002b 00       		.byte	0
+ 469 002c 03       		.uleb128 0x3
+ 470 002d 0E       		.uleb128 0xe
+ 471 002e 3A       		.uleb128 0x3a
+ 472 002f 0B       		.uleb128 0xb
+ 473 0030 3B       		.uleb128 0x3b
+ 474 0031 0B       		.uleb128 0xb
+ 475 0032 49       		.uleb128 0x49
+ 476 0033 13       		.uleb128 0x13
+ 477 0034 00       		.byte	0
+ 478 0035 00       		.byte	0
+ 479 0036 05       		.uleb128 0x5
+ 480 0037 16       		.uleb128 0x16
+ 481 0038 00       		.byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 12
+
+
+ 482 0039 03       		.uleb128 0x3
+ 483 003a 0E       		.uleb128 0xe
+ 484 003b 3A       		.uleb128 0x3a
+ 485 003c 0B       		.uleb128 0xb
+ 486 003d 3B       		.uleb128 0x3b
+ 487 003e 05       		.uleb128 0x5
+ 488 003f 49       		.uleb128 0x49
+ 489 0040 13       		.uleb128 0x13
+ 490 0041 00       		.byte	0
+ 491 0042 00       		.byte	0
+ 492 0043 06       		.uleb128 0x6
+ 493 0044 35       		.uleb128 0x35
+ 494 0045 00       		.byte	0
+ 495 0046 49       		.uleb128 0x49
+ 496 0047 13       		.uleb128 0x13
+ 497 0048 00       		.byte	0
+ 498 0049 00       		.byte	0
+ 499 004a 07       		.uleb128 0x7
+ 500 004b 2E       		.uleb128 0x2e
+ 501 004c 01       		.byte	0x1
+ 502 004d 3F       		.uleb128 0x3f
+ 503 004e 19       		.uleb128 0x19
+ 504 004f 03       		.uleb128 0x3
+ 505 0050 0E       		.uleb128 0xe
+ 506 0051 3A       		.uleb128 0x3a
+ 507 0052 0B       		.uleb128 0xb
+ 508 0053 3B       		.uleb128 0x3b
+ 509 0054 0B       		.uleb128 0xb
+ 510 0055 27       		.uleb128 0x27
+ 511 0056 19       		.uleb128 0x19
+ 512 0057 11       		.uleb128 0x11
+ 513 0058 01       		.uleb128 0x1
+ 514 0059 12       		.uleb128 0x12
+ 515 005a 06       		.uleb128 0x6
+ 516 005b 40       		.uleb128 0x40
+ 517 005c 18       		.uleb128 0x18
+ 518 005d 9742     		.uleb128 0x2117
+ 519 005f 19       		.uleb128 0x19
+ 520 0060 01       		.uleb128 0x1
+ 521 0061 13       		.uleb128 0x13
+ 522 0062 00       		.byte	0
+ 523 0063 00       		.byte	0
+ 524 0064 08       		.uleb128 0x8
+ 525 0065 05       		.uleb128 0x5
+ 526 0066 00       		.byte	0
+ 527 0067 03       		.uleb128 0x3
+ 528 0068 0E       		.uleb128 0xe
+ 529 0069 3A       		.uleb128 0x3a
+ 530 006a 0B       		.uleb128 0xb
+ 531 006b 3B       		.uleb128 0x3b
+ 532 006c 0B       		.uleb128 0xb
+ 533 006d 49       		.uleb128 0x49
+ 534 006e 13       		.uleb128 0x13
+ 535 006f 02       		.uleb128 0x2
+ 536 0070 18       		.uleb128 0x18
+ 537 0071 00       		.byte	0
+ 538 0072 00       		.byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 13
+
+
+ 539 0073 09       		.uleb128 0x9
+ 540 0074 34       		.uleb128 0x34
+ 541 0075 00       		.byte	0
+ 542 0076 03       		.uleb128 0x3
+ 543 0077 0E       		.uleb128 0xe
+ 544 0078 3A       		.uleb128 0x3a
+ 545 0079 0B       		.uleb128 0xb
+ 546 007a 3B       		.uleb128 0x3b
+ 547 007b 0B       		.uleb128 0xb
+ 548 007c 49       		.uleb128 0x49
+ 549 007d 13       		.uleb128 0x13
+ 550 007e 02       		.uleb128 0x2
+ 551 007f 18       		.uleb128 0x18
+ 552 0080 00       		.byte	0
+ 553 0081 00       		.byte	0
+ 554 0082 0A       		.uleb128 0xa
+ 555 0083 2E       		.uleb128 0x2e
+ 556 0084 00       		.byte	0
+ 557 0085 3F       		.uleb128 0x3f
+ 558 0086 19       		.uleb128 0x19
+ 559 0087 03       		.uleb128 0x3
+ 560 0088 0E       		.uleb128 0xe
+ 561 0089 3A       		.uleb128 0x3a
+ 562 008a 0B       		.uleb128 0xb
+ 563 008b 3B       		.uleb128 0x3b
+ 564 008c 0B       		.uleb128 0xb
+ 565 008d 27       		.uleb128 0x27
+ 566 008e 19       		.uleb128 0x19
+ 567 008f 49       		.uleb128 0x49
+ 568 0090 13       		.uleb128 0x13
+ 569 0091 11       		.uleb128 0x11
+ 570 0092 01       		.uleb128 0x1
+ 571 0093 12       		.uleb128 0x12
+ 572 0094 06       		.uleb128 0x6
+ 573 0095 40       		.uleb128 0x40
+ 574 0096 18       		.uleb128 0x18
+ 575 0097 9742     		.uleb128 0x2117
+ 576 0099 19       		.uleb128 0x19
+ 577 009a 00       		.byte	0
+ 578 009b 00       		.byte	0
+ 579 009c 0B       		.uleb128 0xb
+ 580 009d 2E       		.uleb128 0x2e
+ 581 009e 01       		.byte	0x1
+ 582 009f 3F       		.uleb128 0x3f
+ 583 00a0 19       		.uleb128 0x19
+ 584 00a1 03       		.uleb128 0x3
+ 585 00a2 0E       		.uleb128 0xe
+ 586 00a3 3A       		.uleb128 0x3a
+ 587 00a4 0B       		.uleb128 0xb
+ 588 00a5 3B       		.uleb128 0x3b
+ 589 00a6 0B       		.uleb128 0xb
+ 590 00a7 27       		.uleb128 0x27
+ 591 00a8 19       		.uleb128 0x19
+ 592 00a9 49       		.uleb128 0x49
+ 593 00aa 13       		.uleb128 0x13
+ 594 00ab 11       		.uleb128 0x11
+ 595 00ac 01       		.uleb128 0x1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 14
+
+
+ 596 00ad 12       		.uleb128 0x12
+ 597 00ae 06       		.uleb128 0x6
+ 598 00af 40       		.uleb128 0x40
+ 599 00b0 18       		.uleb128 0x18
+ 600 00b1 9742     		.uleb128 0x2117
+ 601 00b3 19       		.uleb128 0x19
+ 602 00b4 00       		.byte	0
+ 603 00b5 00       		.byte	0
+ 604 00b6 00       		.byte	0
+ 605              		.section	.debug_aranges,"",%progbits
+ 606 0000 3C000000 		.4byte	0x3c
+ 607 0004 0200     		.2byte	0x2
+ 608 0006 00000000 		.4byte	.Ldebug_info0
+ 609 000a 04       		.byte	0x4
+ 610 000b 00       		.byte	0
+ 611 000c 0000     		.2byte	0
+ 612 000e 0000     		.2byte	0
+ 613 0010 00000000 		.4byte	.LFB0
+ 614 0014 48000000 		.4byte	.LFE0-.LFB0
+ 615 0018 00000000 		.4byte	.LFB1
+ 616 001c 30000000 		.4byte	.LFE1-.LFB1
+ 617 0020 00000000 		.4byte	.LFB2
+ 618 0024 1C000000 		.4byte	.LFE2-.LFB2
+ 619 0028 00000000 		.4byte	.LFB3
+ 620 002c 1C000000 		.4byte	.LFE3-.LFB3
+ 621 0030 00000000 		.4byte	.LFB4
+ 622 0034 30000000 		.4byte	.LFE4-.LFB4
+ 623 0038 00000000 		.4byte	0
+ 624 003c 00000000 		.4byte	0
+ 625              		.section	.debug_ranges,"",%progbits
+ 626              	.Ldebug_ranges0:
+ 627 0000 00000000 		.4byte	.LFB0
+ 628 0004 48000000 		.4byte	.LFE0
+ 629 0008 00000000 		.4byte	.LFB1
+ 630 000c 30000000 		.4byte	.LFE1
+ 631 0010 00000000 		.4byte	.LFB2
+ 632 0014 1C000000 		.4byte	.LFE2
+ 633 0018 00000000 		.4byte	.LFB3
+ 634 001c 1C000000 		.4byte	.LFE3
+ 635 0020 00000000 		.4byte	.LFB4
+ 636 0024 30000000 		.4byte	.LFE4
+ 637 0028 00000000 		.4byte	0
+ 638 002c 00000000 		.4byte	0
+ 639              		.section	.debug_line,"",%progbits
+ 640              	.Ldebug_line0:
+ 641 0000 A3000000 		.section	.debug_str,"MS",%progbits,1
+ 641      02004000 
+ 641      00000201 
+ 641      FB0E0D00 
+ 641      01010101 
+ 642              	.LASF19:
+ 643 0000 5357325F 		.ascii	"SW2_Read\000"
+ 643      52656164 
+ 643      00
+ 644              	.LASF14:
+ 645 0009 72656733 		.ascii	"reg32\000"
+ 645      3200
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 15
+
+
+ 646              	.LASF11:
+ 647 000f 666C6F61 		.ascii	"float\000"
+ 647      7400
+ 648              	.LASF17:
+ 649 0015 76616C75 		.ascii	"value\000"
+ 649      6500
+ 650              	.LASF25:
+ 651 001b 47656E65 		.ascii	"Generated_Source\\PSoC4\\SW2.c\000"
+ 651      72617465 
+ 651      645F536F 
+ 651      75726365 
+ 651      5C50536F 
+ 652              	.LASF1:
+ 653 0038 756E7369 		.ascii	"unsigned char\000"
+ 653      676E6564 
+ 653      20636861 
+ 653      7200
+ 654              	.LASF22:
+ 655 0046 64725661 		.ascii	"drVal\000"
+ 655      6C00
+ 656              	.LASF5:
+ 657 004c 6C6F6E67 		.ascii	"long unsigned int\000"
+ 657      20756E73 
+ 657      69676E65 
+ 657      6420696E 
+ 657      7400
+ 658              	.LASF3:
+ 659 005e 73686F72 		.ascii	"short unsigned int\000"
+ 659      7420756E 
+ 659      7369676E 
+ 659      65642069 
+ 659      6E7400
+ 660              	.LASF24:
+ 661 0071 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 661      43313120 
+ 661      352E342E 
+ 661      31203230 
+ 661      31363036 
+ 662 00a4 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 662      20726576 
+ 662      6973696F 
+ 662      6E203233 
+ 662      37373135 
+ 663 00d7 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 663      66756E63 
+ 663      74696F6E 
+ 663      2D736563 
+ 663      74696F6E 
+ 664              	.LASF12:
+ 665 00ff 646F7562 		.ascii	"double\000"
+ 665      6C6500
+ 666              	.LASF21:
+ 667 0106 5357325F 		.ascii	"SW2_ClearInterrupt\000"
+ 667      436C6561 
+ 667      72496E74 
+ 667      65727275 
+ 667      707400
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 16
+
+
+ 668              	.LASF10:
+ 669 0119 75696E74 		.ascii	"uint32\000"
+ 669      333200
+ 670              	.LASF8:
+ 671 0120 756E7369 		.ascii	"unsigned int\000"
+ 671      676E6564 
+ 671      20696E74 
+ 671      00
+ 672              	.LASF7:
+ 673 012d 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 673      206C6F6E 
+ 673      6720756E 
+ 673      7369676E 
+ 673      65642069 
+ 674              	.LASF18:
+ 675 0144 6D6F6465 		.ascii	"mode\000"
+ 675      00
+ 676              	.LASF6:
+ 677 0149 6C6F6E67 		.ascii	"long long int\000"
+ 677      206C6F6E 
+ 677      6720696E 
+ 677      7400
+ 678              	.LASF23:
+ 679 0157 6D61736B 		.ascii	"maskedStatus\000"
+ 679      65645374 
+ 679      61747573 
+ 679      00
+ 680              	.LASF13:
+ 681 0164 63686172 		.ascii	"char\000"
+ 681      00
+ 682              	.LASF2:
+ 683 0169 73686F72 		.ascii	"short int\000"
+ 683      7420696E 
+ 683      7400
+ 684              	.LASF15:
+ 685 0173 5357325F 		.ascii	"SW2_Write\000"
+ 685      57726974 
+ 685      6500
+ 686              	.LASF9:
+ 687 017d 75696E74 		.ascii	"uint8\000"
+ 687      3800
+ 688              	.LASF26:
+ 689 0183 443A5C43 		.ascii	"D:\\CYTEST\\Micrium_CY8CKIT-044_OS2\\Micrium\\Examp"
+ 689      59544553 
+ 689      545C4D69 
+ 689      63726975 
+ 689      6D5F4359 
+ 690 01b2 6C65735C 		.ascii	"les\\Cypress\\CY8CKIT-044\\OS2\\PSoC\\OS2.cydsn\000"
+ 690      43797072 
+ 690      6573735C 
+ 690      43593843 
+ 690      4B49542D 
+ 691              	.LASF20:
+ 692 01dd 5357325F 		.ascii	"SW2_ReadDataReg\000"
+ 692      52656164 
+ 692      44617461 
+ 692      52656700 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccaiKB0o.s 			page 17
+
+
+ 693              	.LASF4:
+ 694 01ed 6C6F6E67 		.ascii	"long int\000"
+ 694      20696E74 
+ 694      00
+ 695              	.LASF0:
+ 696 01f6 7369676E 		.ascii	"signed char\000"
+ 696      65642063 
+ 696      68617200 
+ 697              	.LASF16:
+ 698 0202 5357325F 		.ascii	"SW2_SetDriveMode\000"
+ 698      53657444 
+ 698      72697665 
+ 698      4D6F6465 
+ 698      00
+ 699              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

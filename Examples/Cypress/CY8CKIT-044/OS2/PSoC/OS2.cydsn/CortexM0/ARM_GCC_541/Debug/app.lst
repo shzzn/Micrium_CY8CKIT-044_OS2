@@ -1,0 +1,1914 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"app.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.comm	uC_Probe_RGB_Val,4,4
+  20              		.global	uC_Probe_PB_Trigger
+  21              		.bss
+  22              		.type	uC_Probe_PB_Trigger, %object
+  23              		.size	uC_Probe_PB_Trigger, 1
+  24              	uC_Probe_PB_Trigger:
+  25 0000 00       		.space	1
+  26              		.comm	uC_Probe_Temp_Val,4,4
+  27              		.comm	uC_Probe_AmbientLight,2,2
+  28              		.comm	uC_Probe_Accel_X_Axis,2,2
+  29              		.comm	uC_Probe_Accel_Y_Axis,2,2
+  30              		.comm	uC_Probe_Accel_Z_Axis,2,2
+  31 0001 000000   		.align	2
+  32              	App_TaskStartStk:
+  33 0004 00000000 		.space	1024
+  33      00000000 
+  33      00000000 
+  33      00000000 
+  33      00000000 
+  34              		.align	2
+  35              	App_Demo_SensorTaskStk:
+  36 0404 00000000 		.space	1024
+  36      00000000 
+  36      00000000 
+  36      00000000 
+  36      00000000 
+  37              		.align	1
+  38              	App_Demo_Ambient_InitVar:
+  39 0804 0000     		.space	2
+  40              		.section	.rodata
+  41              		.align	2
+  42              	.LC3:
+  43 0000 41707020 		.ascii	"App Task Start\000"
+  43      5461736B 
+  43      20537461 
+  43      727400
+  44              		.section	.text.main,"ax",%progbits
+  45              		.align	2
+  46              		.global	main
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 2
+
+
+  47              		.code	16
+  48              		.thumb_func
+  49              		.type	main, %function
+  50              	main:
+  51              	.LFB34:
+  52              		.file 1 "..\\..\\app.c"
+   1:..\../app.c   **** /*
+   2:..\../app.c   **** ***************************************************************************************************
+   3:..\../app.c   **** *                                             EXAMPLE CODE
+   4:..\../app.c   **** *
+   5:..\../app.c   **** *                            (c) Copyright 2015; Micrium, Inc.; Weston, FL
+   6:..\../app.c   **** *
+   7:..\../app.c   **** *               This file is provided as an example on how to use Micrium products.
+   8:..\../app.c   **** *
+   9:..\../app.c   **** *               Please feel free to use any application code labeled as 'EXAMPLE CODE' in
+  10:..\../app.c   **** *               your application products.  Example code may be used as is, in whole or in
+  11:..\../app.c   **** *               part, or may be used as a reference only. This file can be modified as
+  12:..\../app.c   **** *               required to meet the end-product requirements.
+  13:..\../app.c   **** *
+  14:..\../app.c   **** *               Please help us continue to provide the Embedded community with the finest
+  15:..\../app.c   **** *               software available.  Your honesty is greatly appreciated.
+  16:..\../app.c   **** *
+  17:..\../app.c   **** *               You can find our product's user manual, API reference, release notes and
+  18:..\../app.c   **** *               more information at https://doc.micrium.com.
+  19:..\../app.c   **** *               You can contact us at www.micrium.com.
+  20:..\../app.c   **** ***************************************************************************************************
+  21:..\../app.c   **** */
+  22:..\../app.c   **** 
+  23:..\../app.c   **** /*
+  24:..\../app.c   **** ***************************************************************************************************
+  25:..\../app.c   **** *                                           APPLICATION CODE
+  26:..\../app.c   **** *
+  27:..\../app.c   **** *                                            CYPRESS PSoC4
+  28:..\../app.c   **** *                                               with the
+  29:..\../app.c   **** *                                      CY8CKIT-044 Development Kit
+  30:..\../app.c   **** *
+  31:..\../app.c   **** * Filename      : app.c
+  32:..\../app.c   **** * Version       : V1.00
+  33:..\../app.c   **** * Programmer(s) : DC
+  34:..\../app.c   **** ***************************************************************************************************
+  35:..\../app.c   **** */
+  36:..\../app.c   **** 
+  37:..\../app.c   **** /*
+  38:..\../app.c   **** ***************************************************************************************************
+  39:..\../app.c   **** *                                             INCLUDE FILES
+  40:..\../app.c   **** ***************************************************************************************************
+  41:..\../app.c   **** */
+  42:..\../app.c   **** 
+  43:..\../app.c   **** #include  "app_cfg.h"
+  44:..\../app.c   **** #include  <bsp.h>
+  45:..\../app.c   **** #include  <os.h>
+  46:..\../app.c   **** #include  <cpu.h>
+  47:..\../app.c   **** 
+  48:..\../app.c   **** #include  <lib_math.h>
+  49:..\../app.c   **** #include  <lib_mem.h>
+  50:..\../app.c   **** 
+  51:..\../app.c   **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 3
+
+
+  52:..\../app.c   **** /*
+  53:..\../app.c   **** ***************************************************************************************************
+  54:..\../app.c   **** *                                             LOCAL DEFINES
+  55:..\../app.c   **** ***************************************************************************************************
+  56:..\../app.c   **** */
+  57:..\../app.c   ****                                                                 /* ---------------- TEMP SENSOR DEF
+  58:..\../app.c   **** #define  APP_TEMP_SENSOR_NUM                        0u
+  59:..\../app.c   **** 
+  60:..\../app.c   ****                                                                 /* --------------- AMBIENT LIGHT DE
+  61:..\../app.c   **** #define  APP_AMBIENT_DEMO_MAX_VAL                  50u          /* See 'App_Demo_TempAccel' Task No
+  62:..\../app.c   ****                                                                 
+  63:..\../app.c   **** 
+  64:..\../app.c   **** /*
+  65:..\../app.c   **** ***************************************************************************************************
+  66:..\../app.c   **** *                                            GLOBAL DEFINES
+  67:..\../app.c   **** ***************************************************************************************************
+  68:..\../app.c   **** */
+  69:..\../app.c   ****                                                                 /* -------------- uC/PROBE GLOBAL D
+  70:..\../app.c   **** CPU_INT32U   uC_Probe_RGB_Val;                                  /*  - RGB LED Color Value.         
+  71:..\../app.c   **** CPU_BOOLEAN  uC_Probe_PB_Trigger = DEF_OFF;                     /*  - RGB LED ON/OFF Push Button Tr
+  72:..\../app.c   **** CPU_FP32     uC_Probe_Temp_Val;                                 /*  - Temperature Sensor Value (*F)
+  73:..\../app.c   **** CPU_INT16U   uC_Probe_AmbientLight;                             /*  - Ambient Light Sensor Value.  
+  74:..\../app.c   **** CPU_INT16S   uC_Probe_Accel_X_Axis;                             /*  - Accelerometer X-Axis Value.  
+  75:..\../app.c   **** CPU_INT16S   uC_Probe_Accel_Y_Axis;                             /*  - Accelerometer Y-Axis Value.  
+  76:..\../app.c   **** CPU_INT16S   uC_Probe_Accel_Z_Axis;                             /*  - Accelerometer Z-Axis Value.  
+  77:..\../app.c   **** 
+  78:..\../app.c   **** 
+  79:..\../app.c   **** /*
+  80:..\../app.c   **** ***************************************************************************************************
+  81:..\../app.c   **** *                                            LOCAL VARIABLES
+  82:..\../app.c   **** ***************************************************************************************************
+  83:..\../app.c   **** */
+  84:..\../app.c   ****                                                                 /* ------------------ APP TASK VAR(
+  85:..\../app.c   **** static  OS_STK      App_TaskStartStk[APP_CFG_TASK_START_STK_SIZE];
+  86:..\../app.c   **** 
+  87:..\../app.c   ****                                                                 /* ------------- TEMP & ACCEL TASK 
+  88:..\../app.c   **** static  OS_STK      App_Demo_SensorTaskStk[APP_CFG_SENSOR_TASK_STK_SIZE];
+  89:..\../app.c   **** 
+  90:..\../app.c   ****                                                                 /* --------------- MISCELLANEOUS VA
+  91:..\../app.c   **** static  CPU_INT16U  App_Demo_Ambient_InitVar;                   /*  - Ambient Light Initial DMA Sto
+  92:..\../app.c   **** 
+  93:..\../app.c   **** 
+  94:..\../app.c   **** /*
+  95:..\../app.c   **** ***************************************************************************************************
+  96:..\../app.c   **** *                                         FUNCTION PROTOTYPES
+  97:..\../app.c   **** ***************************************************************************************************
+  98:..\../app.c   **** */
+  99:..\../app.c   **** 
+ 100:..\../app.c   **** static  void  App_TaskStart      (void *p_arg);
+ 101:..\../app.c   **** static  void  App_Demo_SensorTask(void *p_arg);
+ 102:..\../app.c   **** 
+ 103:..\../app.c   **** static  void  App_TaskCreate     (void);
+ 104:..\../app.c   **** static  void  App_ObjCreate      (void);
+ 105:..\../app.c   **** 
+ 106:..\../app.c   **** 
+ 107:..\../app.c   **** /*
+ 108:..\../app.c   **** ***************************************************************************************************
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 4
+
+
+ 109:..\../app.c   **** *                                                main()
+ 110:..\../app.c   **** *
+ 111:..\../app.c   **** * Description : This is the standard entry point for C code.  It is assumed that your code will cal
+ 112:..\../app.c   **** *               main() once you have performed all necessary initialization.
+ 113:..\../app.c   **** *
+ 114:..\../app.c   **** * Argument(s) : none
+ 115:..\../app.c   **** *
+ 116:..\../app.c   **** * Return(s)   : none
+ 117:..\../app.c   **** *
+ 118:..\../app.c   **** * Caller(s)   : Startup Code.
+ 119:..\../app.c   **** *
+ 120:..\../app.c   **** * Note(s)     : none.
+ 121:..\../app.c   **** ***************************************************************************************************
+ 122:..\../app.c   **** */
+ 123:..\../app.c   **** 
+ 124:..\../app.c   **** int  main (void)
+ 125:..\../app.c   **** {
+  53              		.loc 1 125 0
+  54              		.cfi_startproc
+  55              		@ args = 0, pretend = 0, frame = 8
+  56              		@ frame_needed = 1, uses_anonymous_args = 0
+  57 0000 80B5     		push	{r7, lr}
+  58              		.cfi_def_cfa_offset 8
+  59              		.cfi_offset 7, -8
+  60              		.cfi_offset 14, -4
+  61 0002 88B0     		sub	sp, sp, #32
+  62              		.cfi_def_cfa_offset 40
+  63 0004 06AF     		add	r7, sp, #24
+  64              		.cfi_def_cfa 7, 16
+ 126:..\../app.c   ****     OS_ERR  os_err;
+ 127:..\../app.c   **** 
+ 128:..\../app.c   **** 
+ 129:..\../app.c   ****     CPU_Init();                                                 /* Initialize the uC/CPU services  
+  65              		.loc 1 129 0
+  66 0006 FFF7FEFF 		bl	CPU_Init
+ 130:..\../app.c   **** 	Mem_Init();                                                 /* Initialize Memory Managment Module 
+  67              		.loc 1 130 0
+  68 000a FFF7FEFF 		bl	Mem_Init
+ 131:..\../app.c   ****     Math_Init();                                                /* Initialize Mathematical Module  
+  69              		.loc 1 131 0
+  70 000e FFF7FEFF 		bl	Math_Init
+ 132:..\../app.c   ****     
+ 133:..\../app.c   ****     BSP_Init();                                                 /* Initialize BSP Functions.       
+  71              		.loc 1 133 0
+  72 0012 FFF7FEFF 		bl	BSP_Init
+ 134:..\../app.c   ****     
+ 135:..\../app.c   ****     OSInit();                                                   /* Init uC/OS-II.                  
+  73              		.loc 1 135 0
+  74 0016 FFF7FEFF 		bl	OSInit
+ 136:..\../app.c   ****     
+ 137:..\../app.c   ****     OSTaskCreateExt( App_TaskStart,                             /* Create the Start Task           
+  75              		.loc 1 137 0
+  76 001a 0D4A     		ldr	r2, .L3
+  77 001c 0D48     		ldr	r0, .L3+4
+  78 001e 0323     		movs	r3, #3
+  79 0020 0493     		str	r3, [sp, #16]
+  80 0022 0023     		movs	r3, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 5
+
+
+  81 0024 0393     		str	r3, [sp, #12]
+  82 0026 8023     		movs	r3, #128
+  83 0028 5B00     		lsls	r3, r3, #1
+  84 002a 0293     		str	r3, [sp, #8]
+  85 002c 0A4B     		ldr	r3, .L3+8
+  86 002e 0193     		str	r3, [sp, #4]
+  87 0030 0223     		movs	r3, #2
+  88 0032 0093     		str	r3, [sp]
+  89 0034 0223     		movs	r3, #2
+  90 0036 0021     		movs	r1, #0
+  91 0038 FFF7FEFF 		bl	OSTaskCreateExt
+ 138:..\../app.c   ****                      0u,
+ 139:..\../app.c   ****                     &App_TaskStartStk[APP_CFG_TASK_START_STK_SIZE - 1u],
+ 140:..\../app.c   ****                      APP_CFG_TASK_START_PRIO,
+ 141:..\../app.c   ****                      APP_CFG_TASK_START_PRIO,
+ 142:..\../app.c   ****                     &App_TaskStartStk[0u],
+ 143:..\../app.c   ****                      APP_CFG_TASK_START_STK_SIZE,
+ 144:..\../app.c   ****                      0u,
+ 145:..\../app.c   ****                     (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+ 146:..\../app.c   **** 
+ 147:..\../app.c   **** #if (OS_TASK_NAME_EN > 0u)
+ 148:..\../app.c   ****     OSTaskNameSet(          APP_CFG_TASK_START_PRIO,
+  92              		.loc 1 148 0
+  93 003c FA1D     		adds	r2, r7, #7
+  94 003e 074B     		ldr	r3, .L3+12
+  95 0040 1900     		movs	r1, r3
+  96 0042 0220     		movs	r0, #2
+  97 0044 FFF7FEFF 		bl	OSTaskNameSet
+ 149:..\../app.c   ****                   (INT8U *)"App Task Start",
+ 150:..\../app.c   ****                            &os_err);
+ 151:..\../app.c   **** #endif
+ 152:..\../app.c   **** 
+ 153:..\../app.c   ****     OSStart();                                                  /* Start multitasking (i.e. give co
+  98              		.loc 1 153 0
+  99 0048 FFF7FEFF 		bl	OSStart
+ 100              	.L2:
+ 154:..\../app.c   ****     
+ 155:..\../app.c   ****     while (DEF_ON);                                             /* Should Never Get Here.          
+ 101              		.loc 1 155 0 discriminator 1
+ 102 004c FEE7     		b	.L2
+ 103              	.L4:
+ 104 004e C046     		.align	2
+ 105              	.L3:
+ 106 0050 00040000 		.word	App_TaskStartStk+1020
+ 107 0054 00000000 		.word	App_TaskStart
+ 108 0058 04000000 		.word	App_TaskStartStk
+ 109 005c 00000000 		.word	.LC3
+ 110              		.cfi_endproc
+ 111              	.LFE34:
+ 112              		.size	main, .-main
+ 113              		.section	.text.App_TaskStart,"ax",%progbits
+ 114              		.align	2
+ 115              		.code	16
+ 116              		.thumb_func
+ 117              		.type	App_TaskStart, %function
+ 118              	App_TaskStart:
+ 119              	.LFB35:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 6
+
+
+ 156:..\../app.c   **** }
+ 157:..\../app.c   **** 
+ 158:..\../app.c   **** 
+ 159:..\../app.c   **** /*
+ 160:..\../app.c   **** ***************************************************************************************************
+ 161:..\../app.c   **** *                                          App_TaskStart()
+ 162:..\../app.c   **** *
+ 163:..\../app.c   **** * Description : This is an example of a startup task.  As mentioned in the book's text, you MUST
+ 164:..\../app.c   **** *               initialize the ticker only once multitasking has started.
+ 165:..\../app.c   **** *
+ 166:..\../app.c   **** * Argument(s) : p_arg   is the argument passed to 'App_TaskStart()' by 'OSTaskCreate()'.
+ 167:..\../app.c   **** *
+ 168:..\../app.c   **** * Return(s)   : none
+ 169:..\../app.c   **** *
+ 170:..\../app.c   **** * Caller(s)   : main()
+ 171:..\../app.c   **** *
+ 172:..\../app.c   **** * Note(s)     : (1) The first line of code is used to prevent a compiler warning because 'p_arg' is
+ 173:..\../app.c   **** *                   used.  The compiler should not generate any code for this statement.
+ 174:..\../app.c   **** *
+ 175:..\../app.c   **** *               (2) App_TaskStart Task will manage the RGB LED as well as the Push Button to Turn O
+ 176:..\../app.c   **** *                   and OFF the RGB LED.
+ 177:..\../app.c   **** ***************************************************************************************************
+ 178:..\../app.c   **** */
+ 179:..\../app.c   **** 
+ 180:..\../app.c   **** void  App_TaskStart (void *p_arg)
+ 181:..\../app.c   **** {
+ 120              		.loc 1 181 0
+ 121              		.cfi_startproc
+ 122              		@ args = 0, pretend = 0, frame = 16
+ 123              		@ frame_needed = 1, uses_anonymous_args = 0
+ 124 0000 90B5     		push	{r4, r7, lr}
+ 125              		.cfi_def_cfa_offset 12
+ 126              		.cfi_offset 4, -12
+ 127              		.cfi_offset 7, -8
+ 128              		.cfi_offset 14, -4
+ 129 0002 85B0     		sub	sp, sp, #20
+ 130              		.cfi_def_cfa_offset 32
+ 131 0004 00AF     		add	r7, sp, #0
+ 132              		.cfi_def_cfa_register 7
+ 133 0006 7860     		str	r0, [r7, #4]
+ 182:..\../app.c   ****     CPU_BOOLEAN  pb_status;
+ 183:..\../app.c   ****     CPU_BOOLEAN  pb_prev;
+ 184:..\../app.c   ****     CPU_BOOLEAN  led_status;
+ 185:..\../app.c   ****         
+ 186:..\../app.c   **** 
+ 187:..\../app.c   ****    (void)p_arg;
+ 188:..\../app.c   ****     led_status = DEF_OFF;                                       /* Initialize Var(s).              
+ 134              		.loc 1 188 0
+ 135 0008 0E23     		movs	r3, #14
+ 136 000a FB18     		adds	r3, r7, r3
+ 137 000c 0022     		movs	r2, #0
+ 138 000e 1A70     		strb	r2, [r3]
+ 189:..\../app.c   **** 
+ 190:..\../app.c   ****     BSP_CPU_TickInit();                                         /* Initialize the Tick Interrupt.  
+ 139              		.loc 1 190 0
+ 140 0010 FFF7FEFF 		bl	BSP_CPU_TickInit
+ 191:..\../app.c   ****                                                                 /* --------------- ACCELEROMETER SE
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 7
+
+
+ 192:..\../app.c   ****     BSP_Accel_Init();                                           /* Init & Cfg I2C & Accelerometer a
+ 141              		.loc 1 192 0
+ 142 0014 FFF7FEFF 		bl	BSP_Accel_Init
+ 193:..\../app.c   **** 
+ 194:..\../app.c   **** #if (OS_TASK_STAT_EN > 0u)
+ 195:..\../app.c   ****     OSStatInit();                                               /* Determine CPU capacity          
+ 143              		.loc 1 195 0
+ 144 0018 FFF7FEFF 		bl	OSStatInit
+ 196:..\../app.c   **** #endif
+ 197:..\../app.c   **** 
+ 198:..\../app.c   **** #ifdef CPU_CFG_INT_DIS_MEAS_EN
+ 199:..\../app.c   ****     CPU_IntDisMeasMaxCurReset();
+ 145              		.loc 1 199 0
+ 146 001c FFF7FEFF 		bl	CPU_IntDisMeasMaxCurReset
+ 200:..\../app.c   **** #endif
+ 201:..\../app.c   **** 
+ 202:..\../app.c   ****     APP_TRACE_INFO(("Creating Kernel Objects...\n\r"));
+ 203:..\../app.c   ****     App_ObjCreate();                                            /* Create Kernel Objects           
+ 147              		.loc 1 203 0
+ 148 0020 FFF7FEFF 		bl	App_ObjCreate
+ 204:..\../app.c   ****     
+ 205:..\../app.c   ****     APP_TRACE_INFO(("Creating Application Tasks...\n\r"));
+ 206:..\../app.c   ****     App_TaskCreate();                                           /* Create Application Tasks.       
+ 149              		.loc 1 206 0
+ 150 0024 FFF7FEFF 		bl	App_TaskCreate
+ 207:..\../app.c   ****     
+ 208:..\../app.c   ****     BSP_RGB_Off();                                              /* Initially Turn off the RGB LED. 
+ 151              		.loc 1 208 0
+ 152 0028 FFF7FEFF 		bl	BSP_RGB_Off
+ 153              	.L12:
+ 209:..\../app.c   ****     
+ 210:..\../app.c   ****     while (DEF_TRUE) {                                          /* Task body, always written as an 
+ 211:..\../app.c   ****         pb_status = BSP_PB_StatusGet();                         /* ------------- PUSH BUTTON (SW2) 
+ 154              		.loc 1 211 0
+ 155 002c 0D23     		movs	r3, #13
+ 156 002e FC18     		adds	r4, r7, r3
+ 157 0030 FFF7FEFF 		bl	BSP_PB_StatusGet
+ 158 0034 0300     		movs	r3, r0
+ 159 0036 2370     		strb	r3, [r4]
+ 212:..\../app.c   **** 		
+ 213:..\../app.c   ****         if((pb_status == DEF_OFF) && (pb_prev != DEF_OFF)) {    /* Push Button Triggers change on B
+ 160              		.loc 1 213 0
+ 161 0038 0D23     		movs	r3, #13
+ 162 003a FB18     		adds	r3, r7, r3
+ 163 003c 1B78     		ldrb	r3, [r3]
+ 164 003e 002B     		cmp	r3, #0
+ 165 0040 0FD1     		bne	.L6
+ 166              		.loc 1 213 0 is_stmt 0 discriminator 1
+ 167 0042 0F23     		movs	r3, #15
+ 168 0044 FB18     		adds	r3, r7, r3
+ 169 0046 1B78     		ldrb	r3, [r3]
+ 170 0048 002B     		cmp	r3, #0
+ 171 004a 0AD0     		beq	.L6
+ 214:..\../app.c   ****             if (uC_Probe_PB_Trigger == DEF_ON) {                /* If the Probe Button is Turned ON
+ 172              		.loc 1 214 0 is_stmt 1
+ 173 004c 1E4B     		ldr	r3, .L13
+ 174 004e 1B78     		ldrb	r3, [r3]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 8
+
+
+ 175 0050 012B     		cmp	r3, #1
+ 176 0052 03D1     		bne	.L7
+ 215:..\../app.c   ****                 uC_Probe_PB_Trigger = DEF_OFF;
+ 177              		.loc 1 215 0
+ 178 0054 1C4B     		ldr	r3, .L13
+ 179 0056 0022     		movs	r2, #0
+ 180 0058 1A70     		strb	r2, [r3]
+ 181 005a 02E0     		b	.L6
+ 182              	.L7:
+ 216:..\../app.c   ****             } else {                                            /* If the Probe Button is Turned OF
+ 217:..\../app.c   ****                 uC_Probe_PB_Trigger = DEF_ON;
+ 183              		.loc 1 217 0
+ 184 005c 1A4B     		ldr	r3, .L13
+ 185 005e 0122     		movs	r2, #1
+ 186 0060 1A70     		strb	r2, [r3]
+ 187              	.L6:
+ 218:..\../app.c   ****             }
+ 219:..\../app.c   ****         }
+ 220:..\../app.c   ****         
+ 221:..\../app.c   ****         pb_prev = pb_status;                                    /* Set the Status as the Button's P
+ 188              		.loc 1 221 0
+ 189 0062 0F23     		movs	r3, #15
+ 190 0064 FB18     		adds	r3, r7, r3
+ 191 0066 0D22     		movs	r2, #13
+ 192 0068 BA18     		adds	r2, r7, r2
+ 193 006a 1278     		ldrb	r2, [r2]
+ 194 006c 1A70     		strb	r2, [r3]
+ 222:..\../app.c   ****         
+ 223:..\../app.c   ****         if (uC_Probe_PB_Trigger == DEF_ON) {                    /* ---------- uC/PROBE BUTTON TRIGG
+ 195              		.loc 1 223 0
+ 196 006e 164B     		ldr	r3, .L13
+ 197 0070 1B78     		ldrb	r3, [r3]
+ 198 0072 012B     		cmp	r3, #1
+ 199 0074 0BD1     		bne	.L8
+ 224:..\../app.c   ****             if (led_status == DEF_INACTIVE) {                   /* if LED Status Flag is currently 
+ 200              		.loc 1 224 0
+ 201 0076 0E23     		movs	r3, #14
+ 202 0078 FB18     		adds	r3, r7, r3
+ 203 007a 1B78     		ldrb	r3, [r3]
+ 204 007c 002B     		cmp	r3, #0
+ 205 007e 11D1     		bne	.L10
+ 225:..\../app.c   ****                 led_status = DEF_ACTIVE;                        /* ... Status Flag and Turn ON The 
+ 206              		.loc 1 225 0
+ 207 0080 0E23     		movs	r3, #14
+ 208 0082 FB18     		adds	r3, r7, r3
+ 209 0084 0122     		movs	r2, #1
+ 210 0086 1A70     		strb	r2, [r3]
+ 226:..\../app.c   ****                 BSP_RGB_On();
+ 211              		.loc 1 226 0
+ 212 0088 FFF7FEFF 		bl	BSP_RGB_On
+ 213 008c 0AE0     		b	.L10
+ 214              	.L8:
+ 227:..\../app.c   ****             }
+ 228:..\../app.c   ****         } else {
+ 229:..\../app.c   ****             if (led_status == DEF_YES) {                        /* if LED Status Flag is currently 
+ 215              		.loc 1 229 0
+ 216 008e 0E23     		movs	r3, #14
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 9
+
+
+ 217 0090 FB18     		adds	r3, r7, r3
+ 218 0092 1B78     		ldrb	r3, [r3]
+ 219 0094 012B     		cmp	r3, #1
+ 220 0096 05D1     		bne	.L10
+ 230:..\../app.c   ****                 led_status = DEF_INACTIVE;                      /* .. Status Flag and Turn OFF The 
+ 221              		.loc 1 230 0
+ 222 0098 0E23     		movs	r3, #14
+ 223 009a FB18     		adds	r3, r7, r3
+ 224 009c 0022     		movs	r2, #0
+ 225 009e 1A70     		strb	r2, [r3]
+ 231:..\../app.c   ****                 BSP_RGB_Off();
+ 226              		.loc 1 231 0
+ 227 00a0 FFF7FEFF 		bl	BSP_RGB_Off
+ 228              	.L10:
+ 232:..\../app.c   ****             }
+ 233:..\../app.c   ****         }
+ 234:..\../app.c   ****         
+ 235:..\../app.c   ****         if (led_status == DEF_ACTIVE) {                         /* -------------- UPDATE RGB COLOR 
+ 229              		.loc 1 235 0
+ 230 00a4 0E23     		movs	r3, #14
+ 231 00a6 FB18     		adds	r3, r7, r3
+ 232 00a8 1B78     		ldrb	r3, [r3]
+ 233 00aa 012B     		cmp	r3, #1
+ 234 00ac 04D1     		bne	.L11
+ 236:..\../app.c   ****             BSP_RGB_ColorSet(uC_Probe_RGB_Val);                 /* IF LED Status Flag is Active, Up
+ 235              		.loc 1 236 0
+ 236 00ae 074B     		ldr	r3, .L13+4
+ 237 00b0 1B68     		ldr	r3, [r3]
+ 238 00b2 1800     		movs	r0, r3
+ 239 00b4 FFF7FEFF 		bl	BSP_RGB_ColorSet
+ 240              	.L11:
+ 237:..\../app.c   ****         }
+ 238:..\../app.c   ****         
+ 239:..\../app.c   ****         OSTimeDlyHMSM(0u, 0u, 0u, 100u);
+ 241              		.loc 1 239 0
+ 242 00b8 6423     		movs	r3, #100
+ 243 00ba 0022     		movs	r2, #0
+ 244 00bc 0021     		movs	r1, #0
+ 245 00be 0020     		movs	r0, #0
+ 246 00c0 FFF7FEFF 		bl	OSTimeDlyHMSM
+ 240:..\../app.c   ****     }
+ 247              		.loc 1 240 0
+ 248 00c4 B2E7     		b	.L12
+ 249              	.L14:
+ 250 00c6 C046     		.align	2
+ 251              	.L13:
+ 252 00c8 00000000 		.word	uC_Probe_PB_Trigger
+ 253 00cc 00000000 		.word	uC_Probe_RGB_Val
+ 254              		.cfi_endproc
+ 255              	.LFE35:
+ 256              		.size	App_TaskStart, .-App_TaskStart
+ 257              		.section	.rodata
+ 258 000f 00       		.align	2
+ 259              	.LC10:
+ 260 0010 44656D6F 		.ascii	"Demo: Sensor Task\000"
+ 260      3A205365 
+ 260      6E736F72 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 10
+
+
+ 260      20546173 
+ 260      6B00
+ 261              		.section	.text.App_TaskCreate,"ax",%progbits
+ 262              		.align	2
+ 263              		.code	16
+ 264              		.thumb_func
+ 265              		.type	App_TaskCreate, %function
+ 266              	App_TaskCreate:
+ 267              	.LFB36:
+ 241:..\../app.c   **** }
+ 242:..\../app.c   **** 
+ 243:..\../app.c   **** 
+ 244:..\../app.c   **** /*
+ 245:..\../app.c   **** ***************************************************************************************************
+ 246:..\../app.c   **** *                                          App_TaskCreate()
+ 247:..\../app.c   **** *
+ 248:..\../app.c   **** * Description : Create Application Tasks.
+ 249:..\../app.c   **** *
+ 250:..\../app.c   **** * Argument(s) : none
+ 251:..\../app.c   **** *
+ 252:..\../app.c   **** * Return(s)   : none
+ 253:..\../app.c   **** *
+ 254:..\../app.c   **** * Caller(s)   : AppTaskStart()
+ 255:..\../app.c   **** *
+ 256:..\../app.c   **** * Note(s)     : (1) The Following Task(s) were created to simulate Cypress' CY8CKIT-044 Sensor Hub
+ 257:..\../app.c   **** *                   demo using Micrium's uC/OS-III Kernel.
+ 258:..\../app.c   **** *
+ 259:..\../app.c   **** *               (2) Although Multiple Tasks were used for this demo, One (1) Task can manage all 
+ 260:..\../app.c   **** *                   services required to simulate the demo. The use of Mutiple tasks is used as an
+ 261:..\../app.c   **** *                   example for Multitasking with uC/OS-III.
+ 262:..\../app.c   **** ***************************************************************************************************
+ 263:..\../app.c   **** */
+ 264:..\../app.c   **** 
+ 265:..\../app.c   **** void  App_TaskCreate (void)
+ 266:..\../app.c   **** {
+ 268              		.loc 1 266 0
+ 269              		.cfi_startproc
+ 270              		@ args = 0, pretend = 0, frame = 8
+ 271              		@ frame_needed = 1, uses_anonymous_args = 0
+ 272 0000 80B5     		push	{r7, lr}
+ 273              		.cfi_def_cfa_offset 8
+ 274              		.cfi_offset 7, -8
+ 275              		.cfi_offset 14, -4
+ 276 0002 88B0     		sub	sp, sp, #32
+ 277              		.cfi_def_cfa_offset 40
+ 278 0004 06AF     		add	r7, sp, #24
+ 279              		.cfi_def_cfa 7, 16
+ 267:..\../app.c   ****     OS_ERR  os_err;
+ 268:..\../app.c   **** 
+ 269:..\../app.c   ****     
+ 270:..\../app.c   ****     OSTaskCreateExt( App_Demo_SensorTask,                       /* Task that Manages Temp, Accel & 
+ 280              		.loc 1 270 0
+ 281 0006 0D4A     		ldr	r2, .L16
+ 282 0008 0D48     		ldr	r0, .L16+4
+ 283 000a 0323     		movs	r3, #3
+ 284 000c 0493     		str	r3, [sp, #16]
+ 285 000e 0023     		movs	r3, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 11
+
+
+ 286 0010 0393     		str	r3, [sp, #12]
+ 287 0012 8023     		movs	r3, #128
+ 288 0014 5B00     		lsls	r3, r3, #1
+ 289 0016 0293     		str	r3, [sp, #8]
+ 290 0018 0A4B     		ldr	r3, .L16+8
+ 291 001a 0193     		str	r3, [sp, #4]
+ 292 001c 0323     		movs	r3, #3
+ 293 001e 0093     		str	r3, [sp]
+ 294 0020 0323     		movs	r3, #3
+ 295 0022 0021     		movs	r1, #0
+ 296 0024 FFF7FEFF 		bl	OSTaskCreateExt
+ 271:..\../app.c   ****                      0u,
+ 272:..\../app.c   ****                     &App_Demo_SensorTaskStk[APP_CFG_SENSOR_TASK_STK_SIZE - 1u],
+ 273:..\../app.c   ****                      APP_CFG_SENSOR_TASK_PRIO,
+ 274:..\../app.c   ****                      APP_CFG_SENSOR_TASK_PRIO,
+ 275:..\../app.c   ****                     &App_Demo_SensorTaskStk[0u],
+ 276:..\../app.c   ****                      APP_CFG_SENSOR_TASK_STK_SIZE,
+ 277:..\../app.c   ****                      0u,
+ 278:..\../app.c   ****                     (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+ 279:..\../app.c   **** 
+ 280:..\../app.c   **** #if (OS_TASK_NAME_EN > 0u)
+ 281:..\../app.c   ****     OSTaskNameSet(          APP_CFG_SENSOR_TASK_PRIO,
+ 297              		.loc 1 281 0
+ 298 0028 FA1D     		adds	r2, r7, #7
+ 299 002a 074B     		ldr	r3, .L16+12
+ 300 002c 1900     		movs	r1, r3
+ 301 002e 0320     		movs	r0, #3
+ 302 0030 FFF7FEFF 		bl	OSTaskNameSet
+ 282:..\../app.c   ****                   (INT8U *)"Demo: Sensor Task",
+ 283:..\../app.c   ****                            &os_err);
+ 284:..\../app.c   **** #endif
+ 285:..\../app.c   **** }
+ 303              		.loc 1 285 0
+ 304 0034 C046     		nop
+ 305 0036 BD46     		mov	sp, r7
+ 306 0038 02B0     		add	sp, sp, #8
+ 307              		@ sp needed
+ 308 003a 80BD     		pop	{r7, pc}
+ 309              	.L17:
+ 310              		.align	2
+ 311              	.L16:
+ 312 003c 00080000 		.word	App_Demo_SensorTaskStk+1020
+ 313 0040 00000000 		.word	App_Demo_SensorTask
+ 314 0044 04040000 		.word	App_Demo_SensorTaskStk
+ 315 0048 10000000 		.word	.LC10
+ 316              		.cfi_endproc
+ 317              	.LFE36:
+ 318              		.size	App_TaskCreate, .-App_TaskCreate
+ 319              		.section	.text.App_ObjCreate,"ax",%progbits
+ 320              		.align	2
+ 321              		.code	16
+ 322              		.thumb_func
+ 323              		.type	App_ObjCreate, %function
+ 324              	App_ObjCreate:
+ 325              	.LFB37:
+ 286:..\../app.c   **** 
+ 287:..\../app.c   **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 12
+
+
+ 288:..\../app.c   **** /*
+ 289:..\../app.c   **** ***************************************************************************************************
+ 290:..\../app.c   **** *                                          App_ObjCreate()
+ 291:..\../app.c   **** *
+ 292:..\../app.c   **** * Description : Create Application Kernel Objects Tasks.
+ 293:..\../app.c   **** *
+ 294:..\../app.c   **** * Argument(s) : none
+ 295:..\../app.c   **** *
+ 296:..\../app.c   **** * Return(s)   : none
+ 297:..\../app.c   **** *
+ 298:..\../app.c   **** * Caller(s)   : AppTaskStart()
+ 299:..\../app.c   **** *
+ 300:..\../app.c   **** * Note(s)     : none.
+ 301:..\../app.c   **** ***************************************************************************************************
+ 302:..\../app.c   **** */
+ 303:..\../app.c   **** 
+ 304:..\../app.c   **** void  App_ObjCreate (void)
+ 305:..\../app.c   **** {
+ 326              		.loc 1 305 0
+ 327              		.cfi_startproc
+ 328              		@ args = 0, pretend = 0, frame = 0
+ 329              		@ frame_needed = 1, uses_anonymous_args = 0
+ 330 0000 80B5     		push	{r7, lr}
+ 331              		.cfi_def_cfa_offset 8
+ 332              		.cfi_offset 7, -8
+ 333              		.cfi_offset 14, -4
+ 334 0002 00AF     		add	r7, sp, #0
+ 335              		.cfi_def_cfa_register 7
+ 306:..\../app.c   ****     
+ 307:..\../app.c   **** }
+ 336              		.loc 1 307 0
+ 337 0004 C046     		nop
+ 338 0006 BD46     		mov	sp, r7
+ 339              		@ sp needed
+ 340 0008 80BD     		pop	{r7, pc}
+ 341              		.cfi_endproc
+ 342              	.LFE37:
+ 343              		.size	App_ObjCreate, .-App_ObjCreate
+ 344              		.global	__aeabi_uidiv
+ 345              		.global	__aeabi_ui2f
+ 346              		.global	__aeabi_f2d
+ 347              		.global	__aeabi_dmul
+ 348              		.global	__aeabi_dadd
+ 349              		.global	__aeabi_d2f
+ 350 000a C046     		.section	.text.App_Demo_SensorTask,"ax",%progbits
+ 351              		.align	2
+ 352              		.code	16
+ 353              		.thumb_func
+ 354              		.type	App_Demo_SensorTask, %function
+ 355              	App_Demo_SensorTask:
+ 356              	.LFB38:
+ 308:..\../app.c   **** 
+ 309:..\../app.c   **** 
+ 310:..\../app.c   **** /*
+ 311:..\../app.c   **** ***************************************************************************************************
+ 312:..\../app.c   **** ***************************************************************************************************
+ 313:..\../app.c   **** *                                             LOCAL TASKS
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 13
+
+
+ 314:..\../app.c   **** ***************************************************************************************************
+ 315:..\../app.c   **** ***************************************************************************************************
+ 316:..\../app.c   **** */
+ 317:..\../app.c   **** 
+ 318:..\../app.c   **** /*
+ 319:..\../app.c   **** ***************************************************************************************************
+ 320:..\../app.c   **** *                                        App_Demo_SensorTask()
+ 321:..\../app.c   **** *
+ 322:..\../app.c   **** * Description : Manage CY8CKIT-044's Temperature Sensor, Ambient Light Sensor, and I2C Communicatio
+ 323:..\../app.c   **** *               to the KXTJ2-1009 3-Axis Accelerometer.
+ 324:..\../app.c   **** *
+ 325:..\../app.c   **** * Argument(s) : none
+ 326:..\../app.c   **** *
+ 327:..\../app.c   **** * Return(s)   : none
+ 328:..\../app.c   **** *
+ 329:..\../app.c   **** * Caller(s)   : AppTaskStart()
+ 330:..\../app.c   **** *
+ 331:..\../app.c   **** * Note(s)     : (1) The use/start of the DMA Component also sets the source of the Global Variable 
+ 332:..\../app.c   **** *                   will be used to house the Ambient Light data Autiomatically that uC/Probe will
+ 333:..\../app.c   **** *                   Display.
+ 334:..\../app.c   **** *
+ 335:..\../app.c   **** *               (2) The Ambient Light Sensor can go to a max range of 2000, however in normal 'indo
+ 336:..\../app.c   **** *                   light the Light doesn't go higher than 50. For this reason, an initial Variable
+ 337:..\../app.c   **** *                   was introduced to regulate the Probe Variable. When surrounded in Total Darknes
+ 338:..\../app.c   **** *                   the Ambient Light Sensor cannot successfully read the proper Lighting value, an
+ 339:..\../app.c   **** *                   simulate a variable overflow. To keep this from occurring, a check has been int
+ 340:..\../app.c   **** *                   to check if the 'Light Value' is greater than the configured range (50), the
+ 341:..\../app.c   **** *                   uC/Probe variable will be defaulted to '0'.
+ 342:..\../app.c   **** ***************************************************************************************************
+ 343:..\../app.c   **** */
+ 344:..\../app.c   **** 
+ 345:..\../app.c   **** void  App_Demo_SensorTask (void *p_arg)
+ 346:..\../app.c   **** {
+ 357              		.loc 1 346 0
+ 358              		.cfi_startproc
+ 359              		@ args = 0, pretend = 0, frame = 16
+ 360              		@ frame_needed = 1, uses_anonymous_args = 0
+ 361 0000 90B5     		push	{r4, r7, lr}
+ 362              		.cfi_def_cfa_offset 12
+ 363              		.cfi_offset 4, -12
+ 364              		.cfi_offset 7, -8
+ 365              		.cfi_offset 14, -4
+ 366 0002 85B0     		sub	sp, sp, #20
+ 367              		.cfi_def_cfa_offset 32
+ 368 0004 00AF     		add	r7, sp, #0
+ 369              		.cfi_def_cfa_register 7
+ 370 0006 7860     		str	r0, [r7, #4]
+ 347:..\../app.c   ****     OS_ERR      os_err;
+ 348:..\../app.c   ****     CPU_INT08U  temp_status;
+ 349:..\../app.c   ****     CPU_INT16U  temp_val;
+ 350:..\../app.c   ****     CPU_FP32    temp_conv;
+ 351:..\../app.c   ****     
+ 352:..\../app.c   ****     
+ 353:..\../app.c   ****     (void)p_arg;
+ 354:..\../app.c   ****                                                                 /* ---------------- AMBIENT LIGHT I
+ 355:..\../app.c   ****                                                                 /* Enable the DMA Component and set
+ 356:..\../app.c   ****                                                                 /* .. DMA transfer as well as the D
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 14
+
+
+ 357:..\../app.c   ****     DMA_Start((void *)ADC_SAR_CHAN0_RESULT_PTR, &App_Demo_Ambient_InitVar);
+ 371              		.loc 1 357 0
+ 372 0008 2D4B     		ldr	r3, .L24
+ 373 000a 2E4A     		ldr	r2, .L24+4
+ 374 000c 1900     		movs	r1, r3
+ 375 000e 1000     		movs	r0, r2
+ 376 0010 FFF7FEFF 		bl	DMA_Start
+ 358:..\../app.c   ****     
+ 359:..\../app.c   ****     ADC_StartConvert();                                         /* Start ADC Conversions, Save to G
+ 377              		.loc 1 359 0
+ 378 0014 FFF7FEFF 		bl	ADC_StartConvert
+ 379              	.L23:
+ 360:..\../app.c   ****     
+ 361:..\../app.c   ****     while (DEF_TRUE) {                                          /* Task body, always written as an 
+ 362:..\../app.c   ****                                                                 /* ----------------- TEMP SENSOR RE
+ 363:..\../app.c   ****         temp_status = Temp_Sensor_ConversionStatus();           /* Get the Temperature Sensor's Con
+ 380              		.loc 1 363 0
+ 381 0018 0F23     		movs	r3, #15
+ 382 001a FC18     		adds	r4, r7, r3
+ 383 001c FFF7FEFF 		bl	Temp_Sensor_ConversionStatus
+ 384 0020 0300     		movs	r3, r0
+ 385 0022 2370     		strb	r3, [r4]
+ 364:..\../app.c   ****         
+ 365:..\../app.c   ****         if (temp_status == Temp_Sensor_STATUS_COMPLETE) {       /* If Conversion is Complete, Rd & 
+ 386              		.loc 1 365 0
+ 387 0024 0F23     		movs	r3, #15
+ 388 0026 FB18     		adds	r3, r7, r3
+ 389 0028 1B78     		ldrb	r3, [r3]
+ 390 002a 012B     		cmp	r3, #1
+ 391 002c 2FD1     		bne	.L20
+ 366:..\../app.c   ****                                                                 /* Temperature Returned is in (*C).
+ 367:..\../app.c   ****             temp_val          = Temp_Sensor_GetTemperature(APP_TEMP_SENSOR_NUM);
+ 392              		.loc 1 367 0
+ 393 002e 0020     		movs	r0, #0
+ 394 0030 FFF7FEFF 		bl	Temp_Sensor_GetTemperature
+ 395 0034 0300     		movs	r3, r0
+ 396 0036 1A00     		movs	r2, r3
+ 397 0038 0C23     		movs	r3, #12
+ 398 003a FB18     		adds	r3, r7, r3
+ 399 003c 1A80     		strh	r2, [r3]
+ 368:..\../app.c   ****             temp_conv         = (temp_val / 100u);              /* Temp Value must be Factored Down
+ 400              		.loc 1 368 0
+ 401 003e 0C23     		movs	r3, #12
+ 402 0040 FB18     		adds	r3, r7, r3
+ 403 0042 1B88     		ldrh	r3, [r3]
+ 404 0044 6421     		movs	r1, #100
+ 405 0046 1800     		movs	r0, r3
+ 406 0048 FFF7FEFF 		bl	__aeabi_uidiv
+ 407 004c 0300     		movs	r3, r0
+ 408 004e 9BB2     		uxth	r3, r3
+ 409 0050 1800     		movs	r0, r3
+ 410 0052 FFF7FEFF 		bl	__aeabi_ui2f
+ 411 0056 031C     		adds	r3, r0, #0
+ 412 0058 BB60     		str	r3, [r7, #8]
+ 369:..\../app.c   ****             uC_Probe_Temp_Val = ((temp_conv * 1.8) + 32u);      /* Convert Temp from (*C) to (*F) t
+ 413              		.loc 1 369 0
+ 414 005a B868     		ldr	r0, [r7, #8]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 15
+
+
+ 415 005c FFF7FEFF 		bl	__aeabi_f2d
+ 416 0060 194A     		ldr	r2, .L24+8
+ 417 0062 1A4B     		ldr	r3, .L24+12
+ 418 0064 FFF7FEFF 		bl	__aeabi_dmul
+ 419 0068 0300     		movs	r3, r0
+ 420 006a 0C00     		movs	r4, r1
+ 421 006c 1800     		movs	r0, r3
+ 422 006e 2100     		movs	r1, r4
+ 423 0070 0022     		movs	r2, #0
+ 424 0072 174B     		ldr	r3, .L24+16
+ 425 0074 FFF7FEFF 		bl	__aeabi_dadd
+ 426 0078 0300     		movs	r3, r0
+ 427 007a 0C00     		movs	r4, r1
+ 428 007c 1800     		movs	r0, r3
+ 429 007e 2100     		movs	r1, r4
+ 430 0080 FFF7FEFF 		bl	__aeabi_d2f
+ 431 0084 021C     		adds	r2, r0, #0
+ 432 0086 134B     		ldr	r3, .L24+20
+ 433 0088 1A60     		str	r2, [r3]
+ 370:..\../app.c   ****             
+ 371:..\../app.c   ****             Temp_Sensor_Trigger();                              /* Trigger next conversion when thi
+ 434              		.loc 1 371 0
+ 435 008a FFF7FEFF 		bl	Temp_Sensor_Trigger
+ 436              	.L20:
+ 372:..\../app.c   ****         }
+ 373:..\../app.c   ****                                                                 /* --------------- AMBIENT LIGHT SE
+ 374:..\../app.c   ****         if (App_Demo_Ambient_InitVar > APP_AMBIENT_DEMO_MAX_VAL) {
+ 437              		.loc 1 374 0
+ 438 008e 0C4B     		ldr	r3, .L24
+ 439 0090 1B88     		ldrh	r3, [r3]
+ 440 0092 322B     		cmp	r3, #50
+ 441 0094 03D9     		bls	.L21
+ 375:..\../app.c   ****             uC_Probe_AmbientLight = 0u;                         /* See Note (2).                   
+ 442              		.loc 1 375 0
+ 443 0096 104B     		ldr	r3, .L24+24
+ 444 0098 0022     		movs	r2, #0
+ 445 009a 1A80     		strh	r2, [r3]
+ 446 009c 03E0     		b	.L22
+ 447              	.L21:
+ 376:..\../app.c   ****         } else {
+ 377:..\../app.c   ****             uC_Probe_AmbientLight = App_Demo_Ambient_InitVar;
+ 448              		.loc 1 377 0
+ 449 009e 084B     		ldr	r3, .L24
+ 450 00a0 1A88     		ldrh	r2, [r3]
+ 451 00a2 0D4B     		ldr	r3, .L24+24
+ 452 00a4 1A80     		strh	r2, [r3]
+ 453              	.L22:
+ 378:..\../app.c   ****         }
+ 379:..\../app.c   ****         
+ 380:..\../app.c   ****                                                                 /* --------------- ACCELEROMETER SE
+ 381:..\../app.c   ****         BSP_Accel_Rd(&uC_Probe_Accel_X_Axis,                    /* Read Accelerometer's X, Y, & Z-A
+ 454              		.loc 1 381 0
+ 455 00a6 0D4A     		ldr	r2, .L24+28
+ 456 00a8 0D49     		ldr	r1, .L24+32
+ 457 00aa 0E4B     		ldr	r3, .L24+36
+ 458 00ac 1800     		movs	r0, r3
+ 459 00ae FFF7FEFF 		bl	BSP_Accel_Rd
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 16
+
+
+ 382:..\../app.c   ****                      &uC_Probe_Accel_Y_Axis,
+ 383:..\../app.c   ****                      &uC_Probe_Accel_Z_Axis);
+ 384:..\../app.c   ****         
+ 385:..\../app.c   ****         OSTimeDlyHMSM(0u, 0u, 0u, 50u);
+ 460              		.loc 1 385 0
+ 461 00b2 3223     		movs	r3, #50
+ 462 00b4 0022     		movs	r2, #0
+ 463 00b6 0021     		movs	r1, #0
+ 464 00b8 0020     		movs	r0, #0
+ 465 00ba FFF7FEFF 		bl	OSTimeDlyHMSM
+ 386:..\../app.c   ****     }
+ 466              		.loc 1 386 0
+ 467 00be ABE7     		b	.L23
+ 468              	.L25:
+ 469              		.align	2
+ 470              	.L24:
+ 471 00c0 04080000 		.word	App_Demo_Ambient_InitVar
+ 472 00c4 80013A40 		.word	1077543296
+ 473 00c8 CDCCCCCC 		.word	-858993459
+ 474 00cc CCCCFC3F 		.word	1073532108
+ 475 00d0 00004040 		.word	1077936128
+ 476 00d4 00000000 		.word	uC_Probe_Temp_Val
+ 477 00d8 00000000 		.word	uC_Probe_AmbientLight
+ 478 00dc 00000000 		.word	uC_Probe_Accel_Z_Axis
+ 479 00e0 00000000 		.word	uC_Probe_Accel_Y_Axis
+ 480 00e4 00000000 		.word	uC_Probe_Accel_X_Axis
+ 481              		.cfi_endproc
+ 482              	.LFE38:
+ 483              		.size	App_Demo_SensorTask, .-App_Demo_SensorTask
+ 484              		.text
+ 485              	.Letext0:
+ 486              		.file 2 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Ports\\ARM-Cortex-M0\\Generic\\GNU/os_cpu.h"
+ 487              		.file 3 "..\\..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\GNU/cpu.h"
+ 488              		.file 4 "Generated_Source\\PSoC4/cytypes.h"
+ 489              		.file 5 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source/os.h"
+ 490              		.section	.debug_info,"",%progbits
+ 491              	.Ldebug_info0:
+ 492 0000 D3020000 		.4byte	0x2d3
+ 493 0004 0400     		.2byte	0x4
+ 494 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 495 000a 04       		.byte	0x4
+ 496 000b 01       		.uleb128 0x1
+ 497 000c 2C010000 		.4byte	.LASF46
+ 498 0010 0C       		.byte	0xc
+ 499 0011 1A000000 		.4byte	.LASF47
+ 500 0015 CA020000 		.4byte	.LASF48
+ 501 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 502 001d 00000000 		.4byte	0
+ 503 0021 00000000 		.4byte	.Ldebug_line0
+ 504 0025 02       		.uleb128 0x2
+ 505 0026 01       		.byte	0x1
+ 506 0027 06       		.byte	0x6
+ 507 0028 4C030000 		.4byte	.LASF0
+ 508 002c 02       		.uleb128 0x2
+ 509 002d 01       		.byte	0x1
+ 510 002e 08       		.byte	0x8
+ 511 002f ED000000 		.4byte	.LASF1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 17
+
+
+ 512 0033 02       		.uleb128 0x2
+ 513 0034 02       		.byte	0x2
+ 514 0035 05       		.byte	0x5
+ 515 0036 9D020000 		.4byte	.LASF2
+ 516 003a 02       		.uleb128 0x2
+ 517 003b 02       		.byte	0x2
+ 518 003c 07       		.byte	0x7
+ 519 003d 8A000000 		.4byte	.LASF3
+ 520 0041 02       		.uleb128 0x2
+ 521 0042 04       		.byte	0x4
+ 522 0043 05       		.byte	0x5
+ 523 0044 3A030000 		.4byte	.LASF4
+ 524 0048 02       		.uleb128 0x2
+ 525 0049 04       		.byte	0x4
+ 526 004a 07       		.byte	0x7
+ 527 004b F0010000 		.4byte	.LASF5
+ 528 004f 02       		.uleb128 0x2
+ 529 0050 08       		.byte	0x8
+ 530 0051 05       		.byte	0x5
+ 531 0052 8A020000 		.4byte	.LASF6
+ 532 0056 02       		.uleb128 0x2
+ 533 0057 08       		.byte	0x8
+ 534 0058 07       		.byte	0x7
+ 535 0059 15020000 		.4byte	.LASF7
+ 536 005d 03       		.uleb128 0x3
+ 537 005e 04       		.byte	0x4
+ 538 005f 05       		.byte	0x5
+ 539 0060 696E7400 		.ascii	"int\000"
+ 540 0064 02       		.uleb128 0x2
+ 541 0065 04       		.byte	0x4
+ 542 0066 07       		.byte	0x7
+ 543 0067 02020000 		.4byte	.LASF8
+ 544 006b 02       		.uleb128 0x2
+ 545 006c 08       		.byte	0x8
+ 546 006d 04       		.byte	0x4
+ 547 006e 5F020000 		.4byte	.LASF9
+ 548 0072 04       		.uleb128 0x4
+ 549 0073 04       		.byte	0x4
+ 550 0074 02       		.uleb128 0x2
+ 551 0075 04       		.byte	0x4
+ 552 0076 07       		.byte	0x7
+ 553 0077 6B020000 		.4byte	.LASF10
+ 554 007b 02       		.uleb128 0x2
+ 555 007c 01       		.byte	0x1
+ 556 007d 08       		.byte	0x8
+ 557 007e 98020000 		.4byte	.LASF11
+ 558 0082 05       		.uleb128 0x5
+ 559 0083 0F020000 		.4byte	.LASF14
+ 560 0087 02       		.byte	0x2
+ 561 0088 73       		.byte	0x73
+ 562 0089 2C000000 		.4byte	0x2c
+ 563 008d 02       		.uleb128 0x2
+ 564 008e 04       		.byte	0x4
+ 565 008f 04       		.byte	0x4
+ 566 0090 DD000000 		.4byte	.LASF12
+ 567 0094 02       		.uleb128 0x2
+ 568 0095 08       		.byte	0x8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 18
+
+
+ 569 0096 04       		.byte	0x4
+ 570 0097 B6000000 		.4byte	.LASF13
+ 571 009b 05       		.uleb128 0x5
+ 572 009c BD000000 		.4byte	.LASF15
+ 573 00a0 02       		.byte	0x2
+ 574 00a1 7C       		.byte	0x7c
+ 575 00a2 64000000 		.4byte	0x64
+ 576 00a6 05       		.uleb128 0x5
+ 577 00a7 2C020000 		.4byte	.LASF16
+ 578 00ab 03       		.byte	0x3
+ 579 00ac 7D       		.byte	0x7d
+ 580 00ad 2C000000 		.4byte	0x2c
+ 581 00b1 05       		.uleb128 0x5
+ 582 00b2 21010000 		.4byte	.LASF17
+ 583 00b6 03       		.byte	0x3
+ 584 00b7 7E       		.byte	0x7e
+ 585 00b8 2C000000 		.4byte	0x2c
+ 586 00bc 05       		.uleb128 0x5
+ 587 00bd 43020000 		.4byte	.LASF18
+ 588 00c1 03       		.byte	0x3
+ 589 00c2 80       		.byte	0x80
+ 590 00c3 3A000000 		.4byte	0x3a
+ 591 00c7 05       		.uleb128 0x5
+ 592 00c8 38020000 		.4byte	.LASF19
+ 593 00cc 03       		.byte	0x3
+ 594 00cd 81       		.byte	0x81
+ 595 00ce 33000000 		.4byte	0x33
+ 596 00d2 05       		.uleb128 0x5
+ 597 00d3 C4000000 		.4byte	.LASF20
+ 598 00d7 03       		.byte	0x3
+ 599 00d8 82       		.byte	0x82
+ 600 00d9 64000000 		.4byte	0x64
+ 601 00dd 05       		.uleb128 0x5
+ 602 00de 43030000 		.4byte	.LASF21
+ 603 00e2 03       		.byte	0x3
+ 604 00e3 87       		.byte	0x87
+ 605 00e4 8D000000 		.4byte	0x8d
+ 606 00e8 05       		.uleb128 0x5
+ 607 00e9 E9010000 		.4byte	.LASF22
+ 608 00ed 04       		.byte	0x4
+ 609 00ee C4       		.byte	0xc4
+ 610 00ef 48000000 		.4byte	0x48
+ 611 00f3 06       		.uleb128 0x6
+ 612 00f4 0C000000 		.4byte	.LASF23
+ 613 00f8 04       		.byte	0x4
+ 614 00f9 6E01     		.2byte	0x16e
+ 615 00fb FF000000 		.4byte	0xff
+ 616 00ff 07       		.uleb128 0x7
+ 617 0100 E8000000 		.4byte	0xe8
+ 618 0104 05       		.uleb128 0x5
+ 619 0105 FB000000 		.4byte	.LASF24
+ 620 0109 05       		.byte	0x5
+ 621 010a 1D       		.byte	0x1d
+ 622 010b 82000000 		.4byte	0x82
+ 623 010f 08       		.uleb128 0x8
+ 624 0110 D2010000 		.4byte	.LASF49
+ 625 0114 01       		.byte	0x1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 19
+
+
+ 626 0115 7C       		.byte	0x7c
+ 627 0116 5D000000 		.4byte	0x5d
+ 628 011a 00000000 		.4byte	.LFB34
+ 629 011e 60000000 		.4byte	.LFE34-.LFB34
+ 630 0122 01       		.uleb128 0x1
+ 631 0123 9C       		.byte	0x9c
+ 632 0124 37010000 		.4byte	0x137
+ 633 0128 09       		.uleb128 0x9
+ 634 0129 BA010000 		.4byte	.LASF25
+ 635 012d 01       		.byte	0x1
+ 636 012e 7E       		.byte	0x7e
+ 637 012f 04010000 		.4byte	0x104
+ 638 0133 02       		.uleb128 0x2
+ 639 0134 91       		.byte	0x91
+ 640 0135 77       		.sleb128 -9
+ 641 0136 00       		.byte	0
+ 642 0137 0A       		.uleb128 0xa
+ 643 0138 CF000000 		.4byte	.LASF29
+ 644 013c 01       		.byte	0x1
+ 645 013d B4       		.byte	0xb4
+ 646 013e 00000000 		.4byte	.LFB35
+ 647 0142 D0000000 		.4byte	.LFE35-.LFB35
+ 648 0146 01       		.uleb128 0x1
+ 649 0147 9C       		.byte	0x9c
+ 650 0148 85010000 		.4byte	0x185
+ 651 014c 0B       		.uleb128 0xb
+ 652 014d 58030000 		.4byte	.LASF32
+ 653 0151 01       		.byte	0x1
+ 654 0152 B4       		.byte	0xb4
+ 655 0153 72000000 		.4byte	0x72
+ 656 0157 02       		.uleb128 0x2
+ 657 0158 91       		.byte	0x91
+ 658 0159 64       		.sleb128 -28
+ 659 015a 09       		.uleb128 0x9
+ 660 015b 5E000000 		.4byte	.LASF26
+ 661 015f 01       		.byte	0x1
+ 662 0160 B6       		.byte	0xb6
+ 663 0161 A6000000 		.4byte	0xa6
+ 664 0165 02       		.uleb128 0x2
+ 665 0166 91       		.byte	0x91
+ 666 0167 6D       		.sleb128 -19
+ 667 0168 09       		.uleb128 0x9
+ 668 0169 12000000 		.4byte	.LASF27
+ 669 016d 01       		.byte	0x1
+ 670 016e B7       		.byte	0xb7
+ 671 016f A6000000 		.4byte	0xa6
+ 672 0173 02       		.uleb128 0x2
+ 673 0174 91       		.byte	0x91
+ 674 0175 6F       		.sleb128 -17
+ 675 0176 09       		.uleb128 0x9
+ 676 0177 7F000000 		.4byte	.LASF28
+ 677 017b 01       		.byte	0x1
+ 678 017c B8       		.byte	0xb8
+ 679 017d A6000000 		.4byte	0xa6
+ 680 0181 02       		.uleb128 0x2
+ 681 0182 91       		.byte	0x91
+ 682 0183 6E       		.sleb128 -18
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 20
+
+
+ 683 0184 00       		.byte	0
+ 684 0185 0C       		.uleb128 0xc
+ 685 0186 BB020000 		.4byte	.LASF30
+ 686 018a 01       		.byte	0x1
+ 687 018b 0901     		.2byte	0x109
+ 688 018d 00000000 		.4byte	.LFB36
+ 689 0191 4C000000 		.4byte	.LFE36-.LFB36
+ 690 0195 01       		.uleb128 0x1
+ 691 0196 9C       		.byte	0x9c
+ 692 0197 AB010000 		.4byte	0x1ab
+ 693 019b 0D       		.uleb128 0xd
+ 694 019c BA010000 		.4byte	.LASF25
+ 695 01a0 01       		.byte	0x1
+ 696 01a1 0B01     		.2byte	0x10b
+ 697 01a3 04010000 		.4byte	0x104
+ 698 01a7 02       		.uleb128 0x2
+ 699 01a8 91       		.byte	0x91
+ 700 01a9 77       		.sleb128 -9
+ 701 01aa 00       		.byte	0
+ 702 01ab 0E       		.uleb128 0xe
+ 703 01ac 50000000 		.4byte	.LASF50
+ 704 01b0 01       		.byte	0x1
+ 705 01b1 3001     		.2byte	0x130
+ 706 01b3 00000000 		.4byte	.LFB37
+ 707 01b7 0A000000 		.4byte	.LFE37-.LFB37
+ 708 01bb 01       		.uleb128 0x1
+ 709 01bc 9C       		.byte	0x9c
+ 710 01bd 0C       		.uleb128 0xc
+ 711 01be 3C000000 		.4byte	.LASF31
+ 712 01c2 01       		.byte	0x1
+ 713 01c3 5901     		.2byte	0x159
+ 714 01c5 00000000 		.4byte	.LFB38
+ 715 01c9 E8000000 		.4byte	.LFE38-.LFB38
+ 716 01cd 01       		.uleb128 0x1
+ 717 01ce 9C       		.byte	0x9c
+ 718 01cf 1C020000 		.4byte	0x21c
+ 719 01d3 0F       		.uleb128 0xf
+ 720 01d4 58030000 		.4byte	.LASF32
+ 721 01d8 01       		.byte	0x1
+ 722 01d9 5901     		.2byte	0x159
+ 723 01db 72000000 		.4byte	0x72
+ 724 01df 02       		.uleb128 0x2
+ 725 01e0 91       		.byte	0x91
+ 726 01e1 64       		.sleb128 -28
+ 727 01e2 10       		.uleb128 0x10
+ 728 01e3 BA010000 		.4byte	.LASF25
+ 729 01e7 01       		.byte	0x1
+ 730 01e8 5B01     		.2byte	0x15b
+ 731 01ea 04010000 		.4byte	0x104
+ 732 01ee 0D       		.uleb128 0xd
+ 733 01ef 00000000 		.4byte	.LASF33
+ 734 01f3 01       		.byte	0x1
+ 735 01f4 5C01     		.2byte	0x15c
+ 736 01f6 B1000000 		.4byte	0xb1
+ 737 01fa 02       		.uleb128 0x2
+ 738 01fb 91       		.byte	0x91
+ 739 01fc 6F       		.sleb128 -17
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 21
+
+
+ 740 01fd 0D       		.uleb128 0xd
+ 741 01fe 18010000 		.4byte	.LASF34
+ 742 0202 01       		.byte	0x1
+ 743 0203 5D01     		.2byte	0x15d
+ 744 0205 BC000000 		.4byte	0xbc
+ 745 0209 02       		.uleb128 0x2
+ 746 020a 91       		.byte	0x91
+ 747 020b 6C       		.sleb128 -20
+ 748 020c 0D       		.uleb128 0xd
+ 749 020d E3000000 		.4byte	.LASF35
+ 750 0211 01       		.byte	0x1
+ 751 0212 5E01     		.2byte	0x15e
+ 752 0214 DD000000 		.4byte	0xdd
+ 753 0218 02       		.uleb128 0x2
+ 754 0219 91       		.byte	0x91
+ 755 021a 68       		.sleb128 -24
+ 756 021b 00       		.byte	0
+ 757 021c 11       		.uleb128 0x11
+ 758 021d 9B000000 		.4byte	0x9b
+ 759 0221 2C020000 		.4byte	0x22c
+ 760 0225 12       		.uleb128 0x12
+ 761 0226 74000000 		.4byte	0x74
+ 762 022a FF       		.byte	0xff
+ 763 022b 00       		.byte	0
+ 764 022c 09       		.uleb128 0x9
+ 765 022d C1010000 		.4byte	.LASF36
+ 766 0231 01       		.byte	0x1
+ 767 0232 55       		.byte	0x55
+ 768 0233 1C020000 		.4byte	0x21c
+ 769 0237 05       		.uleb128 0x5
+ 770 0238 03       		.byte	0x3
+ 771 0239 04000000 		.4byte	App_TaskStartStk
+ 772 023d 09       		.uleb128 0x9
+ 773 023e 68000000 		.4byte	.LASF37
+ 774 0242 01       		.byte	0x1
+ 775 0243 58       		.byte	0x58
+ 776 0244 1C020000 		.4byte	0x21c
+ 777 0248 05       		.uleb128 0x5
+ 778 0249 03       		.byte	0x3
+ 779 024a 04040000 		.4byte	App_Demo_SensorTaskStk
+ 780 024e 09       		.uleb128 0x9
+ 781 024f 9D000000 		.4byte	.LASF38
+ 782 0253 01       		.byte	0x1
+ 783 0254 5B       		.byte	0x5b
+ 784 0255 BC000000 		.4byte	0xbc
+ 785 0259 05       		.uleb128 0x5
+ 786 025a 03       		.byte	0x3
+ 787 025b 04080000 		.4byte	App_Demo_Ambient_InitVar
+ 788 025f 13       		.uleb128 0x13
+ 789 0260 4E020000 		.4byte	.LASF39
+ 790 0264 01       		.byte	0x1
+ 791 0265 46       		.byte	0x46
+ 792 0266 D2000000 		.4byte	0xd2
+ 793 026a 05       		.uleb128 0x5
+ 794 026b 03       		.byte	0x3
+ 795 026c 00000000 		.4byte	uC_Probe_RGB_Val
+ 796 0270 13       		.uleb128 0x13
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 22
+
+
+ 797 0271 A7020000 		.4byte	.LASF40
+ 798 0275 01       		.byte	0x1
+ 799 0276 47       		.byte	0x47
+ 800 0277 A6000000 		.4byte	0xa6
+ 801 027b 05       		.uleb128 0x5
+ 802 027c 03       		.byte	0x3
+ 803 027d 00000000 		.4byte	uC_Probe_PB_Trigger
+ 804 0281 13       		.uleb128 0x13
+ 805 0282 D7010000 		.4byte	.LASF41
+ 806 0286 01       		.byte	0x1
+ 807 0287 48       		.byte	0x48
+ 808 0288 DD000000 		.4byte	0xdd
+ 809 028c 05       		.uleb128 0x5
+ 810 028d 03       		.byte	0x3
+ 811 028e 00000000 		.4byte	uC_Probe_Temp_Val
+ 812 0292 13       		.uleb128 0x13
+ 813 0293 24030000 		.4byte	.LASF42
+ 814 0297 01       		.byte	0x1
+ 815 0298 49       		.byte	0x49
+ 816 0299 BC000000 		.4byte	0xbc
+ 817 029d 05       		.uleb128 0x5
+ 818 029e 03       		.byte	0x3
+ 819 029f 00000000 		.4byte	uC_Probe_AmbientLight
+ 820 02a3 13       		.uleb128 0x13
+ 821 02a4 02010000 		.4byte	.LASF43
+ 822 02a8 01       		.byte	0x1
+ 823 02a9 4A       		.byte	0x4a
+ 824 02aa C7000000 		.4byte	0xc7
+ 825 02ae 05       		.uleb128 0x5
+ 826 02af 03       		.byte	0x3
+ 827 02b0 00000000 		.4byte	uC_Probe_Accel_X_Axis
+ 828 02b4 13       		.uleb128 0x13
+ 829 02b5 74020000 		.4byte	.LASF44
+ 830 02b9 01       		.byte	0x1
+ 831 02ba 4B       		.byte	0x4b
+ 832 02bb C7000000 		.4byte	0xc7
+ 833 02bf 05       		.uleb128 0x5
+ 834 02c0 03       		.byte	0x3
+ 835 02c1 00000000 		.4byte	uC_Probe_Accel_Y_Axis
+ 836 02c5 13       		.uleb128 0x13
+ 837 02c6 26000000 		.4byte	.LASF45
+ 838 02ca 01       		.byte	0x1
+ 839 02cb 4C       		.byte	0x4c
+ 840 02cc C7000000 		.4byte	0xc7
+ 841 02d0 05       		.uleb128 0x5
+ 842 02d1 03       		.byte	0x3
+ 843 02d2 00000000 		.4byte	uC_Probe_Accel_Z_Axis
+ 844 02d6 00       		.byte	0
+ 845              		.section	.debug_abbrev,"",%progbits
+ 846              	.Ldebug_abbrev0:
+ 847 0000 01       		.uleb128 0x1
+ 848 0001 11       		.uleb128 0x11
+ 849 0002 01       		.byte	0x1
+ 850 0003 25       		.uleb128 0x25
+ 851 0004 0E       		.uleb128 0xe
+ 852 0005 13       		.uleb128 0x13
+ 853 0006 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 23
+
+
+ 854 0007 03       		.uleb128 0x3
+ 855 0008 0E       		.uleb128 0xe
+ 856 0009 1B       		.uleb128 0x1b
+ 857 000a 0E       		.uleb128 0xe
+ 858 000b 55       		.uleb128 0x55
+ 859 000c 17       		.uleb128 0x17
+ 860 000d 11       		.uleb128 0x11
+ 861 000e 01       		.uleb128 0x1
+ 862 000f 10       		.uleb128 0x10
+ 863 0010 17       		.uleb128 0x17
+ 864 0011 00       		.byte	0
+ 865 0012 00       		.byte	0
+ 866 0013 02       		.uleb128 0x2
+ 867 0014 24       		.uleb128 0x24
+ 868 0015 00       		.byte	0
+ 869 0016 0B       		.uleb128 0xb
+ 870 0017 0B       		.uleb128 0xb
+ 871 0018 3E       		.uleb128 0x3e
+ 872 0019 0B       		.uleb128 0xb
+ 873 001a 03       		.uleb128 0x3
+ 874 001b 0E       		.uleb128 0xe
+ 875 001c 00       		.byte	0
+ 876 001d 00       		.byte	0
+ 877 001e 03       		.uleb128 0x3
+ 878 001f 24       		.uleb128 0x24
+ 879 0020 00       		.byte	0
+ 880 0021 0B       		.uleb128 0xb
+ 881 0022 0B       		.uleb128 0xb
+ 882 0023 3E       		.uleb128 0x3e
+ 883 0024 0B       		.uleb128 0xb
+ 884 0025 03       		.uleb128 0x3
+ 885 0026 08       		.uleb128 0x8
+ 886 0027 00       		.byte	0
+ 887 0028 00       		.byte	0
+ 888 0029 04       		.uleb128 0x4
+ 889 002a 0F       		.uleb128 0xf
+ 890 002b 00       		.byte	0
+ 891 002c 0B       		.uleb128 0xb
+ 892 002d 0B       		.uleb128 0xb
+ 893 002e 00       		.byte	0
+ 894 002f 00       		.byte	0
+ 895 0030 05       		.uleb128 0x5
+ 896 0031 16       		.uleb128 0x16
+ 897 0032 00       		.byte	0
+ 898 0033 03       		.uleb128 0x3
+ 899 0034 0E       		.uleb128 0xe
+ 900 0035 3A       		.uleb128 0x3a
+ 901 0036 0B       		.uleb128 0xb
+ 902 0037 3B       		.uleb128 0x3b
+ 903 0038 0B       		.uleb128 0xb
+ 904 0039 49       		.uleb128 0x49
+ 905 003a 13       		.uleb128 0x13
+ 906 003b 00       		.byte	0
+ 907 003c 00       		.byte	0
+ 908 003d 06       		.uleb128 0x6
+ 909 003e 16       		.uleb128 0x16
+ 910 003f 00       		.byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 24
+
+
+ 911 0040 03       		.uleb128 0x3
+ 912 0041 0E       		.uleb128 0xe
+ 913 0042 3A       		.uleb128 0x3a
+ 914 0043 0B       		.uleb128 0xb
+ 915 0044 3B       		.uleb128 0x3b
+ 916 0045 05       		.uleb128 0x5
+ 917 0046 49       		.uleb128 0x49
+ 918 0047 13       		.uleb128 0x13
+ 919 0048 00       		.byte	0
+ 920 0049 00       		.byte	0
+ 921 004a 07       		.uleb128 0x7
+ 922 004b 35       		.uleb128 0x35
+ 923 004c 00       		.byte	0
+ 924 004d 49       		.uleb128 0x49
+ 925 004e 13       		.uleb128 0x13
+ 926 004f 00       		.byte	0
+ 927 0050 00       		.byte	0
+ 928 0051 08       		.uleb128 0x8
+ 929 0052 2E       		.uleb128 0x2e
+ 930 0053 01       		.byte	0x1
+ 931 0054 3F       		.uleb128 0x3f
+ 932 0055 19       		.uleb128 0x19
+ 933 0056 03       		.uleb128 0x3
+ 934 0057 0E       		.uleb128 0xe
+ 935 0058 3A       		.uleb128 0x3a
+ 936 0059 0B       		.uleb128 0xb
+ 937 005a 3B       		.uleb128 0x3b
+ 938 005b 0B       		.uleb128 0xb
+ 939 005c 27       		.uleb128 0x27
+ 940 005d 19       		.uleb128 0x19
+ 941 005e 49       		.uleb128 0x49
+ 942 005f 13       		.uleb128 0x13
+ 943 0060 11       		.uleb128 0x11
+ 944 0061 01       		.uleb128 0x1
+ 945 0062 12       		.uleb128 0x12
+ 946 0063 06       		.uleb128 0x6
+ 947 0064 40       		.uleb128 0x40
+ 948 0065 18       		.uleb128 0x18
+ 949 0066 9642     		.uleb128 0x2116
+ 950 0068 19       		.uleb128 0x19
+ 951 0069 01       		.uleb128 0x1
+ 952 006a 13       		.uleb128 0x13
+ 953 006b 00       		.byte	0
+ 954 006c 00       		.byte	0
+ 955 006d 09       		.uleb128 0x9
+ 956 006e 34       		.uleb128 0x34
+ 957 006f 00       		.byte	0
+ 958 0070 03       		.uleb128 0x3
+ 959 0071 0E       		.uleb128 0xe
+ 960 0072 3A       		.uleb128 0x3a
+ 961 0073 0B       		.uleb128 0xb
+ 962 0074 3B       		.uleb128 0x3b
+ 963 0075 0B       		.uleb128 0xb
+ 964 0076 49       		.uleb128 0x49
+ 965 0077 13       		.uleb128 0x13
+ 966 0078 02       		.uleb128 0x2
+ 967 0079 18       		.uleb128 0x18
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 25
+
+
+ 968 007a 00       		.byte	0
+ 969 007b 00       		.byte	0
+ 970 007c 0A       		.uleb128 0xa
+ 971 007d 2E       		.uleb128 0x2e
+ 972 007e 01       		.byte	0x1
+ 973 007f 03       		.uleb128 0x3
+ 974 0080 0E       		.uleb128 0xe
+ 975 0081 3A       		.uleb128 0x3a
+ 976 0082 0B       		.uleb128 0xb
+ 977 0083 3B       		.uleb128 0x3b
+ 978 0084 0B       		.uleb128 0xb
+ 979 0085 27       		.uleb128 0x27
+ 980 0086 19       		.uleb128 0x19
+ 981 0087 11       		.uleb128 0x11
+ 982 0088 01       		.uleb128 0x1
+ 983 0089 12       		.uleb128 0x12
+ 984 008a 06       		.uleb128 0x6
+ 985 008b 40       		.uleb128 0x40
+ 986 008c 18       		.uleb128 0x18
+ 987 008d 9642     		.uleb128 0x2116
+ 988 008f 19       		.uleb128 0x19
+ 989 0090 01       		.uleb128 0x1
+ 990 0091 13       		.uleb128 0x13
+ 991 0092 00       		.byte	0
+ 992 0093 00       		.byte	0
+ 993 0094 0B       		.uleb128 0xb
+ 994 0095 05       		.uleb128 0x5
+ 995 0096 00       		.byte	0
+ 996 0097 03       		.uleb128 0x3
+ 997 0098 0E       		.uleb128 0xe
+ 998 0099 3A       		.uleb128 0x3a
+ 999 009a 0B       		.uleb128 0xb
+ 1000 009b 3B       		.uleb128 0x3b
+ 1001 009c 0B       		.uleb128 0xb
+ 1002 009d 49       		.uleb128 0x49
+ 1003 009e 13       		.uleb128 0x13
+ 1004 009f 02       		.uleb128 0x2
+ 1005 00a0 18       		.uleb128 0x18
+ 1006 00a1 00       		.byte	0
+ 1007 00a2 00       		.byte	0
+ 1008 00a3 0C       		.uleb128 0xc
+ 1009 00a4 2E       		.uleb128 0x2e
+ 1010 00a5 01       		.byte	0x1
+ 1011 00a6 03       		.uleb128 0x3
+ 1012 00a7 0E       		.uleb128 0xe
+ 1013 00a8 3A       		.uleb128 0x3a
+ 1014 00a9 0B       		.uleb128 0xb
+ 1015 00aa 3B       		.uleb128 0x3b
+ 1016 00ab 05       		.uleb128 0x5
+ 1017 00ac 27       		.uleb128 0x27
+ 1018 00ad 19       		.uleb128 0x19
+ 1019 00ae 11       		.uleb128 0x11
+ 1020 00af 01       		.uleb128 0x1
+ 1021 00b0 12       		.uleb128 0x12
+ 1022 00b1 06       		.uleb128 0x6
+ 1023 00b2 40       		.uleb128 0x40
+ 1024 00b3 18       		.uleb128 0x18
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 26
+
+
+ 1025 00b4 9642     		.uleb128 0x2116
+ 1026 00b6 19       		.uleb128 0x19
+ 1027 00b7 01       		.uleb128 0x1
+ 1028 00b8 13       		.uleb128 0x13
+ 1029 00b9 00       		.byte	0
+ 1030 00ba 00       		.byte	0
+ 1031 00bb 0D       		.uleb128 0xd
+ 1032 00bc 34       		.uleb128 0x34
+ 1033 00bd 00       		.byte	0
+ 1034 00be 03       		.uleb128 0x3
+ 1035 00bf 0E       		.uleb128 0xe
+ 1036 00c0 3A       		.uleb128 0x3a
+ 1037 00c1 0B       		.uleb128 0xb
+ 1038 00c2 3B       		.uleb128 0x3b
+ 1039 00c3 05       		.uleb128 0x5
+ 1040 00c4 49       		.uleb128 0x49
+ 1041 00c5 13       		.uleb128 0x13
+ 1042 00c6 02       		.uleb128 0x2
+ 1043 00c7 18       		.uleb128 0x18
+ 1044 00c8 00       		.byte	0
+ 1045 00c9 00       		.byte	0
+ 1046 00ca 0E       		.uleb128 0xe
+ 1047 00cb 2E       		.uleb128 0x2e
+ 1048 00cc 00       		.byte	0
+ 1049 00cd 03       		.uleb128 0x3
+ 1050 00ce 0E       		.uleb128 0xe
+ 1051 00cf 3A       		.uleb128 0x3a
+ 1052 00d0 0B       		.uleb128 0xb
+ 1053 00d1 3B       		.uleb128 0x3b
+ 1054 00d2 05       		.uleb128 0x5
+ 1055 00d3 27       		.uleb128 0x27
+ 1056 00d4 19       		.uleb128 0x19
+ 1057 00d5 11       		.uleb128 0x11
+ 1058 00d6 01       		.uleb128 0x1
+ 1059 00d7 12       		.uleb128 0x12
+ 1060 00d8 06       		.uleb128 0x6
+ 1061 00d9 40       		.uleb128 0x40
+ 1062 00da 18       		.uleb128 0x18
+ 1063 00db 9742     		.uleb128 0x2117
+ 1064 00dd 19       		.uleb128 0x19
+ 1065 00de 00       		.byte	0
+ 1066 00df 00       		.byte	0
+ 1067 00e0 0F       		.uleb128 0xf
+ 1068 00e1 05       		.uleb128 0x5
+ 1069 00e2 00       		.byte	0
+ 1070 00e3 03       		.uleb128 0x3
+ 1071 00e4 0E       		.uleb128 0xe
+ 1072 00e5 3A       		.uleb128 0x3a
+ 1073 00e6 0B       		.uleb128 0xb
+ 1074 00e7 3B       		.uleb128 0x3b
+ 1075 00e8 05       		.uleb128 0x5
+ 1076 00e9 49       		.uleb128 0x49
+ 1077 00ea 13       		.uleb128 0x13
+ 1078 00eb 02       		.uleb128 0x2
+ 1079 00ec 18       		.uleb128 0x18
+ 1080 00ed 00       		.byte	0
+ 1081 00ee 00       		.byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 27
+
+
+ 1082 00ef 10       		.uleb128 0x10
+ 1083 00f0 34       		.uleb128 0x34
+ 1084 00f1 00       		.byte	0
+ 1085 00f2 03       		.uleb128 0x3
+ 1086 00f3 0E       		.uleb128 0xe
+ 1087 00f4 3A       		.uleb128 0x3a
+ 1088 00f5 0B       		.uleb128 0xb
+ 1089 00f6 3B       		.uleb128 0x3b
+ 1090 00f7 05       		.uleb128 0x5
+ 1091 00f8 49       		.uleb128 0x49
+ 1092 00f9 13       		.uleb128 0x13
+ 1093 00fa 00       		.byte	0
+ 1094 00fb 00       		.byte	0
+ 1095 00fc 11       		.uleb128 0x11
+ 1096 00fd 01       		.uleb128 0x1
+ 1097 00fe 01       		.byte	0x1
+ 1098 00ff 49       		.uleb128 0x49
+ 1099 0100 13       		.uleb128 0x13
+ 1100 0101 01       		.uleb128 0x1
+ 1101 0102 13       		.uleb128 0x13
+ 1102 0103 00       		.byte	0
+ 1103 0104 00       		.byte	0
+ 1104 0105 12       		.uleb128 0x12
+ 1105 0106 21       		.uleb128 0x21
+ 1106 0107 00       		.byte	0
+ 1107 0108 49       		.uleb128 0x49
+ 1108 0109 13       		.uleb128 0x13
+ 1109 010a 2F       		.uleb128 0x2f
+ 1110 010b 0B       		.uleb128 0xb
+ 1111 010c 00       		.byte	0
+ 1112 010d 00       		.byte	0
+ 1113 010e 13       		.uleb128 0x13
+ 1114 010f 34       		.uleb128 0x34
+ 1115 0110 00       		.byte	0
+ 1116 0111 03       		.uleb128 0x3
+ 1117 0112 0E       		.uleb128 0xe
+ 1118 0113 3A       		.uleb128 0x3a
+ 1119 0114 0B       		.uleb128 0xb
+ 1120 0115 3B       		.uleb128 0x3b
+ 1121 0116 0B       		.uleb128 0xb
+ 1122 0117 49       		.uleb128 0x49
+ 1123 0118 13       		.uleb128 0x13
+ 1124 0119 3F       		.uleb128 0x3f
+ 1125 011a 19       		.uleb128 0x19
+ 1126 011b 02       		.uleb128 0x2
+ 1127 011c 18       		.uleb128 0x18
+ 1128 011d 00       		.byte	0
+ 1129 011e 00       		.byte	0
+ 1130 011f 00       		.byte	0
+ 1131              		.section	.debug_aranges,"",%progbits
+ 1132 0000 3C000000 		.4byte	0x3c
+ 1133 0004 0200     		.2byte	0x2
+ 1134 0006 00000000 		.4byte	.Ldebug_info0
+ 1135 000a 04       		.byte	0x4
+ 1136 000b 00       		.byte	0
+ 1137 000c 0000     		.2byte	0
+ 1138 000e 0000     		.2byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 28
+
+
+ 1139 0010 00000000 		.4byte	.LFB34
+ 1140 0014 60000000 		.4byte	.LFE34-.LFB34
+ 1141 0018 00000000 		.4byte	.LFB35
+ 1142 001c D0000000 		.4byte	.LFE35-.LFB35
+ 1143 0020 00000000 		.4byte	.LFB36
+ 1144 0024 4C000000 		.4byte	.LFE36-.LFB36
+ 1145 0028 00000000 		.4byte	.LFB37
+ 1146 002c 0A000000 		.4byte	.LFE37-.LFB37
+ 1147 0030 00000000 		.4byte	.LFB38
+ 1148 0034 E8000000 		.4byte	.LFE38-.LFB38
+ 1149 0038 00000000 		.4byte	0
+ 1150 003c 00000000 		.4byte	0
+ 1151              		.section	.debug_ranges,"",%progbits
+ 1152              	.Ldebug_ranges0:
+ 1153 0000 00000000 		.4byte	.LFB34
+ 1154 0004 60000000 		.4byte	.LFE34
+ 1155 0008 00000000 		.4byte	.LFB35
+ 1156 000c D0000000 		.4byte	.LFE35
+ 1157 0010 00000000 		.4byte	.LFB36
+ 1158 0014 4C000000 		.4byte	.LFE36
+ 1159 0018 00000000 		.4byte	.LFB37
+ 1160 001c 0A000000 		.4byte	.LFE37
+ 1161 0020 00000000 		.4byte	.LFB38
+ 1162 0024 E8000000 		.4byte	.LFE38
+ 1163 0028 00000000 		.4byte	0
+ 1164 002c 00000000 		.4byte	0
+ 1165              		.section	.debug_line,"",%progbits
+ 1166              	.Ldebug_line0:
+ 1167 0000 A2010000 		.section	.debug_str,"MS",%progbits,1
+ 1167      02000401 
+ 1167      00000201 
+ 1167      FB0E0D00 
+ 1167      01010101 
+ 1168              	.LASF33:
+ 1169 0000 74656D70 		.ascii	"temp_status\000"
+ 1169      5F737461 
+ 1169      74757300 
+ 1170              	.LASF23:
+ 1171 000c 72656733 		.ascii	"reg32\000"
+ 1171      3200
+ 1172              	.LASF27:
+ 1173 0012 70625F70 		.ascii	"pb_prev\000"
+ 1173      72657600 
+ 1174              	.LASF47:
+ 1175 001a 2E2E5C2E 		.ascii	"..\\..\\app.c\000"
+ 1175      2E5C6170 
+ 1175      702E6300 
+ 1176              	.LASF45:
+ 1177 0026 75435F50 		.ascii	"uC_Probe_Accel_Z_Axis\000"
+ 1177      726F6265 
+ 1177      5F416363 
+ 1177      656C5F5A 
+ 1177      5F417869 
+ 1178              	.LASF31:
+ 1179 003c 4170705F 		.ascii	"App_Demo_SensorTask\000"
+ 1179      44656D6F 
+ 1179      5F53656E 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 29
+
+
+ 1179      736F7254 
+ 1179      61736B00 
+ 1180              	.LASF50:
+ 1181 0050 4170705F 		.ascii	"App_ObjCreate\000"
+ 1181      4F626A43 
+ 1181      72656174 
+ 1181      6500
+ 1182              	.LASF26:
+ 1183 005e 70625F73 		.ascii	"pb_status\000"
+ 1183      74617475 
+ 1183      7300
+ 1184              	.LASF37:
+ 1185 0068 4170705F 		.ascii	"App_Demo_SensorTaskStk\000"
+ 1185      44656D6F 
+ 1185      5F53656E 
+ 1185      736F7254 
+ 1185      61736B53 
+ 1186              	.LASF28:
+ 1187 007f 6C65645F 		.ascii	"led_status\000"
+ 1187      73746174 
+ 1187      757300
+ 1188              	.LASF3:
+ 1189 008a 73686F72 		.ascii	"short unsigned int\000"
+ 1189      7420756E 
+ 1189      7369676E 
+ 1189      65642069 
+ 1189      6E7400
+ 1190              	.LASF38:
+ 1191 009d 4170705F 		.ascii	"App_Demo_Ambient_InitVar\000"
+ 1191      44656D6F 
+ 1191      5F416D62 
+ 1191      69656E74 
+ 1191      5F496E69 
+ 1192              	.LASF13:
+ 1193 00b6 646F7562 		.ascii	"double\000"
+ 1193      6C6500
+ 1194              	.LASF15:
+ 1195 00bd 4F535F53 		.ascii	"OS_STK\000"
+ 1195      544B00
+ 1196              	.LASF20:
+ 1197 00c4 4350555F 		.ascii	"CPU_INT32U\000"
+ 1197      494E5433 
+ 1197      325500
+ 1198              	.LASF29:
+ 1199 00cf 4170705F 		.ascii	"App_TaskStart\000"
+ 1199      5461736B 
+ 1199      53746172 
+ 1199      7400
+ 1200              	.LASF12:
+ 1201 00dd 666C6F61 		.ascii	"float\000"
+ 1201      7400
+ 1202              	.LASF35:
+ 1203 00e3 74656D70 		.ascii	"temp_conv\000"
+ 1203      5F636F6E 
+ 1203      7600
+ 1204              	.LASF1:
+ 1205 00ed 756E7369 		.ascii	"unsigned char\000"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 30
+
+
+ 1205      676E6564 
+ 1205      20636861 
+ 1205      7200
+ 1206              	.LASF24:
+ 1207 00fb 4F535F45 		.ascii	"OS_ERR\000"
+ 1207      525200
+ 1208              	.LASF43:
+ 1209 0102 75435F50 		.ascii	"uC_Probe_Accel_X_Axis\000"
+ 1209      726F6265 
+ 1209      5F416363 
+ 1209      656C5F58 
+ 1209      5F417869 
+ 1210              	.LASF34:
+ 1211 0118 74656D70 		.ascii	"temp_val\000"
+ 1211      5F76616C 
+ 1211      00
+ 1212              	.LASF17:
+ 1213 0121 4350555F 		.ascii	"CPU_INT08U\000"
+ 1213      494E5430 
+ 1213      385500
+ 1214              	.LASF46:
+ 1215 012c 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1215      43313120 
+ 1215      352E342E 
+ 1215      31203230 
+ 1215      31363036 
+ 1216 015f 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 1216      20726576 
+ 1216      6973696F 
+ 1216      6E203233 
+ 1216      37373135 
+ 1217 0192 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 1217      66756E63 
+ 1217      74696F6E 
+ 1217      2D736563 
+ 1217      74696F6E 
+ 1218              	.LASF25:
+ 1219 01ba 6F735F65 		.ascii	"os_err\000"
+ 1219      727200
+ 1220              	.LASF36:
+ 1221 01c1 4170705F 		.ascii	"App_TaskStartStk\000"
+ 1221      5461736B 
+ 1221      53746172 
+ 1221      7453746B 
+ 1221      00
+ 1222              	.LASF49:
+ 1223 01d2 6D61696E 		.ascii	"main\000"
+ 1223      00
+ 1224              	.LASF41:
+ 1225 01d7 75435F50 		.ascii	"uC_Probe_Temp_Val\000"
+ 1225      726F6265 
+ 1225      5F54656D 
+ 1225      705F5661 
+ 1225      6C00
+ 1226              	.LASF22:
+ 1227 01e9 75696E74 		.ascii	"uint32\000"
+ 1227      333200
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 31
+
+
+ 1228              	.LASF5:
+ 1229 01f0 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1229      20756E73 
+ 1229      69676E65 
+ 1229      6420696E 
+ 1229      7400
+ 1230              	.LASF8:
+ 1231 0202 756E7369 		.ascii	"unsigned int\000"
+ 1231      676E6564 
+ 1231      20696E74 
+ 1231      00
+ 1232              	.LASF14:
+ 1233 020f 494E5438 		.ascii	"INT8U\000"
+ 1233      5500
+ 1234              	.LASF7:
+ 1235 0215 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1235      206C6F6E 
+ 1235      6720756E 
+ 1235      7369676E 
+ 1235      65642069 
+ 1236              	.LASF16:
+ 1237 022c 4350555F 		.ascii	"CPU_BOOLEAN\000"
+ 1237      424F4F4C 
+ 1237      45414E00 
+ 1238              	.LASF19:
+ 1239 0238 4350555F 		.ascii	"CPU_INT16S\000"
+ 1239      494E5431 
+ 1239      365300
+ 1240              	.LASF18:
+ 1241 0243 4350555F 		.ascii	"CPU_INT16U\000"
+ 1241      494E5431 
+ 1241      365500
+ 1242              	.LASF39:
+ 1243 024e 75435F50 		.ascii	"uC_Probe_RGB_Val\000"
+ 1243      726F6265 
+ 1243      5F524742 
+ 1243      5F56616C 
+ 1243      00
+ 1244              	.LASF9:
+ 1245 025f 6C6F6E67 		.ascii	"long double\000"
+ 1245      20646F75 
+ 1245      626C6500 
+ 1246              	.LASF10:
+ 1247 026b 73697A65 		.ascii	"sizetype\000"
+ 1247      74797065 
+ 1247      00
+ 1248              	.LASF44:
+ 1249 0274 75435F50 		.ascii	"uC_Probe_Accel_Y_Axis\000"
+ 1249      726F6265 
+ 1249      5F416363 
+ 1249      656C5F59 
+ 1249      5F417869 
+ 1250              	.LASF6:
+ 1251 028a 6C6F6E67 		.ascii	"long long int\000"
+ 1251      206C6F6E 
+ 1251      6720696E 
+ 1251      7400
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccIVsY08.s 			page 32
+
+
+ 1252              	.LASF11:
+ 1253 0298 63686172 		.ascii	"char\000"
+ 1253      00
+ 1254              	.LASF2:
+ 1255 029d 73686F72 		.ascii	"short int\000"
+ 1255      7420696E 
+ 1255      7400
+ 1256              	.LASF40:
+ 1257 02a7 75435F50 		.ascii	"uC_Probe_PB_Trigger\000"
+ 1257      726F6265 
+ 1257      5F50425F 
+ 1257      54726967 
+ 1257      67657200 
+ 1258              	.LASF30:
+ 1259 02bb 4170705F 		.ascii	"App_TaskCreate\000"
+ 1259      5461736B 
+ 1259      43726561 
+ 1259      746500
+ 1260              	.LASF48:
+ 1261 02ca 443A5C43 		.ascii	"D:\\CYTEST\\Micrium_CY8CKIT-044_OS2\\Micrium\\Examp"
+ 1261      59544553 
+ 1261      545C4D69 
+ 1261      63726975 
+ 1261      6D5F4359 
+ 1262 02f9 6C65735C 		.ascii	"les\\Cypress\\CY8CKIT-044\\OS2\\PSoC\\OS2.cydsn\000"
+ 1262      43797072 
+ 1262      6573735C 
+ 1262      43593843 
+ 1262      4B49542D 
+ 1263              	.LASF42:
+ 1264 0324 75435F50 		.ascii	"uC_Probe_AmbientLight\000"
+ 1264      726F6265 
+ 1264      5F416D62 
+ 1264      69656E74 
+ 1264      4C696768 
+ 1265              	.LASF4:
+ 1266 033a 6C6F6E67 		.ascii	"long int\000"
+ 1266      20696E74 
+ 1266      00
+ 1267              	.LASF21:
+ 1268 0343 4350555F 		.ascii	"CPU_FP32\000"
+ 1268      46503332 
+ 1268      00
+ 1269              	.LASF0:
+ 1270 034c 7369676E 		.ascii	"signed char\000"
+ 1270      65642063 
+ 1270      68617200 
+ 1271              	.LASF32:
+ 1272 0358 705F6172 		.ascii	"p_arg\000"
+ 1272      6700
+ 1273              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

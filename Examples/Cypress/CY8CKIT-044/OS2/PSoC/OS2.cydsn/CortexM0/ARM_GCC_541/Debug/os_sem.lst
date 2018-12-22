@@ -1,0 +1,3654 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"os_sem.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.OSSemAccept,"ax",%progbits
+  20              		.align	2
+  21              		.global	OSSemAccept
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	OSSemAccept, %function
+  25              	OSSemAccept:
+  26              	.LFB1:
+  27              		.file 1 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source\\os_sem.c"
+   1:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*
+   2:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+   3:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                uC/OS-II
+   4:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                          The Real-Time Kernel
+   5:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                          SEMAPHORE MANAGEMENT
+   6:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+   7:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                              (c) Copyright 1992-2013, Micrium, Weston, FL
+   8:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                           All Rights Reserved
+   9:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+  10:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * File    : OS_SEM.C
+  11:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * By      : Jean J. Labrosse
+  12:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Version : V2.92.11
+  13:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+  14:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * LICENSING TERMS:
+  15:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * ---------------
+  16:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful re
+  17:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * If you plan on using  uC/OS-II  in a commercial product you need to contact Micrium to properly l
+  18:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * its use in your product. We provide ALL the source code for your convenience and to help you expe
+  19:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  pa
+  20:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * licensing fee.
+  21:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+  22:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** */
+  23:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+  24:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #define  MICRIUM_SOURCE
+  25:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+  26:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #ifndef  OS_MASTER_FILE
+  27:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #include <ucos_ii.h>
+  28:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+  29:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+  30:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_SEM_EN > 0u
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 2
+
+
+  31:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*$PAGE*/
+  32:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*
+  33:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+  34:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                          ACCEPT SEMAPHORE
+  35:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+  36:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Description: This function checks the semaphore to see if a resource is available or, if an event
+  37:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              occurred.  Unlike OSSemPend(), OSSemAccept() does not suspend the calling task if th
+  38:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              resource is not available or the event did not occur.
+  39:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+  40:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Arguments  : pevent     is a pointer to the event control block
+  41:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+  42:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Returns    : >  0       if the resource is available or the event did not occur the semaphore is
+  43:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                         decremented to obtain the resource.
+  44:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              == 0       if the resource is not available or the event did not occur or,
+  45:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                         if 'pevent' is a NULL pointer or,
+  46:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                         if you didn't pass a pointer to a semaphore
+  47:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+  48:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** */
+  49:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+  50:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_SEM_ACCEPT_EN > 0u
+  51:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** INT16U  OSSemAccept (OS_EVENT *pevent)
+  52:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** {
+  28              		.loc 1 52 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 16
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 80B5     		push	{r7, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 84B0     		sub	sp, sp, #16
+  37              		.cfi_def_cfa_offset 24
+  38 0004 00AF     		add	r7, sp, #0
+  39              		.cfi_def_cfa_register 7
+  40 0006 7860     		str	r0, [r7, #4]
+  53:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     INT16U     cnt;
+  54:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register  
+  55:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_CPU_SR  cpu_sr = 0u;
+  41              		.loc 1 55 0
+  42 0008 0023     		movs	r3, #0
+  43 000a FB60     		str	r3, [r7, #12]
+  56:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+  57:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+  58:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+  59:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+  60:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_ARG_CHK_EN > 0u
+  61:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent == (OS_EVENT *)0) {                    /* Validate 'pevent'                         
+  44              		.loc 1 61 0
+  45 000c 7B68     		ldr	r3, [r7, #4]
+  46 000e 002B     		cmp	r3, #0
+  47 0010 01D1     		bne	.L2
+  62:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (0u);
+  48              		.loc 1 62 0
+  49 0012 0023     		movs	r3, #0
+  50 0014 20E0     		b	.L3
+  51              	.L2:
+  63:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 3
+
+
+  64:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+  65:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventType != OS_EVENT_TYPE_SEM) {   /* Validate event block type                 
+  52              		.loc 1 65 0
+  53 0016 7B68     		ldr	r3, [r7, #4]
+  54 0018 1B78     		ldrb	r3, [r3]
+  55 001a 032B     		cmp	r3, #3
+  56 001c 01D0     		beq	.L4
+  66:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (0u);
+  57              		.loc 1 66 0
+  58 001e 0023     		movs	r3, #0
+  59 0020 1AE0     		b	.L3
+  60              	.L4:
+  67:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+  68:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_ENTER_CRITICAL();
+  61              		.loc 1 68 0
+  62 0022 FFF7FEFF 		bl	OS_CPU_SR_Save
+  63 0026 0300     		movs	r3, r0
+  64 0028 FB60     		str	r3, [r7, #12]
+  69:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     cnt = pevent->OSEventCnt;
+  65              		.loc 1 69 0
+  66 002a 0A23     		movs	r3, #10
+  67 002c FB18     		adds	r3, r7, r3
+  68 002e 7A68     		ldr	r2, [r7, #4]
+  69 0030 1289     		ldrh	r2, [r2, #8]
+  70 0032 1A80     		strh	r2, [r3]
+  70:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (cnt > 0u) {                                   /* See if resource is available              
+  71              		.loc 1 70 0
+  72 0034 0A23     		movs	r3, #10
+  73 0036 FB18     		adds	r3, r7, r3
+  74 0038 1B88     		ldrh	r3, [r3]
+  75 003a 002B     		cmp	r3, #0
+  76 003c 05D0     		beq	.L5
+  71:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         pevent->OSEventCnt--;                         /* Yes, decrement semaphore and notify caller
+  77              		.loc 1 71 0
+  78 003e 7B68     		ldr	r3, [r7, #4]
+  79 0040 1B89     		ldrh	r3, [r3, #8]
+  80 0042 013B     		subs	r3, r3, #1
+  81 0044 9AB2     		uxth	r2, r3
+  82 0046 7B68     		ldr	r3, [r7, #4]
+  83 0048 1A81     		strh	r2, [r3, #8]
+  84              	.L5:
+  72:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+  73:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EXIT_CRITICAL();
+  85              		.loc 1 73 0
+  86 004a FB68     		ldr	r3, [r7, #12]
+  87 004c 1800     		movs	r0, r3
+  88 004e FFF7FEFF 		bl	OS_CPU_SR_Restore
+  74:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     return (cnt);                                     /* Return semaphore count                    
+  89              		.loc 1 74 0
+  90 0052 0A23     		movs	r3, #10
+  91 0054 FB18     		adds	r3, r7, r3
+  92 0056 1B88     		ldrh	r3, [r3]
+  93              	.L3:
+  75:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** }
+  94              		.loc 1 75 0
+  95 0058 1800     		movs	r0, r3
+  96 005a BD46     		mov	sp, r7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 4
+
+
+  97 005c 04B0     		add	sp, sp, #16
+  98              		@ sp needed
+  99 005e 80BD     		pop	{r7, pc}
+ 100              		.cfi_endproc
+ 101              	.LFE1:
+ 102              		.size	OSSemAccept, .-OSSemAccept
+ 103              		.section	.rodata
+ 104              		.align	2
+ 105              	.LC2:
+ 106 0000 3F00     		.ascii	"?\000"
+ 107              		.section	.text.OSSemCreate,"ax",%progbits
+ 108              		.align	2
+ 109              		.global	OSSemCreate
+ 110              		.code	16
+ 111              		.thumb_func
+ 112              		.type	OSSemCreate, %function
+ 113              	OSSemCreate:
+ 114              	.LFB2:
+  76:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+  77:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+  78:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*$PAGE*/
+  79:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*
+  80:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+  81:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                         CREATE A SEMAPHORE
+  82:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+  83:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Description: This function creates a semaphore.
+  84:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+  85:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Arguments  : cnt           is the initial value for the semaphore.  If the value is 0, no resourc
+  86:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            available (or no event has occurred).  You initialize the semaphore to
+  87:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            non-zero value to specify how many resources are available (e.g. if yo
+  88:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            10 resources, you would initialize the semaphore to 10).
+  89:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+  90:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Returns    : != (void *)0  is a pointer to the event control block (OS_EVENT) associated with the
+  91:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            created semaphore
+  92:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              == (void *)0  if no event control blocks were available
+  93:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+  94:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** */
+  95:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+  96:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** OS_EVENT  *OSSemCreate (INT16U cnt)
+  97:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** {
+ 115              		.loc 1 97 0
+ 116              		.cfi_startproc
+ 117              		@ args = 0, pretend = 0, frame = 16
+ 118              		@ frame_needed = 1, uses_anonymous_args = 0
+ 119 0000 80B5     		push	{r7, lr}
+ 120              		.cfi_def_cfa_offset 8
+ 121              		.cfi_offset 7, -8
+ 122              		.cfi_offset 14, -4
+ 123 0002 84B0     		sub	sp, sp, #16
+ 124              		.cfi_def_cfa_offset 24
+ 125 0004 00AF     		add	r7, sp, #0
+ 126              		.cfi_def_cfa_register 7
+ 127 0006 0200     		movs	r2, r0
+ 128 0008 BB1D     		adds	r3, r7, #6
+ 129 000a 1A80     		strh	r2, [r3]
+  98:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EVENT  *pevent;
+  99:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_CRITICAL_METHOD == 3u                               /* Allocate storage for CPU status regis
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 5
+
+
+ 100:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 130              		.loc 1 100 0
+ 131 000c 0023     		movs	r3, #0
+ 132 000e FB60     		str	r3, [r7, #12]
+ 101:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 102:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 103:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 104:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 105:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #ifdef OS_SAFETY_CRITICAL_IEC61508
+ 106:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (OSSafetyCriticalStartFlag == OS_TRUE) {
+ 107:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+ 108:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return ((OS_EVENT *)0);
+ 109:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 110:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 111:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 112:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (OSIntNesting > 0u) {                               /* See if called from ISR ...           
+ 133              		.loc 1 112 0
+ 134 0010 194B     		ldr	r3, .L11
+ 135 0012 1B78     		ldrb	r3, [r3]
+ 136 0014 002B     		cmp	r3, #0
+ 137 0016 01D0     		beq	.L7
+ 113:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return ((OS_EVENT *)0);                            /* ... can't CREATE from an ISR         
+ 138              		.loc 1 113 0
+ 139 0018 0023     		movs	r3, #0
+ 140 001a 28E0     		b	.L8
+ 141              	.L7:
+ 114:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 115:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_ENTER_CRITICAL();
+ 142              		.loc 1 115 0
+ 143 001c FFF7FEFF 		bl	OS_CPU_SR_Save
+ 144 0020 0300     		movs	r3, r0
+ 145 0022 FB60     		str	r3, [r7, #12]
+ 116:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     pevent = OSEventFreeList;                              /* Get next free event control block    
+ 146              		.loc 1 116 0
+ 147 0024 154B     		ldr	r3, .L11+4
+ 148 0026 1B68     		ldr	r3, [r3]
+ 149 0028 BB60     		str	r3, [r7, #8]
+ 117:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (OSEventFreeList != (OS_EVENT *)0) {                /* See if pool of free ECB pool was empt
+ 150              		.loc 1 117 0
+ 151 002a 144B     		ldr	r3, .L11+4
+ 152 002c 1B68     		ldr	r3, [r3]
+ 153 002e 002B     		cmp	r3, #0
+ 154 0030 04D0     		beq	.L9
+ 118:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OSEventFreeList = (OS_EVENT *)OSEventFreeList->OSEventPtr;
+ 155              		.loc 1 118 0
+ 156 0032 124B     		ldr	r3, .L11+4
+ 157 0034 1B68     		ldr	r3, [r3]
+ 158 0036 5A68     		ldr	r2, [r3, #4]
+ 159 0038 104B     		ldr	r3, .L11+4
+ 160 003a 1A60     		str	r2, [r3]
+ 161              	.L9:
+ 119:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 120:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EXIT_CRITICAL();
+ 162              		.loc 1 120 0
+ 163 003c FB68     		ldr	r3, [r7, #12]
+ 164 003e 1800     		movs	r0, r3
+ 165 0040 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 6
+
+
+ 121:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent != (OS_EVENT *)0) {                         /* Get an event control block           
+ 166              		.loc 1 121 0
+ 167 0044 BB68     		ldr	r3, [r7, #8]
+ 168 0046 002B     		cmp	r3, #0
+ 169 0048 10D0     		beq	.L10
+ 122:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         pevent->OSEventType    = OS_EVENT_TYPE_SEM;
+ 170              		.loc 1 122 0
+ 171 004a BB68     		ldr	r3, [r7, #8]
+ 172 004c 0322     		movs	r2, #3
+ 173 004e 1A70     		strb	r2, [r3]
+ 123:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         pevent->OSEventCnt     = cnt;                      /* Set semaphore value                  
+ 174              		.loc 1 123 0
+ 175 0050 BB68     		ldr	r3, [r7, #8]
+ 176 0052 BA1D     		adds	r2, r7, #6
+ 177 0054 1288     		ldrh	r2, [r2]
+ 178 0056 1A81     		strh	r2, [r3, #8]
+ 124:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         pevent->OSEventPtr     = (void *)0;                /* Unlink from ECB free list            
+ 179              		.loc 1 124 0
+ 180 0058 BB68     		ldr	r3, [r7, #8]
+ 181 005a 0022     		movs	r2, #0
+ 182 005c 5A60     		str	r2, [r3, #4]
+ 125:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_EVENT_NAME_EN > 0u
+ 126:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         pevent->OSEventName    = (INT8U *)(void *)"?";
+ 183              		.loc 1 126 0
+ 184 005e BB68     		ldr	r3, [r7, #8]
+ 185 0060 074A     		ldr	r2, .L11+8
+ 186 0062 5A61     		str	r2, [r3, #20]
+ 127:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 128:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_EventWaitListInit(pevent);                      /* Initialize to 'nobody waiting' on sem
+ 187              		.loc 1 128 0
+ 188 0064 BB68     		ldr	r3, [r7, #8]
+ 189 0066 1800     		movs	r0, r3
+ 190 0068 FFF7FEFF 		bl	OS_EventWaitListInit
+ 191              	.L10:
+ 129:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 130:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     return (pevent);
+ 192              		.loc 1 130 0
+ 193 006c BB68     		ldr	r3, [r7, #8]
+ 194              	.L8:
+ 131:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** }
+ 195              		.loc 1 131 0
+ 196 006e 1800     		movs	r0, r3
+ 197 0070 BD46     		mov	sp, r7
+ 198 0072 04B0     		add	sp, sp, #16
+ 199              		@ sp needed
+ 200 0074 80BD     		pop	{r7, pc}
+ 201              	.L12:
+ 202 0076 C046     		.align	2
+ 203              	.L11:
+ 204 0078 00000000 		.word	OSIntNesting
+ 205 007c 00000000 		.word	OSEventFreeList
+ 206 0080 00000000 		.word	.LC2
+ 207              		.cfi_endproc
+ 208              	.LFE2:
+ 209              		.size	OSSemCreate, .-OSSemCreate
+ 210              		.section	.text.OSSemDel,"ax",%progbits
+ 211              		.align	2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 7
+
+
+ 212              		.global	OSSemDel
+ 213              		.code	16
+ 214              		.thumb_func
+ 215              		.type	OSSemDel, %function
+ 216              	OSSemDel:
+ 217              	.LFB3:
+ 132:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 133:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*$PAGE*/
+ 134:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*
+ 135:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 136:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                         DELETE A SEMAPHORE
+ 137:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 138:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Description: This function deletes a semaphore and readies all tasks pending on the semaphore.
+ 139:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 140:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Arguments  : pevent        is a pointer to the event control block associated with the desired
+ 141:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            semaphore.
+ 142:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 143:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              opt           determines delete options as follows:
+ 144:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            opt == OS_DEL_NO_PEND   Delete semaphore ONLY if no task pending
+ 145:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            opt == OS_DEL_ALWAYS    Deletes the semaphore even if tasks are waitin
+ 146:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                    In this case, all the tasks pending will be re
+ 147:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 148:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              perr          is a pointer to an error code that can contain one of the following va
+ 149:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_NONE             The call was successful and the semaphore was 
+ 150:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_DEL_ISR          If you attempted to delete the semaphore from 
+ 151:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_INVALID_OPT      An invalid option was specified
+ 152:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_TASK_WAITING     One or more tasks were waiting on the semaphor
+ 153:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_EVENT_TYPE       If you didn't pass a pointer to a semaphore
+ 154:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_PEVENT_NULL      If 'pevent' is a NULL pointer.
+ 155:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 156:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Returns    : pevent        upon error
+ 157:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              (OS_EVENT *)0 if the semaphore was successfully deleted.
+ 158:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 159:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Note(s)    : 1) This function must be used with care.  Tasks that would normally expect the prese
+ 160:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                 the semaphore MUST check the return code of OSSemPend().
+ 161:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              2) OSSemAccept() callers will not know that the intended semaphore has been deleted 
+ 162:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                 they check 'pevent' to see that it's a NULL pointer.
+ 163:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              3) This call can potentially disable interrupts for a long time.  The interrupt disa
+ 164:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                 time is directly proportional to the number of tasks waiting on the semaphore.
+ 165:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              4) Because ALL tasks pending on the semaphore will be readied, you MUST be careful i
+ 166:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                 applications where the semaphore is used for mutual exclusion because the resourc
+ 167:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                 will no longer be guarded by the semaphore.
+ 168:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              5) All tasks that were waiting for the semaphore will be readied and returned an 
+ 169:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                 OS_ERR_PEND_ABORT if OSSemDel() was called with OS_DEL_ALWAYS
+ 170:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 171:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** */
+ 172:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 173:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_SEM_DEL_EN > 0u
+ 174:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** OS_EVENT  *OSSemDel (OS_EVENT  *pevent,
+ 175:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                      INT8U      opt,
+ 176:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                      INT8U     *perr)
+ 177:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** {
+ 218              		.loc 1 177 0
+ 219              		.cfi_startproc
+ 220              		@ args = 0, pretend = 0, frame = 32
+ 221              		@ frame_needed = 1, uses_anonymous_args = 0
+ 222 0000 80B5     		push	{r7, lr}
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 8
+
+
+ 223              		.cfi_def_cfa_offset 8
+ 224              		.cfi_offset 7, -8
+ 225              		.cfi_offset 14, -4
+ 226 0002 88B0     		sub	sp, sp, #32
+ 227              		.cfi_def_cfa_offset 40
+ 228 0004 00AF     		add	r7, sp, #0
+ 229              		.cfi_def_cfa_register 7
+ 230 0006 F860     		str	r0, [r7, #12]
+ 231 0008 7A60     		str	r2, [r7, #4]
+ 232 000a 0B23     		movs	r3, #11
+ 233 000c FB18     		adds	r3, r7, r3
+ 234 000e 0A1C     		adds	r2, r1, #0
+ 235 0010 1A70     		strb	r2, [r3]
+ 178:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     BOOLEAN    tasks_waiting;
+ 179:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EVENT  *pevent_return;
+ 180:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_CRITICAL_METHOD == 3u                               /* Allocate storage for CPU status regis
+ 181:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 236              		.loc 1 181 0
+ 237 0012 0023     		movs	r3, #0
+ 238 0014 7B61     		str	r3, [r7, #20]
+ 182:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 183:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 184:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 185:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 186:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #ifdef OS_SAFETY_CRITICAL
+ 187:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (perr == (INT8U *)0) {
+ 188:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+ 189:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return ((OS_EVENT *)0);
+ 190:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 191:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 192:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 193:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_ARG_CHK_EN > 0u
+ 194:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent == (OS_EVENT *)0) {                         /* Validate 'pevent'                    
+ 239              		.loc 1 194 0
+ 240 0016 FB68     		ldr	r3, [r7, #12]
+ 241 0018 002B     		cmp	r3, #0
+ 242 001a 04D1     		bne	.L14
+ 195:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_PEVENT_NULL;
+ 243              		.loc 1 195 0
+ 244 001c 7B68     		ldr	r3, [r7, #4]
+ 245 001e 0422     		movs	r2, #4
+ 246 0020 1A70     		strb	r2, [r3]
+ 196:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (pevent);
+ 247              		.loc 1 196 0
+ 248 0022 FB68     		ldr	r3, [r7, #12]
+ 249 0024 89E0     		b	.L15
+ 250              	.L14:
+ 197:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 198:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 199:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventType != OS_EVENT_TYPE_SEM) {        /* Validate event block type            
+ 251              		.loc 1 199 0
+ 252 0026 FB68     		ldr	r3, [r7, #12]
+ 253 0028 1B78     		ldrb	r3, [r3]
+ 254 002a 032B     		cmp	r3, #3
+ 255 002c 04D0     		beq	.L16
+ 200:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_EVENT_TYPE;
+ 256              		.loc 1 200 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 9
+
+
+ 257 002e 7B68     		ldr	r3, [r7, #4]
+ 258 0030 0122     		movs	r2, #1
+ 259 0032 1A70     		strb	r2, [r3]
+ 201:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (pevent);
+ 260              		.loc 1 201 0
+ 261 0034 FB68     		ldr	r3, [r7, #12]
+ 262 0036 80E0     		b	.L15
+ 263              	.L16:
+ 202:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 203:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (OSIntNesting > 0u) {                               /* See if called from ISR ...           
+ 264              		.loc 1 203 0
+ 265 0038 424B     		ldr	r3, .L30
+ 266 003a 1B78     		ldrb	r3, [r3]
+ 267 003c 002B     		cmp	r3, #0
+ 268 003e 04D0     		beq	.L17
+ 204:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_DEL_ISR;                            /* ... can't DELETE from an ISR         
+ 269              		.loc 1 204 0
+ 270 0040 7B68     		ldr	r3, [r7, #4]
+ 271 0042 0F22     		movs	r2, #15
+ 272 0044 1A70     		strb	r2, [r3]
+ 205:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (pevent);
+ 273              		.loc 1 205 0
+ 274 0046 FB68     		ldr	r3, [r7, #12]
+ 275 0048 77E0     		b	.L15
+ 276              	.L17:
+ 206:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 207:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_ENTER_CRITICAL();
+ 277              		.loc 1 207 0
+ 278 004a FFF7FEFF 		bl	OS_CPU_SR_Save
+ 279 004e 0300     		movs	r3, r0
+ 280 0050 7B61     		str	r3, [r7, #20]
+ 208:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventGrp != 0u) {                        /* See if any tasks waiting on semaphore
+ 281              		.loc 1 208 0
+ 282 0052 FB68     		ldr	r3, [r7, #12]
+ 283 0054 9B7A     		ldrb	r3, [r3, #10]
+ 284 0056 002B     		cmp	r3, #0
+ 285 0058 04D0     		beq	.L18
+ 209:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         tasks_waiting = OS_TRUE;                           /* Yes                                  
+ 286              		.loc 1 209 0
+ 287 005a 1F23     		movs	r3, #31
+ 288 005c FB18     		adds	r3, r7, r3
+ 289 005e 0122     		movs	r2, #1
+ 290 0060 1A70     		strb	r2, [r3]
+ 291 0062 03E0     		b	.L19
+ 292              	.L18:
+ 210:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     } else {
+ 211:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         tasks_waiting = OS_FALSE;                          /* No                                   
+ 293              		.loc 1 211 0
+ 294 0064 1F23     		movs	r3, #31
+ 295 0066 FB18     		adds	r3, r7, r3
+ 296 0068 0022     		movs	r2, #0
+ 297 006a 1A70     		strb	r2, [r3]
+ 298              	.L19:
+ 212:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 213:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     switch (opt) {
+ 299              		.loc 1 213 0
+ 300 006c 0B23     		movs	r3, #11
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 10
+
+
+ 301 006e FB18     		adds	r3, r7, r3
+ 302 0070 1B78     		ldrb	r3, [r3]
+ 303 0072 002B     		cmp	r3, #0
+ 304 0074 02D0     		beq	.L21
+ 305 0076 012B     		cmp	r3, #1
+ 306 0078 2FD0     		beq	.L26
+ 307 007a 53E0     		b	.L29
+ 308              	.L21:
+ 214:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         case OS_DEL_NO_PEND:                               /* Delete semaphore only if no task wait
+ 215:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              if (tasks_waiting == OS_FALSE) {
+ 309              		.loc 1 215 0
+ 310 007c 1F23     		movs	r3, #31
+ 311 007e FB18     		adds	r3, r7, r3
+ 312 0080 1B78     		ldrb	r3, [r3]
+ 313 0082 002B     		cmp	r3, #0
+ 314 0084 19D1     		bne	.L23
+ 216:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_EVENT_NAME_EN > 0u
+ 217:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  pevent->OSEventName    = (INT8U *)(void *)"?";
+ 315              		.loc 1 217 0
+ 316 0086 FB68     		ldr	r3, [r7, #12]
+ 317 0088 2F4A     		ldr	r2, .L30+4
+ 318 008a 5A61     		str	r2, [r3, #20]
+ 218:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 219:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  pevent->OSEventType    = OS_EVENT_TYPE_UNUSED;
+ 319              		.loc 1 219 0
+ 320 008c FB68     		ldr	r3, [r7, #12]
+ 321 008e 0022     		movs	r2, #0
+ 322 0090 1A70     		strb	r2, [r3]
+ 220:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  pevent->OSEventPtr     = OSEventFreeList; /* Return Event Control Block to free li
+ 323              		.loc 1 220 0
+ 324 0092 2E4B     		ldr	r3, .L30+8
+ 325 0094 1A68     		ldr	r2, [r3]
+ 326 0096 FB68     		ldr	r3, [r7, #12]
+ 327 0098 5A60     		str	r2, [r3, #4]
+ 221:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  pevent->OSEventCnt     = 0u;
+ 328              		.loc 1 221 0
+ 329 009a FB68     		ldr	r3, [r7, #12]
+ 330 009c 0022     		movs	r2, #0
+ 331 009e 1A81     		strh	r2, [r3, #8]
+ 222:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  OSEventFreeList        = pevent;          /* Get next free event control block    
+ 332              		.loc 1 222 0
+ 333 00a0 2A4B     		ldr	r3, .L30+8
+ 334 00a2 FA68     		ldr	r2, [r7, #12]
+ 335 00a4 1A60     		str	r2, [r3]
+ 223:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  OS_EXIT_CRITICAL();
+ 336              		.loc 1 223 0
+ 337 00a6 7B69     		ldr	r3, [r7, #20]
+ 338 00a8 1800     		movs	r0, r3
+ 339 00aa FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 224:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  *perr                  = OS_ERR_NONE;
+ 340              		.loc 1 224 0
+ 341 00ae 7B68     		ldr	r3, [r7, #4]
+ 342 00b0 0022     		movs	r2, #0
+ 343 00b2 1A70     		strb	r2, [r3]
+ 225:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  pevent_return          = (OS_EVENT *)0;   /* Semaphore has been deleted           
+ 344              		.loc 1 225 0
+ 345 00b4 0023     		movs	r3, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 11
+
+
+ 346 00b6 BB61     		str	r3, [r7, #24]
+ 226:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              } else {
+ 227:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  OS_EXIT_CRITICAL();
+ 228:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  *perr                  = OS_ERR_TASK_WAITING;
+ 229:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  pevent_return          = pevent;
+ 230:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              }
+ 231:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              break;
+ 347              		.loc 1 231 0
+ 348 00b8 3EE0     		b	.L25
+ 349              	.L23:
+ 227:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  *perr                  = OS_ERR_TASK_WAITING;
+ 350              		.loc 1 227 0
+ 351 00ba 7B69     		ldr	r3, [r7, #20]
+ 352 00bc 1800     		movs	r0, r3
+ 353 00be FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 228:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  pevent_return          = pevent;
+ 354              		.loc 1 228 0
+ 355 00c2 7B68     		ldr	r3, [r7, #4]
+ 356 00c4 4922     		movs	r2, #73
+ 357 00c6 1A70     		strb	r2, [r3]
+ 229:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              }
+ 358              		.loc 1 229 0
+ 359 00c8 FB68     		ldr	r3, [r7, #12]
+ 360 00ca BB61     		str	r3, [r7, #24]
+ 361              		.loc 1 231 0
+ 362 00cc 34E0     		b	.L25
+ 363              	.L27:
+ 232:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 233:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         case OS_DEL_ALWAYS:                                /* Always delete the semaphore          
+ 234:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              while (pevent->OSEventGrp != 0u) {            /* Ready ALL tasks waiting for semaphore
+ 235:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  (void)OS_EventTaskRdy(pevent, (void *)0, OS_STAT_SEM, OS_STAT_PEND_ABORT);
+ 364              		.loc 1 235 0
+ 365 00ce F868     		ldr	r0, [r7, #12]
+ 366 00d0 0223     		movs	r3, #2
+ 367 00d2 0122     		movs	r2, #1
+ 368 00d4 0021     		movs	r1, #0
+ 369 00d6 FFF7FEFF 		bl	OS_EventTaskRdy
+ 370              	.L26:
+ 234:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  (void)OS_EventTaskRdy(pevent, (void *)0, OS_STAT_SEM, OS_STAT_PEND_ABORT);
+ 371              		.loc 1 234 0
+ 372 00da FB68     		ldr	r3, [r7, #12]
+ 373 00dc 9B7A     		ldrb	r3, [r3, #10]
+ 374 00de 002B     		cmp	r3, #0
+ 375 00e0 F5D1     		bne	.L27
+ 236:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              }
+ 237:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_EVENT_NAME_EN > 0u
+ 238:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              pevent->OSEventName    = (INT8U *)(void *)"?";
+ 376              		.loc 1 238 0
+ 377 00e2 FB68     		ldr	r3, [r7, #12]
+ 378 00e4 184A     		ldr	r2, .L30+4
+ 379 00e6 5A61     		str	r2, [r3, #20]
+ 239:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 240:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              pevent->OSEventType    = OS_EVENT_TYPE_UNUSED;
+ 380              		.loc 1 240 0
+ 381 00e8 FB68     		ldr	r3, [r7, #12]
+ 382 00ea 0022     		movs	r2, #0
+ 383 00ec 1A70     		strb	r2, [r3]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 12
+
+
+ 241:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              pevent->OSEventPtr     = OSEventFreeList;     /* Return Event Control Block to free li
+ 384              		.loc 1 241 0
+ 385 00ee 174B     		ldr	r3, .L30+8
+ 386 00f0 1A68     		ldr	r2, [r3]
+ 387 00f2 FB68     		ldr	r3, [r7, #12]
+ 388 00f4 5A60     		str	r2, [r3, #4]
+ 242:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              pevent->OSEventCnt     = 0u;
+ 389              		.loc 1 242 0
+ 390 00f6 FB68     		ldr	r3, [r7, #12]
+ 391 00f8 0022     		movs	r2, #0
+ 392 00fa 1A81     		strh	r2, [r3, #8]
+ 243:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              OSEventFreeList        = pevent;              /* Get next free event control block    
+ 393              		.loc 1 243 0
+ 394 00fc 134B     		ldr	r3, .L30+8
+ 395 00fe FA68     		ldr	r2, [r7, #12]
+ 396 0100 1A60     		str	r2, [r3]
+ 244:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              OS_EXIT_CRITICAL();
+ 397              		.loc 1 244 0
+ 398 0102 7B69     		ldr	r3, [r7, #20]
+ 399 0104 1800     		movs	r0, r3
+ 400 0106 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 245:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              if (tasks_waiting == OS_TRUE) {               /* Reschedule only if task(s) were waiti
+ 401              		.loc 1 245 0
+ 402 010a 1F23     		movs	r3, #31
+ 403 010c FB18     		adds	r3, r7, r3
+ 404 010e 1B78     		ldrb	r3, [r3]
+ 405 0110 012B     		cmp	r3, #1
+ 406 0112 01D1     		bne	.L28
+ 246:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  OS_Sched();                               /* Find highest priority task ready to r
+ 407              		.loc 1 246 0
+ 408 0114 FFF7FEFF 		bl	OS_Sched
+ 409              	.L28:
+ 247:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              }
+ 248:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              *perr                  = OS_ERR_NONE;
+ 410              		.loc 1 248 0
+ 411 0118 7B68     		ldr	r3, [r7, #4]
+ 412 011a 0022     		movs	r2, #0
+ 413 011c 1A70     		strb	r2, [r3]
+ 249:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              pevent_return          = (OS_EVENT *)0;       /* Semaphore has been deleted           
+ 414              		.loc 1 249 0
+ 415 011e 0023     		movs	r3, #0
+ 416 0120 BB61     		str	r3, [r7, #24]
+ 250:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              break;
+ 417              		.loc 1 250 0
+ 418 0122 09E0     		b	.L25
+ 419              	.L29:
+ 251:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 252:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         default:
+ 253:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              OS_EXIT_CRITICAL();
+ 420              		.loc 1 253 0
+ 421 0124 7B69     		ldr	r3, [r7, #20]
+ 422 0126 1800     		movs	r0, r3
+ 423 0128 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 254:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              *perr                  = OS_ERR_INVALID_OPT;
+ 424              		.loc 1 254 0
+ 425 012c 7B68     		ldr	r3, [r7, #4]
+ 426 012e 0722     		movs	r2, #7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 13
+
+
+ 427 0130 1A70     		strb	r2, [r3]
+ 255:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              pevent_return          = pevent;
+ 428              		.loc 1 255 0
+ 429 0132 FB68     		ldr	r3, [r7, #12]
+ 430 0134 BB61     		str	r3, [r7, #24]
+ 256:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              break;
+ 431              		.loc 1 256 0
+ 432 0136 C046     		nop
+ 433              	.L25:
+ 257:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 258:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     return (pevent_return);
+ 434              		.loc 1 258 0
+ 435 0138 BB69     		ldr	r3, [r7, #24]
+ 436              	.L15:
+ 259:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** }
+ 437              		.loc 1 259 0
+ 438 013a 1800     		movs	r0, r3
+ 439 013c BD46     		mov	sp, r7
+ 440 013e 08B0     		add	sp, sp, #32
+ 441              		@ sp needed
+ 442 0140 80BD     		pop	{r7, pc}
+ 443              	.L31:
+ 444 0142 C046     		.align	2
+ 445              	.L30:
+ 446 0144 00000000 		.word	OSIntNesting
+ 447 0148 00000000 		.word	.LC2
+ 448 014c 00000000 		.word	OSEventFreeList
+ 449              		.cfi_endproc
+ 450              	.LFE3:
+ 451              		.size	OSSemDel, .-OSSemDel
+ 452              		.section	.text.OSSemPend,"ax",%progbits
+ 453              		.align	2
+ 454              		.global	OSSemPend
+ 455              		.code	16
+ 456              		.thumb_func
+ 457              		.type	OSSemPend, %function
+ 458              	OSSemPend:
+ 459              	.LFB4:
+ 260:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 261:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 262:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*$PAGE*/
+ 263:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*
+ 264:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 265:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                          PEND ON SEMAPHORE
+ 266:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 267:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Description: This function waits for a semaphore.
+ 268:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 269:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Arguments  : pevent        is a pointer to the event control block associated with the desired
+ 270:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            semaphore.
+ 271:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 272:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              timeout       is an optional timeout period (in clock ticks).  If non-zero, your tas
+ 273:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            wait for the resource up to the amount of time specified by this argum
+ 274:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            If you specify 0, however, your task will wait forever at the specifie
+ 275:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            semaphore or, until the resource becomes available (or the event occur
+ 276:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 277:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              perr          is a pointer to where an error message will be deposited.  Possible er
+ 278:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            messages are:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 14
+
+
+ 279:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 280:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_NONE         The call was successful and your task owns the res
+ 281:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                or, the event you are waiting for occurred.
+ 282:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_TIMEOUT      The semaphore was not received within the specifie
+ 283:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                'timeout'.
+ 284:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_PEND_ABORT   The wait on the semaphore was aborted.
+ 285:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_EVENT_TYPE   If you didn't pass a pointer to a semaphore.
+ 286:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_PEND_ISR     If you called this function from an ISR and the re
+ 287:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                would lead to a suspension.
+ 288:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_PEVENT_NULL  If 'pevent' is a NULL pointer.
+ 289:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_PEND_LOCKED  If you called this function when the scheduler is 
+ 290:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 291:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Returns    : none
+ 292:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 293:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** */
+ 294:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*$PAGE*/
+ 295:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** void  OSSemPend (OS_EVENT  *pevent,
+ 296:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  INT32U     timeout,
+ 297:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  INT8U     *perr)
+ 298:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** {
+ 460              		.loc 1 298 0
+ 461              		.cfi_startproc
+ 462              		@ args = 0, pretend = 0, frame = 24
+ 463              		@ frame_needed = 1, uses_anonymous_args = 0
+ 464 0000 80B5     		push	{r7, lr}
+ 465              		.cfi_def_cfa_offset 8
+ 466              		.cfi_offset 7, -8
+ 467              		.cfi_offset 14, -4
+ 468 0002 86B0     		sub	sp, sp, #24
+ 469              		.cfi_def_cfa_offset 32
+ 470 0004 00AF     		add	r7, sp, #0
+ 471              		.cfi_def_cfa_register 7
+ 472 0006 F860     		str	r0, [r7, #12]
+ 473 0008 B960     		str	r1, [r7, #8]
+ 474 000a 7A60     		str	r2, [r7, #4]
+ 299:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register  
+ 300:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 475              		.loc 1 300 0
+ 476 000c 0023     		movs	r3, #0
+ 477 000e 7B61     		str	r3, [r7, #20]
+ 301:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 302:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 303:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 304:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 305:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #ifdef OS_SAFETY_CRITICAL
+ 306:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (perr == (INT8U *)0) {
+ 307:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+ 308:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return;
+ 309:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 310:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 311:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 312:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_ARG_CHK_EN > 0u
+ 313:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent == (OS_EVENT *)0) {                    /* Validate 'pevent'                         
+ 478              		.loc 1 313 0
+ 479 0010 FB68     		ldr	r3, [r7, #12]
+ 480 0012 002B     		cmp	r3, #0
+ 481 0014 03D1     		bne	.L33
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 15
+
+
+ 314:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_PEVENT_NULL;
+ 482              		.loc 1 314 0
+ 483 0016 7B68     		ldr	r3, [r7, #4]
+ 484 0018 0422     		movs	r2, #4
+ 485 001a 1A70     		strb	r2, [r3]
+ 315:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return;
+ 486              		.loc 1 315 0
+ 487 001c 81E0     		b	.L32
+ 488              	.L33:
+ 316:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 317:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 318:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventType != OS_EVENT_TYPE_SEM) {   /* Validate event block type                 
+ 489              		.loc 1 318 0
+ 490 001e FB68     		ldr	r3, [r7, #12]
+ 491 0020 1B78     		ldrb	r3, [r3]
+ 492 0022 032B     		cmp	r3, #3
+ 493 0024 03D0     		beq	.L35
+ 319:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_EVENT_TYPE;
+ 494              		.loc 1 319 0
+ 495 0026 7B68     		ldr	r3, [r7, #4]
+ 496 0028 0122     		movs	r2, #1
+ 497 002a 1A70     		strb	r2, [r3]
+ 320:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return;
+ 498              		.loc 1 320 0
+ 499 002c 79E0     		b	.L32
+ 500              	.L35:
+ 321:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 322:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (OSIntNesting > 0u) {                          /* See if called from ISR ...                
+ 501              		.loc 1 322 0
+ 502 002e 3E4B     		ldr	r3, .L44
+ 503 0030 1B78     		ldrb	r3, [r3]
+ 504 0032 002B     		cmp	r3, #0
+ 505 0034 03D0     		beq	.L36
+ 323:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_PEND_ISR;                      /* ... can't PEND from an ISR                
+ 506              		.loc 1 323 0
+ 507 0036 7B68     		ldr	r3, [r7, #4]
+ 508 0038 0222     		movs	r2, #2
+ 509 003a 1A70     		strb	r2, [r3]
+ 324:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return;
+ 510              		.loc 1 324 0
+ 511 003c 71E0     		b	.L32
+ 512              	.L36:
+ 325:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 326:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (OSLockNesting > 0u) {                         /* See if called with scheduler locked ...   
+ 513              		.loc 1 326 0
+ 514 003e 3B4B     		ldr	r3, .L44+4
+ 515 0040 1B78     		ldrb	r3, [r3]
+ 516 0042 002B     		cmp	r3, #0
+ 517 0044 03D0     		beq	.L37
+ 327:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_PEND_LOCKED;                   /* ... can't PEND when locked                
+ 518              		.loc 1 327 0
+ 519 0046 7B68     		ldr	r3, [r7, #4]
+ 520 0048 0D22     		movs	r2, #13
+ 521 004a 1A70     		strb	r2, [r3]
+ 328:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return;
+ 522              		.loc 1 328 0
+ 523 004c 69E0     		b	.L32
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 16
+
+
+ 524              	.L37:
+ 329:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 330:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_ENTER_CRITICAL();
+ 525              		.loc 1 330 0
+ 526 004e FFF7FEFF 		bl	OS_CPU_SR_Save
+ 527 0052 0300     		movs	r3, r0
+ 528 0054 7B61     		str	r3, [r7, #20]
+ 331:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventCnt > 0u) {                    /* If sem. is positive, resource available ..
+ 529              		.loc 1 331 0
+ 530 0056 FB68     		ldr	r3, [r7, #12]
+ 531 0058 1B89     		ldrh	r3, [r3, #8]
+ 532 005a 002B     		cmp	r3, #0
+ 533 005c 0DD0     		beq	.L38
+ 332:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         pevent->OSEventCnt--;                         /* ... decrement semaphore only if positive. 
+ 534              		.loc 1 332 0
+ 535 005e FB68     		ldr	r3, [r7, #12]
+ 536 0060 1B89     		ldrh	r3, [r3, #8]
+ 537 0062 013B     		subs	r3, r3, #1
+ 538 0064 9AB2     		uxth	r2, r3
+ 539 0066 FB68     		ldr	r3, [r7, #12]
+ 540 0068 1A81     		strh	r2, [r3, #8]
+ 333:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_EXIT_CRITICAL();
+ 541              		.loc 1 333 0
+ 542 006a 7B69     		ldr	r3, [r7, #20]
+ 543 006c 1800     		movs	r0, r3
+ 544 006e FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 334:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_NONE;
+ 545              		.loc 1 334 0
+ 546 0072 7B68     		ldr	r3, [r7, #4]
+ 547 0074 0022     		movs	r2, #0
+ 548 0076 1A70     		strb	r2, [r3]
+ 335:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return;
+ 549              		.loc 1 335 0
+ 550 0078 53E0     		b	.L32
+ 551              	.L38:
+ 336:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 337:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                                                       /* Otherwise, must wait until event occurs   
+ 338:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OSTCBCur->OSTCBStat     |= OS_STAT_SEM;           /* Resource not available, pend on semaphore 
+ 552              		.loc 1 338 0
+ 553 007a 2D4B     		ldr	r3, .L44+8
+ 554 007c 1A68     		ldr	r2, [r3]
+ 555 007e 2C4B     		ldr	r3, .L44+8
+ 556 0080 1B68     		ldr	r3, [r3]
+ 557 0082 3421     		movs	r1, #52
+ 558 0084 5B5C     		ldrb	r3, [r3, r1]
+ 559 0086 0121     		movs	r1, #1
+ 560 0088 0B43     		orrs	r3, r1
+ 561 008a D9B2     		uxtb	r1, r3
+ 562 008c 3423     		movs	r3, #52
+ 563 008e D154     		strb	r1, [r2, r3]
+ 339:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OSTCBCur->OSTCBStatPend  = OS_STAT_PEND_OK;
+ 564              		.loc 1 339 0
+ 565 0090 274B     		ldr	r3, .L44+8
+ 566 0092 1B68     		ldr	r3, [r3]
+ 567 0094 3522     		movs	r2, #53
+ 568 0096 0021     		movs	r1, #0
+ 569 0098 9954     		strb	r1, [r3, r2]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 17
+
+
+ 340:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OSTCBCur->OSTCBDly       = timeout;               /* Store pend timeout in TCB                 
+ 570              		.loc 1 340 0
+ 571 009a 254B     		ldr	r3, .L44+8
+ 572 009c 1B68     		ldr	r3, [r3]
+ 573 009e BA68     		ldr	r2, [r7, #8]
+ 574 00a0 1A63     		str	r2, [r3, #48]
+ 341:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EventTaskWait(pevent);                         /* Suspend task until event or timeout occurs
+ 575              		.loc 1 341 0
+ 576 00a2 FB68     		ldr	r3, [r7, #12]
+ 577 00a4 1800     		movs	r0, r3
+ 578 00a6 FFF7FEFF 		bl	OS_EventTaskWait
+ 342:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EXIT_CRITICAL();
+ 579              		.loc 1 342 0
+ 580 00aa 7B69     		ldr	r3, [r7, #20]
+ 581 00ac 1800     		movs	r0, r3
+ 582 00ae FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 343:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_Sched();                                       /* Find next highest priority task ready     
+ 583              		.loc 1 343 0
+ 584 00b2 FFF7FEFF 		bl	OS_Sched
+ 344:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_ENTER_CRITICAL();
+ 585              		.loc 1 344 0
+ 586 00b6 FFF7FEFF 		bl	OS_CPU_SR_Save
+ 587 00ba 0300     		movs	r3, r0
+ 588 00bc 7B61     		str	r3, [r7, #20]
+ 345:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     switch (OSTCBCur->OSTCBStatPend) {                /* See if we timed-out or aborted            
+ 589              		.loc 1 345 0
+ 590 00be 1C4B     		ldr	r3, .L44+8
+ 591 00c0 1B68     		ldr	r3, [r3]
+ 592 00c2 3522     		movs	r2, #53
+ 593 00c4 9B5C     		ldrb	r3, [r3, r2]
+ 594 00c6 002B     		cmp	r3, #0
+ 595 00c8 02D0     		beq	.L40
+ 596 00ca 022B     		cmp	r3, #2
+ 597 00cc 04D0     		beq	.L41
+ 598 00ce 07E0     		b	.L43
+ 599              	.L40:
+ 346:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         case OS_STAT_PEND_OK:
+ 347:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              *perr = OS_ERR_NONE;
+ 600              		.loc 1 347 0
+ 601 00d0 7B68     		ldr	r3, [r7, #4]
+ 602 00d2 0022     		movs	r2, #0
+ 603 00d4 1A70     		strb	r2, [r3]
+ 348:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              break;
+ 604              		.loc 1 348 0
+ 605 00d6 0EE0     		b	.L42
+ 606              	.L41:
+ 349:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 350:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         case OS_STAT_PEND_ABORT:
+ 351:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              *perr = OS_ERR_PEND_ABORT;               /* Indicate that we aborted                  
+ 607              		.loc 1 351 0
+ 608 00d8 7B68     		ldr	r3, [r7, #4]
+ 609 00da 0E22     		movs	r2, #14
+ 610 00dc 1A70     		strb	r2, [r3]
+ 352:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              break;
+ 611              		.loc 1 352 0
+ 612 00de 0AE0     		b	.L42
+ 613              	.L43:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 18
+
+
+ 353:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 354:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         case OS_STAT_PEND_TO:
+ 355:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         default:
+ 356:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              OS_EventTaskRemove(OSTCBCur, pevent);
+ 614              		.loc 1 356 0
+ 615 00e0 134B     		ldr	r3, .L44+8
+ 616 00e2 1B68     		ldr	r3, [r3]
+ 617 00e4 FA68     		ldr	r2, [r7, #12]
+ 618 00e6 1100     		movs	r1, r2
+ 619 00e8 1800     		movs	r0, r3
+ 620 00ea FFF7FEFF 		bl	OS_EventTaskRemove
+ 357:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              *perr = OS_ERR_TIMEOUT;                  /* Indicate that we didn't get event within T
+ 621              		.loc 1 357 0
+ 622 00ee 7B68     		ldr	r3, [r7, #4]
+ 623 00f0 0A22     		movs	r2, #10
+ 624 00f2 1A70     		strb	r2, [r3]
+ 358:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****              break;
+ 625              		.loc 1 358 0
+ 626 00f4 C046     		nop
+ 627              	.L42:
+ 359:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 360:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OSTCBCur->OSTCBStat          =  OS_STAT_RDY;      /* Set   task  status to ready               
+ 628              		.loc 1 360 0
+ 629 00f6 0E4B     		ldr	r3, .L44+8
+ 630 00f8 1B68     		ldr	r3, [r3]
+ 631 00fa 3422     		movs	r2, #52
+ 632 00fc 0021     		movs	r1, #0
+ 633 00fe 9954     		strb	r1, [r3, r2]
+ 361:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OSTCBCur->OSTCBStatPend      =  OS_STAT_PEND_OK;  /* Clear pend  status                        
+ 634              		.loc 1 361 0
+ 635 0100 0B4B     		ldr	r3, .L44+8
+ 636 0102 1B68     		ldr	r3, [r3]
+ 637 0104 3522     		movs	r2, #53
+ 638 0106 0021     		movs	r1, #0
+ 639 0108 9954     		strb	r1, [r3, r2]
+ 362:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OSTCBCur->OSTCBEventPtr      = (OS_EVENT  *)0;    /* Clear event pointers                      
+ 640              		.loc 1 362 0
+ 641 010a 094B     		ldr	r3, .L44+8
+ 642 010c 1B68     		ldr	r3, [r3]
+ 643 010e 0022     		movs	r2, #0
+ 644 0110 DA61     		str	r2, [r3, #28]
+ 363:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if (OS_EVENT_MULTI_EN > 0u)
+ 364:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OSTCBCur->OSTCBEventMultiPtr = (OS_EVENT **)0;
+ 645              		.loc 1 364 0
+ 646 0112 074B     		ldr	r3, .L44+8
+ 647 0114 1B68     		ldr	r3, [r3]
+ 648 0116 0022     		movs	r2, #0
+ 649 0118 1A62     		str	r2, [r3, #32]
+ 365:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 366:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EXIT_CRITICAL();
+ 650              		.loc 1 366 0
+ 651 011a 7B69     		ldr	r3, [r7, #20]
+ 652 011c 1800     		movs	r0, r3
+ 653 011e FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 654              	.L32:
+ 367:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** }
+ 655              		.loc 1 367 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 19
+
+
+ 656 0122 BD46     		mov	sp, r7
+ 657 0124 06B0     		add	sp, sp, #24
+ 658              		@ sp needed
+ 659 0126 80BD     		pop	{r7, pc}
+ 660              	.L45:
+ 661              		.align	2
+ 662              	.L44:
+ 663 0128 00000000 		.word	OSIntNesting
+ 664 012c 00000000 		.word	OSLockNesting
+ 665 0130 00000000 		.word	OSTCBCur
+ 666              		.cfi_endproc
+ 667              	.LFE4:
+ 668              		.size	OSSemPend, .-OSSemPend
+ 669              		.section	.text.OSSemPendAbort,"ax",%progbits
+ 670              		.align	2
+ 671              		.global	OSSemPendAbort
+ 672              		.code	16
+ 673              		.thumb_func
+ 674              		.type	OSSemPendAbort, %function
+ 675              	OSSemPendAbort:
+ 676              	.LFB5:
+ 368:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 369:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*$PAGE*/
+ 370:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*
+ 371:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 372:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                    ABORT WAITING ON A SEMAPHORE
+ 373:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 374:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Description: This function aborts & readies any tasks currently waiting on a semaphore.  This fun
+ 375:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              should be used to fault-abort the wait on the semaphore, rather than to normally sig
+ 376:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              the semaphore via OSSemPost().
+ 377:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 378:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Arguments  : pevent        is a pointer to the event control block associated with the desired
+ 379:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            semaphore.
+ 380:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 381:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              opt           determines the type of ABORT performed:
+ 382:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_PEND_OPT_NONE         ABORT wait for a single task (HPT) waiting on
+ 383:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                     semaphore
+ 384:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_PEND_OPT_BROADCAST    ABORT wait for ALL tasks that are  waiting on
+ 385:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                     semaphore
+ 386:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 387:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              perr          is a pointer to where an error message will be deposited.  Possible er
+ 388:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            messages are:
+ 389:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 390:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_NONE         No tasks were     waiting on the semaphore.
+ 391:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_PEND_ABORT   At least one task waiting on the semaphore was rea
+ 392:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                and informed of the aborted wait; check return val
+ 393:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                for the number of tasks whose wait on the semaphor
+ 394:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                                was aborted.
+ 395:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_EVENT_TYPE   If you didn't pass a pointer to a semaphore.
+ 396:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_PEVENT_NULL  If 'pevent' is a NULL pointer.
+ 397:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 398:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Returns    : == 0          if no tasks were waiting on the semaphore, or upon error.
+ 399:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              >  0          if one or more tasks waiting on the semaphore are now readied and info
+ 400:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 401:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** */
+ 402:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 403:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_SEM_PEND_ABORT_EN > 0u
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 20
+
+
+ 404:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** INT8U  OSSemPendAbort (OS_EVENT  *pevent,
+ 405:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                        INT8U      opt,
+ 406:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                        INT8U     *perr)
+ 407:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** {
+ 677              		.loc 1 407 0
+ 678              		.cfi_startproc
+ 679              		@ args = 0, pretend = 0, frame = 24
+ 680              		@ frame_needed = 1, uses_anonymous_args = 0
+ 681 0000 80B5     		push	{r7, lr}
+ 682              		.cfi_def_cfa_offset 8
+ 683              		.cfi_offset 7, -8
+ 684              		.cfi_offset 14, -4
+ 685 0002 86B0     		sub	sp, sp, #24
+ 686              		.cfi_def_cfa_offset 32
+ 687 0004 00AF     		add	r7, sp, #0
+ 688              		.cfi_def_cfa_register 7
+ 689 0006 F860     		str	r0, [r7, #12]
+ 690 0008 7A60     		str	r2, [r7, #4]
+ 691 000a 0B23     		movs	r3, #11
+ 692 000c FB18     		adds	r3, r7, r3
+ 693 000e 0A1C     		adds	r2, r1, #0
+ 694 0010 1A70     		strb	r2, [r3]
+ 408:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     INT8U      nbr_tasks;
+ 409:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register  
+ 410:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 695              		.loc 1 410 0
+ 696 0012 0023     		movs	r3, #0
+ 697 0014 3B61     		str	r3, [r7, #16]
+ 411:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 412:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 413:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 414:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 415:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #ifdef OS_SAFETY_CRITICAL
+ 416:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (perr == (INT8U *)0) {
+ 417:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+ 418:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (0u);
+ 419:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 420:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 421:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 422:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_ARG_CHK_EN > 0u
+ 423:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent == (OS_EVENT *)0) {                    /* Validate 'pevent'                         
+ 698              		.loc 1 423 0
+ 699 0016 FB68     		ldr	r3, [r7, #12]
+ 700 0018 002B     		cmp	r3, #0
+ 701 001a 04D1     		bne	.L47
+ 424:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_PEVENT_NULL;
+ 702              		.loc 1 424 0
+ 703 001c 7B68     		ldr	r3, [r7, #4]
+ 704 001e 0422     		movs	r2, #4
+ 705 0020 1A70     		strb	r2, [r3]
+ 425:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (0u);
+ 706              		.loc 1 425 0
+ 707 0022 0023     		movs	r3, #0
+ 708 0024 4FE0     		b	.L48
+ 709              	.L47:
+ 426:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 427:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 21
+
+
+ 428:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventType != OS_EVENT_TYPE_SEM) {   /* Validate event block type                 
+ 710              		.loc 1 428 0
+ 711 0026 FB68     		ldr	r3, [r7, #12]
+ 712 0028 1B78     		ldrb	r3, [r3]
+ 713 002a 032B     		cmp	r3, #3
+ 714 002c 04D0     		beq	.L49
+ 429:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_EVENT_TYPE;
+ 715              		.loc 1 429 0
+ 716 002e 7B68     		ldr	r3, [r7, #4]
+ 717 0030 0122     		movs	r2, #1
+ 718 0032 1A70     		strb	r2, [r3]
+ 430:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (0u);
+ 719              		.loc 1 430 0
+ 720 0034 0023     		movs	r3, #0
+ 721 0036 46E0     		b	.L48
+ 722              	.L49:
+ 431:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 432:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_ENTER_CRITICAL();
+ 723              		.loc 1 432 0
+ 724 0038 FFF7FEFF 		bl	OS_CPU_SR_Save
+ 725 003c 0300     		movs	r3, r0
+ 726 003e 3B61     		str	r3, [r7, #16]
+ 433:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventGrp != 0u) {                   /* See if any task waiting on semaphore?     
+ 727              		.loc 1 433 0
+ 728 0040 FB68     		ldr	r3, [r7, #12]
+ 729 0042 9B7A     		ldrb	r3, [r3, #10]
+ 730 0044 002B     		cmp	r3, #0
+ 731 0046 36D0     		beq	.L50
+ 434:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         nbr_tasks = 0u;
+ 732              		.loc 1 434 0
+ 733 0048 1723     		movs	r3, #23
+ 734 004a FB18     		adds	r3, r7, r3
+ 735 004c 0022     		movs	r2, #0
+ 736 004e 1A70     		strb	r2, [r3]
+ 435:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         switch (opt) {
+ 737              		.loc 1 435 0
+ 738 0050 0B23     		movs	r3, #11
+ 739 0052 FB18     		adds	r3, r7, r3
+ 740 0054 1B78     		ldrb	r3, [r3]
+ 741 0056 012B     		cmp	r3, #1
+ 742 0058 12D1     		bne	.L56
+ 436:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****             case OS_PEND_OPT_BROADCAST:               /* Do we need to abort ALL waiting tasks?    
+ 437:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  while (pevent->OSEventGrp != 0u) {   /* Yes, ready ALL tasks waiting on semaphore 
+ 743              		.loc 1 437 0
+ 744 005a 0CE0     		b	.L53
+ 745              	.L54:
+ 438:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                      (void)OS_EventTaskRdy(pevent, (void *)0, OS_STAT_SEM, OS_STAT_PEND_ABORT);
+ 746              		.loc 1 438 0
+ 747 005c F868     		ldr	r0, [r7, #12]
+ 748 005e 0223     		movs	r3, #2
+ 749 0060 0122     		movs	r2, #1
+ 750 0062 0021     		movs	r1, #0
+ 751 0064 FFF7FEFF 		bl	OS_EventTaskRdy
+ 439:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                      nbr_tasks++;
+ 752              		.loc 1 439 0
+ 753 0068 1723     		movs	r3, #23
+ 754 006a FB18     		adds	r3, r7, r3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 22
+
+
+ 755 006c 1A78     		ldrb	r2, [r3]
+ 756 006e 1723     		movs	r3, #23
+ 757 0070 FB18     		adds	r3, r7, r3
+ 758 0072 0132     		adds	r2, r2, #1
+ 759 0074 1A70     		strb	r2, [r3]
+ 760              	.L53:
+ 437:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                      (void)OS_EventTaskRdy(pevent, (void *)0, OS_STAT_SEM, OS_STAT_PEND_ABORT);
+ 761              		.loc 1 437 0
+ 762 0076 FB68     		ldr	r3, [r7, #12]
+ 763 0078 9B7A     		ldrb	r3, [r3, #10]
+ 764 007a 002B     		cmp	r3, #0
+ 765 007c EED1     		bne	.L54
+ 440:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  }
+ 441:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  break;
+ 766              		.loc 1 441 0
+ 767 007e 0DE0     		b	.L55
+ 768              	.L56:
+ 442:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 443:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****             case OS_PEND_OPT_NONE:
+ 444:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****             default:                                  /* No,  ready HPT       waiting on semaphore 
+ 445:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  (void)OS_EventTaskRdy(pevent, (void *)0, OS_STAT_SEM, OS_STAT_PEND_ABORT);
+ 769              		.loc 1 445 0
+ 770 0080 F868     		ldr	r0, [r7, #12]
+ 771 0082 0223     		movs	r3, #2
+ 772 0084 0122     		movs	r2, #1
+ 773 0086 0021     		movs	r1, #0
+ 774 0088 FFF7FEFF 		bl	OS_EventTaskRdy
+ 446:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  nbr_tasks++;
+ 775              		.loc 1 446 0
+ 776 008c 1723     		movs	r3, #23
+ 777 008e FB18     		adds	r3, r7, r3
+ 778 0090 1A78     		ldrb	r2, [r3]
+ 779 0092 1723     		movs	r3, #23
+ 780 0094 FB18     		adds	r3, r7, r3
+ 781 0096 0132     		adds	r2, r2, #1
+ 782 0098 1A70     		strb	r2, [r3]
+ 447:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                  break;
+ 783              		.loc 1 447 0
+ 784 009a C046     		nop
+ 785              	.L55:
+ 448:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         }
+ 449:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_EXIT_CRITICAL();
+ 786              		.loc 1 449 0
+ 787 009c 3B69     		ldr	r3, [r7, #16]
+ 788 009e 1800     		movs	r0, r3
+ 789 00a0 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 450:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_Sched();                                   /* Find HPT ready to run                     
+ 790              		.loc 1 450 0
+ 791 00a4 FFF7FEFF 		bl	OS_Sched
+ 451:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_PEND_ABORT;
+ 792              		.loc 1 451 0
+ 793 00a8 7B68     		ldr	r3, [r7, #4]
+ 794 00aa 0E22     		movs	r2, #14
+ 795 00ac 1A70     		strb	r2, [r3]
+ 452:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (nbr_tasks);
+ 796              		.loc 1 452 0
+ 797 00ae 1723     		movs	r3, #23
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 23
+
+
+ 798 00b0 FB18     		adds	r3, r7, r3
+ 799 00b2 1B78     		ldrb	r3, [r3]
+ 800 00b4 07E0     		b	.L48
+ 801              	.L50:
+ 453:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 454:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EXIT_CRITICAL();
+ 802              		.loc 1 454 0
+ 803 00b6 3B69     		ldr	r3, [r7, #16]
+ 804 00b8 1800     		movs	r0, r3
+ 805 00ba FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 455:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     *perr = OS_ERR_NONE;
+ 806              		.loc 1 455 0
+ 807 00be 7B68     		ldr	r3, [r7, #4]
+ 808 00c0 0022     		movs	r2, #0
+ 809 00c2 1A70     		strb	r2, [r3]
+ 456:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     return (0u);                                      /* No tasks waiting on semaphore             
+ 810              		.loc 1 456 0
+ 811 00c4 0023     		movs	r3, #0
+ 812              	.L48:
+ 457:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** }
+ 813              		.loc 1 457 0
+ 814 00c6 1800     		movs	r0, r3
+ 815 00c8 BD46     		mov	sp, r7
+ 816 00ca 06B0     		add	sp, sp, #24
+ 817              		@ sp needed
+ 818 00cc 80BD     		pop	{r7, pc}
+ 819              		.cfi_endproc
+ 820              	.LFE5:
+ 821              		.size	OSSemPendAbort, .-OSSemPendAbort
+ 822 00ce C046     		.section	.text.OSSemPost,"ax",%progbits
+ 823              		.align	2
+ 824              		.global	OSSemPost
+ 825              		.code	16
+ 826              		.thumb_func
+ 827              		.type	OSSemPost, %function
+ 828              	OSSemPost:
+ 829              	.LFB6:
+ 458:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 459:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 460:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*$PAGE*/
+ 461:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*
+ 462:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 463:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                         POST TO A SEMAPHORE
+ 464:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 465:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Description: This function signals a semaphore
+ 466:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 467:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Arguments  : pevent        is a pointer to the event control block associated with the desired
+ 468:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            semaphore.
+ 469:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 470:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Returns    : OS_ERR_NONE         The call was successful and the semaphore was signaled.
+ 471:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              OS_ERR_SEM_OVF      If the semaphore count exceeded its limit. In other words, you h
+ 472:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                  signaled the semaphore more often than you waited on it with eit
+ 473:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                  OSSemAccept() or OSSemPend().
+ 474:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              OS_ERR_EVENT_TYPE   If you didn't pass a pointer to a semaphore
+ 475:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              OS_ERR_PEVENT_NULL  If 'pevent' is a NULL pointer.
+ 476:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 477:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** */
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 24
+
+
+ 478:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 479:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** INT8U  OSSemPost (OS_EVENT *pevent)
+ 480:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** {
+ 830              		.loc 1 480 0
+ 831              		.cfi_startproc
+ 832              		@ args = 0, pretend = 0, frame = 16
+ 833              		@ frame_needed = 1, uses_anonymous_args = 0
+ 834 0000 80B5     		push	{r7, lr}
+ 835              		.cfi_def_cfa_offset 8
+ 836              		.cfi_offset 7, -8
+ 837              		.cfi_offset 14, -4
+ 838 0002 84B0     		sub	sp, sp, #16
+ 839              		.cfi_def_cfa_offset 24
+ 840 0004 00AF     		add	r7, sp, #0
+ 841              		.cfi_def_cfa_register 7
+ 842 0006 7860     		str	r0, [r7, #4]
+ 481:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register  
+ 482:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 843              		.loc 1 482 0
+ 844 0008 0023     		movs	r3, #0
+ 845 000a FB60     		str	r3, [r7, #12]
+ 483:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 484:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 485:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 486:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 487:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_ARG_CHK_EN > 0u
+ 488:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent == (OS_EVENT *)0) {                    /* Validate 'pevent'                         
+ 846              		.loc 1 488 0
+ 847 000c 7B68     		ldr	r3, [r7, #4]
+ 848 000e 002B     		cmp	r3, #0
+ 849 0010 01D1     		bne	.L58
+ 489:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (OS_ERR_PEVENT_NULL);
+ 850              		.loc 1 489 0
+ 851 0012 0423     		movs	r3, #4
+ 852 0014 31E0     		b	.L59
+ 853              	.L58:
+ 490:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 491:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 492:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventType != OS_EVENT_TYPE_SEM) {   /* Validate event block type                 
+ 854              		.loc 1 492 0
+ 855 0016 7B68     		ldr	r3, [r7, #4]
+ 856 0018 1B78     		ldrb	r3, [r3]
+ 857 001a 032B     		cmp	r3, #3
+ 858 001c 01D0     		beq	.L60
+ 493:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (OS_ERR_EVENT_TYPE);
+ 859              		.loc 1 493 0
+ 860 001e 0123     		movs	r3, #1
+ 861 0020 2BE0     		b	.L59
+ 862              	.L60:
+ 494:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 495:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_ENTER_CRITICAL();
+ 863              		.loc 1 495 0
+ 864 0022 FFF7FEFF 		bl	OS_CPU_SR_Save
+ 865 0026 0300     		movs	r3, r0
+ 866 0028 FB60     		str	r3, [r7, #12]
+ 496:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventGrp != 0u) {                   /* See if any task waiting for semaphore     
+ 867              		.loc 1 496 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 25
+
+
+ 868 002a 7B68     		ldr	r3, [r7, #4]
+ 869 002c 9B7A     		ldrb	r3, [r3, #10]
+ 870 002e 002B     		cmp	r3, #0
+ 871 0030 0DD0     		beq	.L61
+ 497:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                                                       /* Ready HPT waiting on event                
+ 498:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         (void)OS_EventTaskRdy(pevent, (void *)0, OS_STAT_SEM, OS_STAT_PEND_OK);
+ 872              		.loc 1 498 0
+ 873 0032 7868     		ldr	r0, [r7, #4]
+ 874 0034 0023     		movs	r3, #0
+ 875 0036 0122     		movs	r2, #1
+ 876 0038 0021     		movs	r1, #0
+ 877 003a FFF7FEFF 		bl	OS_EventTaskRdy
+ 499:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_EXIT_CRITICAL();
+ 878              		.loc 1 499 0
+ 879 003e FB68     		ldr	r3, [r7, #12]
+ 880 0040 1800     		movs	r0, r3
+ 881 0042 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 500:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_Sched();                                   /* Find HPT ready to run                     
+ 882              		.loc 1 500 0
+ 883 0046 FFF7FEFF 		bl	OS_Sched
+ 501:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (OS_ERR_NONE);
+ 884              		.loc 1 501 0
+ 885 004a 0023     		movs	r3, #0
+ 886 004c 15E0     		b	.L59
+ 887              	.L61:
+ 502:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 503:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventCnt < 65535u) {                /* Make sure semaphore will not overflow     
+ 888              		.loc 1 503 0
+ 889 004e 7B68     		ldr	r3, [r7, #4]
+ 890 0050 1B89     		ldrh	r3, [r3, #8]
+ 891 0052 0C4A     		ldr	r2, .L63
+ 892 0054 9342     		cmp	r3, r2
+ 893 0056 0BD0     		beq	.L62
+ 504:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         pevent->OSEventCnt++;                         /* Increment semaphore count to register even
+ 894              		.loc 1 504 0
+ 895 0058 7B68     		ldr	r3, [r7, #4]
+ 896 005a 1B89     		ldrh	r3, [r3, #8]
+ 897 005c 0133     		adds	r3, r3, #1
+ 898 005e 9AB2     		uxth	r2, r3
+ 899 0060 7B68     		ldr	r3, [r7, #4]
+ 900 0062 1A81     		strh	r2, [r3, #8]
+ 505:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_EXIT_CRITICAL();
+ 901              		.loc 1 505 0
+ 902 0064 FB68     		ldr	r3, [r7, #12]
+ 903 0066 1800     		movs	r0, r3
+ 904 0068 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 506:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (OS_ERR_NONE);
+ 905              		.loc 1 506 0
+ 906 006c 0023     		movs	r3, #0
+ 907 006e 04E0     		b	.L59
+ 908              	.L62:
+ 507:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 508:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EXIT_CRITICAL();                               /* Semaphore value has reached its maximum   
+ 909              		.loc 1 508 0
+ 910 0070 FB68     		ldr	r3, [r7, #12]
+ 911 0072 1800     		movs	r0, r3
+ 912 0074 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 26
+
+
+ 509:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     return (OS_ERR_SEM_OVF);
+ 913              		.loc 1 509 0
+ 914 0078 3323     		movs	r3, #51
+ 915              	.L59:
+ 510:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** }
+ 916              		.loc 1 510 0
+ 917 007a 1800     		movs	r0, r3
+ 918 007c BD46     		mov	sp, r7
+ 919 007e 04B0     		add	sp, sp, #16
+ 920              		@ sp needed
+ 921 0080 80BD     		pop	{r7, pc}
+ 922              	.L64:
+ 923 0082 C046     		.align	2
+ 924              	.L63:
+ 925 0084 FFFF0000 		.word	65535
+ 926              		.cfi_endproc
+ 927              	.LFE6:
+ 928              		.size	OSSemPost, .-OSSemPost
+ 929              		.section	.text.OSSemQuery,"ax",%progbits
+ 930              		.align	2
+ 931              		.global	OSSemQuery
+ 932              		.code	16
+ 933              		.thumb_func
+ 934              		.type	OSSemQuery, %function
+ 935              	OSSemQuery:
+ 936              	.LFB7:
+ 511:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 512:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*$PAGE*/
+ 513:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*
+ 514:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 515:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                          QUERY A SEMAPHORE
+ 516:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 517:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Description: This function obtains information about a semaphore
+ 518:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 519:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Arguments  : pevent        is a pointer to the event control block associated with the desired
+ 520:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            semaphore
+ 521:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 522:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              p_sem_data    is a pointer to a structure that will contain information about the
+ 523:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            semaphore.
+ 524:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 525:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Returns    : OS_ERR_NONE         The call was successful and the message was sent
+ 526:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              OS_ERR_EVENT_TYPE   If you are attempting to obtain data from a non semaphore.
+ 527:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              OS_ERR_PEVENT_NULL  If 'pevent'     is a NULL pointer.
+ 528:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              OS_ERR_PDATA_NULL   If 'p_sem_data' is a NULL pointer
+ 529:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 530:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** */
+ 531:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 532:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_SEM_QUERY_EN > 0u
+ 533:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** INT8U  OSSemQuery (OS_EVENT     *pevent,
+ 534:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                    OS_SEM_DATA  *p_sem_data)
+ 535:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** {
+ 937              		.loc 1 535 0
+ 938              		.cfi_startproc
+ 939              		@ args = 0, pretend = 0, frame = 24
+ 940              		@ frame_needed = 1, uses_anonymous_args = 0
+ 941 0000 80B5     		push	{r7, lr}
+ 942              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 27
+
+
+ 943              		.cfi_offset 7, -8
+ 944              		.cfi_offset 14, -4
+ 945 0002 86B0     		sub	sp, sp, #24
+ 946              		.cfi_def_cfa_offset 32
+ 947 0004 00AF     		add	r7, sp, #0
+ 948              		.cfi_def_cfa_register 7
+ 949 0006 7860     		str	r0, [r7, #4]
+ 950 0008 3960     		str	r1, [r7]
+ 536:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     INT8U       i;
+ 537:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_PRIO    *psrc;
+ 538:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_PRIO    *pdest;
+ 539:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_CRITICAL_METHOD == 3u                               /* Allocate storage for CPU status regis
+ 540:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_CPU_SR   cpu_sr = 0u;
+ 951              		.loc 1 540 0
+ 952 000a 0023     		movs	r3, #0
+ 953 000c BB60     		str	r3, [r7, #8]
+ 541:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 542:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 543:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 544:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 545:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_ARG_CHK_EN > 0u
+ 546:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent == (OS_EVENT *)0) {                         /* Validate 'pevent'                    
+ 954              		.loc 1 546 0
+ 955 000e 7B68     		ldr	r3, [r7, #4]
+ 956 0010 002B     		cmp	r3, #0
+ 957 0012 01D1     		bne	.L66
+ 547:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (OS_ERR_PEVENT_NULL);
+ 958              		.loc 1 547 0
+ 959 0014 0423     		movs	r3, #4
+ 960 0016 3AE0     		b	.L67
+ 961              	.L66:
+ 548:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 549:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (p_sem_data == (OS_SEM_DATA *)0) {                  /* Validate 'p_sem_data'                
+ 962              		.loc 1 549 0
+ 963 0018 3B68     		ldr	r3, [r7]
+ 964 001a 002B     		cmp	r3, #0
+ 965 001c 01D1     		bne	.L68
+ 550:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (OS_ERR_PDATA_NULL);
+ 966              		.loc 1 550 0
+ 967 001e 0923     		movs	r3, #9
+ 968 0020 35E0     		b	.L67
+ 969              	.L68:
+ 551:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 552:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 553:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventType != OS_EVENT_TYPE_SEM) {        /* Validate event block type            
+ 970              		.loc 1 553 0
+ 971 0022 7B68     		ldr	r3, [r7, #4]
+ 972 0024 1B78     		ldrb	r3, [r3]
+ 973 0026 032B     		cmp	r3, #3
+ 974 0028 01D0     		beq	.L69
+ 554:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return (OS_ERR_EVENT_TYPE);
+ 975              		.loc 1 554 0
+ 976 002a 0123     		movs	r3, #1
+ 977 002c 2FE0     		b	.L67
+ 978              	.L69:
+ 555:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 556:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_ENTER_CRITICAL();
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 28
+
+
+ 979              		.loc 1 556 0
+ 980 002e FFF7FEFF 		bl	OS_CPU_SR_Save
+ 981 0032 0300     		movs	r3, r0
+ 982 0034 BB60     		str	r3, [r7, #8]
+ 557:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     p_sem_data->OSEventGrp = pevent->OSEventGrp;           /* Copy message mailbox wait list       
+ 983              		.loc 1 557 0
+ 984 0036 7B68     		ldr	r3, [r7, #4]
+ 985 0038 9A7A     		ldrb	r2, [r3, #10]
+ 986 003a 3B68     		ldr	r3, [r7]
+ 987 003c 9A72     		strb	r2, [r3, #10]
+ 558:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     psrc                   = &pevent->OSEventTbl[0];
+ 988              		.loc 1 558 0
+ 989 003e 7B68     		ldr	r3, [r7, #4]
+ 990 0040 0B33     		adds	r3, r3, #11
+ 991 0042 3B61     		str	r3, [r7, #16]
+ 559:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     pdest                  = &p_sem_data->OSEventTbl[0];
+ 992              		.loc 1 559 0
+ 993 0044 3B68     		ldr	r3, [r7]
+ 994 0046 0233     		adds	r3, r3, #2
+ 995 0048 FB60     		str	r3, [r7, #12]
+ 560:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     for (i = 0u; i < OS_EVENT_TBL_SIZE; i++) {
+ 996              		.loc 1 560 0
+ 997 004a 1723     		movs	r3, #23
+ 998 004c FB18     		adds	r3, r7, r3
+ 999 004e 0022     		movs	r2, #0
+ 1000 0050 1A70     		strb	r2, [r3]
+ 1001 0052 0EE0     		b	.L70
+ 1002              	.L71:
+ 561:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *pdest++ = *psrc++;
+ 1003              		.loc 1 561 0 discriminator 3
+ 1004 0054 FB68     		ldr	r3, [r7, #12]
+ 1005 0056 5A1C     		adds	r2, r3, #1
+ 1006 0058 FA60     		str	r2, [r7, #12]
+ 1007 005a 3A69     		ldr	r2, [r7, #16]
+ 1008 005c 511C     		adds	r1, r2, #1
+ 1009 005e 3961     		str	r1, [r7, #16]
+ 1010 0060 1278     		ldrb	r2, [r2]
+ 1011 0062 1A70     		strb	r2, [r3]
+ 560:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     for (i = 0u; i < OS_EVENT_TBL_SIZE; i++) {
+ 1012              		.loc 1 560 0 discriminator 3
+ 1013 0064 1723     		movs	r3, #23
+ 1014 0066 FB18     		adds	r3, r7, r3
+ 1015 0068 1A78     		ldrb	r2, [r3]
+ 1016 006a 1723     		movs	r3, #23
+ 1017 006c FB18     		adds	r3, r7, r3
+ 1018 006e 0132     		adds	r2, r2, #1
+ 1019 0070 1A70     		strb	r2, [r3]
+ 1020              	.L70:
+ 560:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     for (i = 0u; i < OS_EVENT_TBL_SIZE; i++) {
+ 1021              		.loc 1 560 0 is_stmt 0 discriminator 1
+ 1022 0072 1723     		movs	r3, #23
+ 1023 0074 FB18     		adds	r3, r7, r3
+ 1024 0076 1B78     		ldrb	r3, [r3]
+ 1025 0078 072B     		cmp	r3, #7
+ 1026 007a EBD9     		bls	.L71
+ 562:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 563:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     p_sem_data->OSCnt = pevent->OSEventCnt;                /* Get semaphore count                  
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 29
+
+
+ 1027              		.loc 1 563 0 is_stmt 1
+ 1028 007c 7B68     		ldr	r3, [r7, #4]
+ 1029 007e 1A89     		ldrh	r2, [r3, #8]
+ 1030 0080 3B68     		ldr	r3, [r7]
+ 1031 0082 1A80     		strh	r2, [r3]
+ 564:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EXIT_CRITICAL();
+ 1032              		.loc 1 564 0
+ 1033 0084 BB68     		ldr	r3, [r7, #8]
+ 1034 0086 1800     		movs	r0, r3
+ 1035 0088 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 565:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     return (OS_ERR_NONE);
+ 1036              		.loc 1 565 0
+ 1037 008c 0023     		movs	r3, #0
+ 1038              	.L67:
+ 566:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** }
+ 1039              		.loc 1 566 0
+ 1040 008e 1800     		movs	r0, r3
+ 1041 0090 BD46     		mov	sp, r7
+ 1042 0092 06B0     		add	sp, sp, #24
+ 1043              		@ sp needed
+ 1044 0094 80BD     		pop	{r7, pc}
+ 1045              		.cfi_endproc
+ 1046              	.LFE7:
+ 1047              		.size	OSSemQuery, .-OSSemQuery
+ 1048 0096 C046     		.section	.text.OSSemSet,"ax",%progbits
+ 1049              		.align	2
+ 1050              		.global	OSSemSet
+ 1051              		.code	16
+ 1052              		.thumb_func
+ 1053              		.type	OSSemSet, %function
+ 1054              	OSSemSet:
+ 1055              	.LFB8:
+ 567:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif                                                     /* OS_SEM_QUERY_EN                      
+ 568:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 569:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*$PAGE*/
+ 570:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** /*
+ 571:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ 572:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                                            SET SEMAPHORE
+ 573:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 574:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Description: This function sets the semaphore count to the value specified as an argument.  Typic
+ 575:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              this value would be 0.
+ 576:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 577:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              You would typically use this function when a semaphore is used as a signaling mechan
+ 578:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              and, you want to reset the count value.
+ 579:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 580:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** * Arguments  : pevent     is a pointer to the event control block
+ 581:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 582:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              cnt        is the new value for the semaphore count.  You would pass 0 to reset the
+ 583:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                         semaphore count.
+ 584:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 585:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *              perr       is a pointer to an error code returned by the function as follows:
+ 586:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *
+ 587:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_NONE          The call was successful and the semaphore value w
+ 588:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_EVENT_TYPE    If you didn't pass a pointer to a semaphore.
+ 589:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_PEVENT_NULL   If 'pevent' is a NULL pointer.
+ 590:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** *                            OS_ERR_TASK_WAITING  If tasks are waiting on the semaphore.
+ 591:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** ***************************************************************************************************
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 30
+
+
+ 592:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** */
+ 593:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 594:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_SEM_SET_EN > 0u
+ 595:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** void  OSSemSet (OS_EVENT  *pevent,
+ 596:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                 INT16U     cnt,
+ 597:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****                 INT8U     *perr)
+ 598:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** {
+ 1056              		.loc 1 598 0
+ 1057              		.cfi_startproc
+ 1058              		@ args = 0, pretend = 0, frame = 24
+ 1059              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1060 0000 80B5     		push	{r7, lr}
+ 1061              		.cfi_def_cfa_offset 8
+ 1062              		.cfi_offset 7, -8
+ 1063              		.cfi_offset 14, -4
+ 1064 0002 86B0     		sub	sp, sp, #24
+ 1065              		.cfi_def_cfa_offset 32
+ 1066 0004 00AF     		add	r7, sp, #0
+ 1067              		.cfi_def_cfa_register 7
+ 1068 0006 F860     		str	r0, [r7, #12]
+ 1069 0008 7A60     		str	r2, [r7, #4]
+ 1070 000a 0A23     		movs	r3, #10
+ 1071 000c FB18     		adds	r3, r7, r3
+ 1072 000e 0A1C     		adds	r2, r1, #0
+ 1073 0010 1A80     		strh	r2, [r3]
+ 599:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register  
+ 600:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 1074              		.loc 1 600 0
+ 1075 0012 0023     		movs	r3, #0
+ 1076 0014 7B61     		str	r3, [r7, #20]
+ 601:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 602:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 603:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 604:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 605:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #ifdef OS_SAFETY_CRITICAL
+ 606:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (perr == (INT8U *)0) {
+ 607:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+ 608:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return;
+ 609:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 610:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 611:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** 
+ 612:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #if OS_ARG_CHK_EN > 0u
+ 613:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent == (OS_EVENT *)0) {                    /* Validate 'pevent'                         
+ 1077              		.loc 1 613 0
+ 1078 0016 FB68     		ldr	r3, [r7, #12]
+ 1079 0018 002B     		cmp	r3, #0
+ 1080 001a 03D1     		bne	.L73
+ 614:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_PEVENT_NULL;
+ 1081              		.loc 1 614 0
+ 1082 001c 7B68     		ldr	r3, [r7, #4]
+ 1083 001e 0422     		movs	r2, #4
+ 1084 0020 1A70     		strb	r2, [r3]
+ 615:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return;
+ 1085              		.loc 1 615 0
+ 1086 0022 29E0     		b	.L72
+ 1087              	.L73:
+ 616:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 31
+
+
+ 617:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** #endif
+ 618:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventType != OS_EVENT_TYPE_SEM) {   /* Validate event block type                 
+ 1088              		.loc 1 618 0
+ 1089 0024 FB68     		ldr	r3, [r7, #12]
+ 1090 0026 1B78     		ldrb	r3, [r3]
+ 1091 0028 032B     		cmp	r3, #3
+ 1092 002a 03D0     		beq	.L75
+ 619:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         *perr = OS_ERR_EVENT_TYPE;
+ 1093              		.loc 1 619 0
+ 1094 002c 7B68     		ldr	r3, [r7, #4]
+ 1095 002e 0122     		movs	r2, #1
+ 1096 0030 1A70     		strb	r2, [r3]
+ 620:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         return;
+ 1097              		.loc 1 620 0
+ 1098 0032 21E0     		b	.L72
+ 1099              	.L75:
+ 621:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 622:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_ENTER_CRITICAL();
+ 1100              		.loc 1 622 0
+ 1101 0034 FFF7FEFF 		bl	OS_CPU_SR_Save
+ 1102 0038 0300     		movs	r3, r0
+ 1103 003a 7B61     		str	r3, [r7, #20]
+ 623:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     *perr = OS_ERR_NONE;
+ 1104              		.loc 1 623 0
+ 1105 003c 7B68     		ldr	r3, [r7, #4]
+ 1106 003e 0022     		movs	r2, #0
+ 1107 0040 1A70     		strb	r2, [r3]
+ 624:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     if (pevent->OSEventCnt > 0u) {                    /* See if semaphore already has a count      
+ 1108              		.loc 1 624 0
+ 1109 0042 FB68     		ldr	r3, [r7, #12]
+ 1110 0044 1B89     		ldrh	r3, [r3, #8]
+ 1111 0046 002B     		cmp	r3, #0
+ 1112 0048 05D0     		beq	.L76
+ 625:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         pevent->OSEventCnt = cnt;                     /* Yes, set it to the new value specified.   
+ 1113              		.loc 1 625 0
+ 1114 004a FB68     		ldr	r3, [r7, #12]
+ 1115 004c 0A22     		movs	r2, #10
+ 1116 004e BA18     		adds	r2, r7, r2
+ 1117 0050 1288     		ldrh	r2, [r2]
+ 1118 0052 1A81     		strh	r2, [r3, #8]
+ 1119 0054 0CE0     		b	.L77
+ 1120              	.L76:
+ 626:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     } else {                                          /* No                                        
+ 627:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         if (pevent->OSEventGrp == 0u) {               /*      See if task(s) waiting?              
+ 1121              		.loc 1 627 0
+ 1122 0056 FB68     		ldr	r3, [r7, #12]
+ 1123 0058 9B7A     		ldrb	r3, [r3, #10]
+ 1124 005a 002B     		cmp	r3, #0
+ 1125 005c 05D1     		bne	.L78
+ 628:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****             pevent->OSEventCnt = cnt;                 /*      No, OK to set the value              
+ 1126              		.loc 1 628 0
+ 1127 005e FB68     		ldr	r3, [r7, #12]
+ 1128 0060 0A22     		movs	r2, #10
+ 1129 0062 BA18     		adds	r2, r7, r2
+ 1130 0064 1288     		ldrh	r2, [r2]
+ 1131 0066 1A81     		strh	r2, [r3, #8]
+ 1132 0068 02E0     		b	.L77
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 32
+
+
+ 1133              	.L78:
+ 629:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         } else {
+ 630:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****             *perr              = OS_ERR_TASK_WAITING;
+ 1134              		.loc 1 630 0
+ 1135 006a 7B68     		ldr	r3, [r7, #4]
+ 1136 006c 4922     		movs	r2, #73
+ 1137 006e 1A70     		strb	r2, [r3]
+ 1138              	.L77:
+ 631:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****         }
+ 632:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     }
+ 633:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c ****     OS_EXIT_CRITICAL();
+ 1139              		.loc 1 633 0
+ 1140 0070 7B69     		ldr	r3, [r7, #20]
+ 1141 0072 1800     		movs	r0, r3
+ 1142 0074 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 1143              	.L72:
+ 634:..\..\..\..\..\..\Software\uCOS-II\Source/os_sem.c **** }
+ 1144              		.loc 1 634 0
+ 1145 0078 BD46     		mov	sp, r7
+ 1146 007a 06B0     		add	sp, sp, #24
+ 1147              		@ sp needed
+ 1148 007c 80BD     		pop	{r7, pc}
+ 1149              		.cfi_endproc
+ 1150              	.LFE8:
+ 1151              		.size	OSSemSet, .-OSSemSet
+ 1152 007e C046     		.text
+ 1153              	.Letext0:
+ 1154              		.file 2 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Ports\\ARM-Cortex-M0\\Generic\\GNU/os_cpu.h"
+ 1155              		.file 3 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source/ucos_ii.h"
+ 1156              		.section	.debug_info,"",%progbits
+ 1157              	.Ldebug_info0:
+ 1158 0000 BF060000 		.4byte	0x6bf
+ 1159 0004 0400     		.2byte	0x4
+ 1160 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 1161 000a 04       		.byte	0x4
+ 1162 000b 01       		.uleb128 0x1
+ 1163 000c 01020000 		.4byte	.LASF94
+ 1164 0010 0C       		.byte	0xc
+ 1165 0011 F7000000 		.4byte	.LASF95
+ 1166 0015 14040000 		.4byte	.LASF96
+ 1167 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 1168 001d 00000000 		.4byte	0
+ 1169 0021 00000000 		.4byte	.Ldebug_line0
+ 1170 0025 02       		.uleb128 0x2
+ 1171 0026 01       		.byte	0x1
+ 1172 0027 06       		.byte	0x6
+ 1173 0028 5E010000 		.4byte	.LASF0
+ 1174 002c 02       		.uleb128 0x2
+ 1175 002d 01       		.byte	0x1
+ 1176 002e 08       		.byte	0x8
+ 1177 002f A0020000 		.4byte	.LASF1
+ 1178 0033 02       		.uleb128 0x2
+ 1179 0034 02       		.byte	0x2
+ 1180 0035 05       		.byte	0x5
+ 1181 0036 C5000000 		.4byte	.LASF2
+ 1182 003a 02       		.uleb128 0x2
+ 1183 003b 02       		.byte	0x2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 33
+
+
+ 1184 003c 07       		.byte	0x7
+ 1185 003d D7030000 		.4byte	.LASF3
+ 1186 0041 02       		.uleb128 0x2
+ 1187 0042 04       		.byte	0x4
+ 1188 0043 05       		.byte	0x5
+ 1189 0044 BE010000 		.4byte	.LASF4
+ 1190 0048 02       		.uleb128 0x2
+ 1191 0049 04       		.byte	0x4
+ 1192 004a 07       		.byte	0x7
+ 1193 004b 02040000 		.4byte	.LASF5
+ 1194 004f 02       		.uleb128 0x2
+ 1195 0050 08       		.byte	0x8
+ 1196 0051 05       		.byte	0x5
+ 1197 0052 A7010000 		.4byte	.LASF6
+ 1198 0056 02       		.uleb128 0x2
+ 1199 0057 08       		.byte	0x8
+ 1200 0058 07       		.byte	0x7
+ 1201 0059 24030000 		.4byte	.LASF7
+ 1202 005d 03       		.uleb128 0x3
+ 1203 005e 04       		.byte	0x4
+ 1204 005f 05       		.byte	0x5
+ 1205 0060 696E7400 		.ascii	"int\000"
+ 1206 0064 02       		.uleb128 0x2
+ 1207 0065 04       		.byte	0x4
+ 1208 0066 07       		.byte	0x7
+ 1209 0067 3B030000 		.4byte	.LASF8
+ 1210 006b 02       		.uleb128 0x2
+ 1211 006c 08       		.byte	0x8
+ 1212 006d 04       		.byte	0x4
+ 1213 006e AE020000 		.4byte	.LASF9
+ 1214 0072 04       		.uleb128 0x4
+ 1215 0073 04       		.byte	0x4
+ 1216 0074 02       		.uleb128 0x2
+ 1217 0075 04       		.byte	0x4
+ 1218 0076 07       		.byte	0x7
+ 1219 0077 7D000000 		.4byte	.LASF10
+ 1220 007b 02       		.uleb128 0x2
+ 1221 007c 01       		.byte	0x1
+ 1222 007d 08       		.byte	0x8
+ 1223 007e 93030000 		.4byte	.LASF11
+ 1224 0082 05       		.uleb128 0x5
+ 1225 0083 CD040000 		.4byte	.LASF12
+ 1226 0087 02       		.byte	0x2
+ 1227 0088 72       		.byte	0x72
+ 1228 0089 2C000000 		.4byte	0x2c
+ 1229 008d 05       		.uleb128 0x5
+ 1230 008e FB010000 		.4byte	.LASF13
+ 1231 0092 02       		.byte	0x2
+ 1232 0093 73       		.byte	0x73
+ 1233 0094 2C000000 		.4byte	0x2c
+ 1234 0098 05       		.uleb128 0x5
+ 1235 0099 11030000 		.4byte	.LASF14
+ 1236 009d 02       		.byte	0x2
+ 1237 009e 75       		.byte	0x75
+ 1238 009f 3A000000 		.4byte	0x3a
+ 1239 00a3 05       		.uleb128 0x5
+ 1240 00a4 F0000000 		.4byte	.LASF15
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 34
+
+
+ 1241 00a8 02       		.byte	0x2
+ 1242 00a9 77       		.byte	0x77
+ 1243 00aa 64000000 		.4byte	0x64
+ 1244 00ae 02       		.uleb128 0x2
+ 1245 00af 04       		.byte	0x4
+ 1246 00b0 04       		.byte	0x4
+ 1247 00b1 84010000 		.4byte	.LASF16
+ 1248 00b5 02       		.uleb128 0x2
+ 1249 00b6 08       		.byte	0x8
+ 1250 00b7 04       		.byte	0x4
+ 1251 00b8 2C000000 		.4byte	.LASF17
+ 1252 00bc 05       		.uleb128 0x5
+ 1253 00bd 86000000 		.4byte	.LASF18
+ 1254 00c1 02       		.byte	0x2
+ 1255 00c2 7C       		.byte	0x7c
+ 1256 00c3 64000000 		.4byte	0x64
+ 1257 00c7 05       		.uleb128 0x5
+ 1258 00c8 8D000000 		.4byte	.LASF19
+ 1259 00cc 02       		.byte	0x2
+ 1260 00cd 7D       		.byte	0x7d
+ 1261 00ce 64000000 		.4byte	0x64
+ 1262 00d2 06       		.uleb128 0x6
+ 1263 00d3 A7030000 		.4byte	.LASF20
+ 1264 00d7 03       		.byte	0x3
+ 1265 00d8 7201     		.2byte	0x172
+ 1266 00da 8D000000 		.4byte	0x8d
+ 1267 00de 07       		.uleb128 0x7
+ 1268 00df A4000000 		.4byte	.LASF29
+ 1269 00e3 18       		.byte	0x18
+ 1270 00e4 03       		.byte	0x3
+ 1271 00e5 7801     		.2byte	0x178
+ 1272 00e7 3A010000 		.4byte	0x13a
+ 1273 00eb 08       		.uleb128 0x8
+ 1274 00ec AF030000 		.4byte	.LASF21
+ 1275 00f0 03       		.byte	0x3
+ 1276 00f1 7901     		.2byte	0x179
+ 1277 00f3 8D000000 		.4byte	0x8d
+ 1278 00f7 00       		.byte	0
+ 1279 00f8 08       		.uleb128 0x8
+ 1280 00f9 47010000 		.4byte	.LASF22
+ 1281 00fd 03       		.byte	0x3
+ 1282 00fe 7A01     		.2byte	0x17a
+ 1283 0100 72000000 		.4byte	0x72
+ 1284 0104 04       		.byte	0x4
+ 1285 0105 08       		.uleb128 0x8
+ 1286 0106 BA000000 		.4byte	.LASF23
+ 1287 010a 03       		.byte	0x3
+ 1288 010b 7B01     		.2byte	0x17b
+ 1289 010d 98000000 		.4byte	0x98
+ 1290 0111 08       		.byte	0x8
+ 1291 0112 08       		.uleb128 0x8
+ 1292 0113 7C040000 		.4byte	.LASF24
+ 1293 0117 03       		.byte	0x3
+ 1294 0118 7C01     		.2byte	0x17c
+ 1295 011a D2000000 		.4byte	0xd2
+ 1296 011e 0A       		.byte	0xa
+ 1297 011f 08       		.uleb128 0x8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 35
+
+
+ 1298 0120 33050000 		.4byte	.LASF25
+ 1299 0124 03       		.byte	0x3
+ 1300 0125 7D01     		.2byte	0x17d
+ 1301 0127 3A010000 		.4byte	0x13a
+ 1302 012b 0B       		.byte	0xb
+ 1303 012c 08       		.uleb128 0x8
+ 1304 012d 71000000 		.4byte	.LASF26
+ 1305 0131 03       		.byte	0x3
+ 1306 0132 8001     		.2byte	0x180
+ 1307 0134 4A010000 		.4byte	0x14a
+ 1308 0138 14       		.byte	0x14
+ 1309 0139 00       		.byte	0
+ 1310 013a 09       		.uleb128 0x9
+ 1311 013b D2000000 		.4byte	0xd2
+ 1312 013f 4A010000 		.4byte	0x14a
+ 1313 0143 0A       		.uleb128 0xa
+ 1314 0144 74000000 		.4byte	0x74
+ 1315 0148 07       		.byte	0x7
+ 1316 0149 00       		.byte	0
+ 1317 014a 0B       		.uleb128 0xb
+ 1318 014b 04       		.byte	0x4
+ 1319 014c 8D000000 		.4byte	0x8d
+ 1320 0150 06       		.uleb128 0x6
+ 1321 0151 B5010000 		.4byte	.LASF27
+ 1322 0155 03       		.byte	0x3
+ 1323 0156 8201     		.2byte	0x182
+ 1324 0158 DE000000 		.4byte	0xde
+ 1325 015c 06       		.uleb128 0x6
+ 1326 015d 00000000 		.4byte	.LASF28
+ 1327 0161 03       		.byte	0x3
+ 1328 0162 9301     		.2byte	0x193
+ 1329 0164 98000000 		.4byte	0x98
+ 1330 0168 07       		.uleb128 0x7
+ 1331 0169 EB040000 		.4byte	.LASF30
+ 1332 016d 14       		.byte	0x14
+ 1333 016e 03       		.byte	0x3
+ 1334 016f A601     		.2byte	0x1a6
+ 1335 0171 C4010000 		.4byte	0x1c4
+ 1336 0175 08       		.uleb128 0x8
+ 1337 0176 98030000 		.4byte	.LASF31
+ 1338 017a 03       		.byte	0x3
+ 1339 017b A701     		.2byte	0x1a7
+ 1340 017d 72000000 		.4byte	0x72
+ 1341 0181 00       		.byte	0
+ 1342 0182 08       		.uleb128 0x8
+ 1343 0183 69030000 		.4byte	.LASF32
+ 1344 0187 03       		.byte	0x3
+ 1345 0188 A801     		.2byte	0x1a8
+ 1346 018a 72000000 		.4byte	0x72
+ 1347 018e 04       		.byte	0x4
+ 1348 018f 08       		.uleb128 0x8
+ 1349 0190 95040000 		.4byte	.LASF33
+ 1350 0194 03       		.byte	0x3
+ 1351 0195 A901     		.2byte	0x1a9
+ 1352 0197 72000000 		.4byte	0x72
+ 1353 019b 08       		.byte	0x8
+ 1354 019c 08       		.uleb128 0x8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 36
+
+
+ 1355 019d 40000000 		.4byte	.LASF34
+ 1356 01a1 03       		.byte	0x3
+ 1357 01a2 AA01     		.2byte	0x1aa
+ 1358 01a4 72000000 		.4byte	0x72
+ 1359 01a8 0C       		.byte	0xc
+ 1360 01a9 08       		.uleb128 0x8
+ 1361 01aa CF020000 		.4byte	.LASF35
+ 1362 01ae 03       		.byte	0x3
+ 1363 01af AB01     		.2byte	0x1ab
+ 1364 01b1 5C010000 		.4byte	0x15c
+ 1365 01b5 10       		.byte	0x10
+ 1366 01b6 08       		.uleb128 0x8
+ 1367 01b7 E8020000 		.4byte	.LASF36
+ 1368 01bb 03       		.byte	0x3
+ 1369 01bc AC01     		.2byte	0x1ac
+ 1370 01be 8D000000 		.4byte	0x8d
+ 1371 01c2 12       		.byte	0x12
+ 1372 01c3 00       		.byte	0
+ 1373 01c4 06       		.uleb128 0x6
+ 1374 01c5 C0040000 		.4byte	.LASF37
+ 1375 01c9 03       		.byte	0x3
+ 1376 01ca B101     		.2byte	0x1b1
+ 1377 01cc 68010000 		.4byte	0x168
+ 1378 01d0 07       		.uleb128 0x7
+ 1379 01d1 06050000 		.4byte	.LASF38
+ 1380 01d5 0C       		.byte	0xc
+ 1381 01d6 03       		.byte	0x3
+ 1382 01d7 1302     		.2byte	0x213
+ 1383 01d9 05020000 		.4byte	0x205
+ 1384 01dd 08       		.uleb128 0x8
+ 1385 01de A1010000 		.4byte	.LASF39
+ 1386 01e2 03       		.byte	0x3
+ 1387 01e3 1402     		.2byte	0x214
+ 1388 01e5 98000000 		.4byte	0x98
+ 1389 01e9 00       		.byte	0
+ 1390 01ea 08       		.uleb128 0x8
+ 1391 01eb 33050000 		.4byte	.LASF25
+ 1392 01ef 03       		.byte	0x3
+ 1393 01f0 1502     		.2byte	0x215
+ 1394 01f2 3A010000 		.4byte	0x13a
+ 1395 01f6 02       		.byte	0x2
+ 1396 01f7 08       		.uleb128 0x8
+ 1397 01f8 7C040000 		.4byte	.LASF24
+ 1398 01fc 03       		.byte	0x3
+ 1399 01fd 1602     		.2byte	0x216
+ 1400 01ff D2000000 		.4byte	0xd2
+ 1401 0203 0A       		.byte	0xa
+ 1402 0204 00       		.byte	0
+ 1403 0205 06       		.uleb128 0x6
+ 1404 0206 6A010000 		.4byte	.LASF40
+ 1405 020a 03       		.byte	0x3
+ 1406 020b 1702     		.2byte	0x217
+ 1407 020d D0010000 		.4byte	0x1d0
+ 1408 0211 07       		.uleb128 0x7
+ 1409 0212 F4010000 		.4byte	.LASF41
+ 1410 0216 58       		.byte	0x58
+ 1411 0217 03       		.byte	0x3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 37
+
+
+ 1412 0218 2E02     		.2byte	0x22e
+ 1413 021a 98030000 		.4byte	0x398
+ 1414 021e 08       		.uleb128 0x8
+ 1415 021f CF000000 		.4byte	.LASF42
+ 1416 0223 03       		.byte	0x3
+ 1417 0224 2F02     		.2byte	0x22f
+ 1418 0226 98030000 		.4byte	0x398
+ 1419 022a 00       		.byte	0
+ 1420 022b 08       		.uleb128 0x8
+ 1421 022c 18030000 		.4byte	.LASF43
+ 1422 0230 03       		.byte	0x3
+ 1423 0231 3202     		.2byte	0x232
+ 1424 0233 72000000 		.4byte	0x72
+ 1425 0237 04       		.byte	0x4
+ 1426 0238 08       		.uleb128 0x8
+ 1427 0239 F3030000 		.4byte	.LASF44
+ 1428 023d 03       		.byte	0x3
+ 1429 023e 3302     		.2byte	0x233
+ 1430 0240 98030000 		.4byte	0x398
+ 1431 0244 08       		.byte	0x8
+ 1432 0245 08       		.uleb128 0x8
+ 1433 0246 E7010000 		.4byte	.LASF45
+ 1434 024a 03       		.byte	0x3
+ 1435 024b 3402     		.2byte	0x234
+ 1436 024d A3000000 		.4byte	0xa3
+ 1437 0251 0C       		.byte	0xc
+ 1438 0252 08       		.uleb128 0x8
+ 1439 0253 EA030000 		.4byte	.LASF46
+ 1440 0257 03       		.byte	0x3
+ 1441 0258 3502     		.2byte	0x235
+ 1442 025a 98000000 		.4byte	0x98
+ 1443 025e 10       		.byte	0x10
+ 1444 025f 08       		.uleb128 0x8
+ 1445 0260 D5010000 		.4byte	.LASF47
+ 1446 0264 03       		.byte	0x3
+ 1447 0265 3602     		.2byte	0x236
+ 1448 0267 98000000 		.4byte	0x98
+ 1449 026b 12       		.byte	0x12
+ 1450 026c 08       		.uleb128 0x8
+ 1451 026d 34010000 		.4byte	.LASF48
+ 1452 0271 03       		.byte	0x3
+ 1453 0272 3902     		.2byte	0x239
+ 1454 0274 9E030000 		.4byte	0x39e
+ 1455 0278 14       		.byte	0x14
+ 1456 0279 08       		.uleb128 0x8
+ 1457 027a A3040000 		.4byte	.LASF49
+ 1458 027e 03       		.byte	0x3
+ 1459 027f 3A02     		.2byte	0x23a
+ 1460 0281 9E030000 		.4byte	0x39e
+ 1461 0285 18       		.byte	0x18
+ 1462 0286 08       		.uleb128 0x8
+ 1463 0287 48030000 		.4byte	.LASF50
+ 1464 028b 03       		.byte	0x3
+ 1465 028c 4302     		.2byte	0x243
+ 1466 028e A4030000 		.4byte	0x3a4
+ 1467 0292 1C       		.byte	0x1c
+ 1468 0293 08       		.uleb128 0x8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 38
+
+
+ 1469 0294 56030000 		.4byte	.LASF51
+ 1470 0298 03       		.byte	0x3
+ 1471 0299 4702     		.2byte	0x247
+ 1472 029b AA030000 		.4byte	0x3aa
+ 1473 029f 20       		.byte	0x20
+ 1474 02a0 08       		.uleb128 0x8
+ 1475 02a1 5E000000 		.4byte	.LASF52
+ 1476 02a5 03       		.byte	0x3
+ 1477 02a6 4B02     		.2byte	0x24b
+ 1478 02a8 72000000 		.4byte	0x72
+ 1479 02ac 24       		.byte	0x24
+ 1480 02ad 08       		.uleb128 0x8
+ 1481 02ae 8A010000 		.4byte	.LASF53
+ 1482 02b2 03       		.byte	0x3
+ 1483 02b3 5002     		.2byte	0x250
+ 1484 02b5 B0030000 		.4byte	0x3b0
+ 1485 02b9 28       		.byte	0x28
+ 1486 02ba 08       		.uleb128 0x8
+ 1487 02bb 6E040000 		.4byte	.LASF54
+ 1488 02bf 03       		.byte	0x3
+ 1489 02c0 5202     		.2byte	0x252
+ 1490 02c2 5C010000 		.4byte	0x15c
+ 1491 02c6 2C       		.byte	0x2c
+ 1492 02c7 08       		.uleb128 0x8
+ 1493 02c8 98010000 		.4byte	.LASF55
+ 1494 02cc 03       		.byte	0x3
+ 1495 02cd 5502     		.2byte	0x255
+ 1496 02cf A3000000 		.4byte	0xa3
+ 1497 02d3 30       		.byte	0x30
+ 1498 02d4 08       		.uleb128 0x8
+ 1499 02d5 E1040000 		.4byte	.LASF56
+ 1500 02d9 03       		.byte	0x3
+ 1501 02da 5602     		.2byte	0x256
+ 1502 02dc 8D000000 		.4byte	0x8d
+ 1503 02e0 34       		.byte	0x34
+ 1504 02e1 08       		.uleb128 0x8
+ 1505 02e2 09000000 		.4byte	.LASF57
+ 1506 02e6 03       		.byte	0x3
+ 1507 02e7 5702     		.2byte	0x257
+ 1508 02e9 8D000000 		.4byte	0x8d
+ 1509 02ed 35       		.byte	0x35
+ 1510 02ee 08       		.uleb128 0x8
+ 1511 02ef 2A010000 		.4byte	.LASF58
+ 1512 02f3 03       		.byte	0x3
+ 1513 02f4 5802     		.2byte	0x258
+ 1514 02f6 8D000000 		.4byte	0x8d
+ 1515 02fa 36       		.byte	0x36
+ 1516 02fb 08       		.uleb128 0x8
+ 1517 02fc C7010000 		.4byte	.LASF59
+ 1518 0300 03       		.byte	0x3
+ 1519 0301 5A02     		.2byte	0x25a
+ 1520 0303 8D000000 		.4byte	0x8d
+ 1521 0307 37       		.byte	0x37
+ 1522 0308 08       		.uleb128 0x8
+ 1523 0309 CE010000 		.4byte	.LASF60
+ 1524 030d 03       		.byte	0x3
+ 1525 030e 5B02     		.2byte	0x25b
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 39
+
+
+ 1526 0310 8D000000 		.4byte	0x8d
+ 1527 0314 38       		.byte	0x38
+ 1528 0315 08       		.uleb128 0x8
+ 1529 0316 DD010000 		.4byte	.LASF61
+ 1530 031a 03       		.byte	0x3
+ 1531 031b 5C02     		.2byte	0x25c
+ 1532 031d D2000000 		.4byte	0xd2
+ 1533 0321 39       		.byte	0x39
+ 1534 0322 08       		.uleb128 0x8
+ 1535 0323 07030000 		.4byte	.LASF62
+ 1536 0327 03       		.byte	0x3
+ 1537 0328 5D02     		.2byte	0x25d
+ 1538 032a D2000000 		.4byte	0xd2
+ 1539 032e 3A       		.byte	0x3a
+ 1540 032f 08       		.uleb128 0x8
+ 1541 0330 52000000 		.4byte	.LASF63
+ 1542 0334 03       		.byte	0x3
+ 1543 0335 6002     		.2byte	0x260
+ 1544 0337 8D000000 		.4byte	0x8d
+ 1545 033b 3B       		.byte	0x3b
+ 1546 033c 08       		.uleb128 0x8
+ 1547 033d 76010000 		.4byte	.LASF64
+ 1548 0341 03       		.byte	0x3
+ 1549 0342 6402     		.2byte	0x264
+ 1550 0344 A3000000 		.4byte	0xa3
+ 1551 0348 3C       		.byte	0x3c
+ 1552 0349 08       		.uleb128 0x8
+ 1553 034a C8030000 		.4byte	.LASF65
+ 1554 034e 03       		.byte	0x3
+ 1555 034f 6502     		.2byte	0x265
+ 1556 0351 A3000000 		.4byte	0xa3
+ 1557 0355 40       		.byte	0x40
+ 1558 0356 08       		.uleb128 0x8
+ 1559 0357 8F020000 		.4byte	.LASF66
+ 1560 035b 03       		.byte	0x3
+ 1561 035c 6602     		.2byte	0x266
+ 1562 035e A3000000 		.4byte	0xa3
+ 1563 0362 44       		.byte	0x44
+ 1564 0363 08       		.uleb128 0x8
+ 1565 0364 33000000 		.4byte	.LASF67
+ 1566 0368 03       		.byte	0x3
+ 1567 0369 6702     		.2byte	0x267
+ 1568 036b 98030000 		.4byte	0x398
+ 1569 036f 48       		.byte	0x48
+ 1570 0370 08       		.uleb128 0x8
+ 1571 0371 97000000 		.4byte	.LASF68
+ 1572 0375 03       		.byte	0x3
+ 1573 0376 6802     		.2byte	0x268
+ 1574 0378 A3000000 		.4byte	0xa3
+ 1575 037c 4C       		.byte	0x4c
+ 1576 037d 08       		.uleb128 0x8
+ 1577 037e 12050000 		.4byte	.LASF69
+ 1578 0382 03       		.byte	0x3
+ 1579 0383 6C02     		.2byte	0x26c
+ 1580 0385 4A010000 		.4byte	0x14a
+ 1581 0389 50       		.byte	0x50
+ 1582 038a 08       		.uleb128 0x8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 40
+
+
+ 1583 038b 78030000 		.4byte	.LASF70
+ 1584 038f 03       		.byte	0x3
+ 1585 0390 7002     		.2byte	0x270
+ 1586 0392 B6030000 		.4byte	0x3b6
+ 1587 0396 54       		.byte	0x54
+ 1588 0397 00       		.byte	0
+ 1589 0398 0B       		.uleb128 0xb
+ 1590 0399 04       		.byte	0x4
+ 1591 039a BC000000 		.4byte	0xbc
+ 1592 039e 0B       		.uleb128 0xb
+ 1593 039f 04       		.byte	0x4
+ 1594 03a0 11020000 		.4byte	0x211
+ 1595 03a4 0B       		.uleb128 0xb
+ 1596 03a5 04       		.byte	0x4
+ 1597 03a6 50010000 		.4byte	0x150
+ 1598 03aa 0B       		.uleb128 0xb
+ 1599 03ab 04       		.byte	0x4
+ 1600 03ac A4030000 		.4byte	0x3a4
+ 1601 03b0 0B       		.uleb128 0xb
+ 1602 03b1 04       		.byte	0x4
+ 1603 03b2 C4010000 		.4byte	0x1c4
+ 1604 03b6 09       		.uleb128 0x9
+ 1605 03b7 A3000000 		.4byte	0xa3
+ 1606 03bb C6030000 		.4byte	0x3c6
+ 1607 03bf 0A       		.uleb128 0xa
+ 1608 03c0 74000000 		.4byte	0x74
+ 1609 03c4 00       		.byte	0
+ 1610 03c5 00       		.byte	0
+ 1611 03c6 06       		.uleb128 0x6
+ 1612 03c7 17000000 		.4byte	.LASF71
+ 1613 03cb 03       		.byte	0x3
+ 1614 03cc 7202     		.2byte	0x272
+ 1615 03ce 11020000 		.4byte	0x211
+ 1616 03d2 0C       		.uleb128 0xc
+ 1617 03d3 52010000 		.4byte	.LASF73
+ 1618 03d7 01       		.byte	0x1
+ 1619 03d8 33       		.byte	0x33
+ 1620 03d9 98000000 		.4byte	0x98
+ 1621 03dd 00000000 		.4byte	.LFB1
+ 1622 03e1 60000000 		.4byte	.LFE1-.LFB1
+ 1623 03e5 01       		.uleb128 0x1
+ 1624 03e6 9C       		.byte	0x9c
+ 1625 03e7 16040000 		.4byte	0x416
+ 1626 03eb 0D       		.uleb128 0xd
+ 1627 03ec BB030000 		.4byte	.LASF75
+ 1628 03f0 01       		.byte	0x1
+ 1629 03f1 33       		.byte	0x33
+ 1630 03f2 A4030000 		.4byte	0x3a4
+ 1631 03f6 02       		.uleb128 0x2
+ 1632 03f7 91       		.byte	0x91
+ 1633 03f8 6C       		.sleb128 -20
+ 1634 03f9 0E       		.uleb128 0xe
+ 1635 03fa 636E7400 		.ascii	"cnt\000"
+ 1636 03fe 01       		.byte	0x1
+ 1637 03ff 35       		.byte	0x35
+ 1638 0400 98000000 		.4byte	0x98
+ 1639 0404 02       		.uleb128 0x2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 41
+
+
+ 1640 0405 91       		.byte	0x91
+ 1641 0406 72       		.sleb128 -14
+ 1642 0407 0F       		.uleb128 0xf
+ 1643 0408 DA040000 		.4byte	.LASF72
+ 1644 040c 01       		.byte	0x1
+ 1645 040d 37       		.byte	0x37
+ 1646 040e C7000000 		.4byte	0xc7
+ 1647 0412 02       		.uleb128 0x2
+ 1648 0413 91       		.byte	0x91
+ 1649 0414 74       		.sleb128 -12
+ 1650 0415 00       		.byte	0
+ 1651 0416 0C       		.uleb128 0xc
+ 1652 0417 FB020000 		.4byte	.LASF74
+ 1653 041b 01       		.byte	0x1
+ 1654 041c 60       		.byte	0x60
+ 1655 041d A4030000 		.4byte	0x3a4
+ 1656 0421 00000000 		.4byte	.LFB2
+ 1657 0425 84000000 		.4byte	.LFE2-.LFB2
+ 1658 0429 01       		.uleb128 0x1
+ 1659 042a 9C       		.byte	0x9c
+ 1660 042b 5A040000 		.4byte	0x45a
+ 1661 042f 10       		.uleb128 0x10
+ 1662 0430 636E7400 		.ascii	"cnt\000"
+ 1663 0434 01       		.byte	0x1
+ 1664 0435 60       		.byte	0x60
+ 1665 0436 98000000 		.4byte	0x98
+ 1666 043a 02       		.uleb128 0x2
+ 1667 043b 91       		.byte	0x91
+ 1668 043c 6E       		.sleb128 -18
+ 1669 043d 0F       		.uleb128 0xf
+ 1670 043e BB030000 		.4byte	.LASF75
+ 1671 0442 01       		.byte	0x1
+ 1672 0443 62       		.byte	0x62
+ 1673 0444 A4030000 		.4byte	0x3a4
+ 1674 0448 02       		.uleb128 0x2
+ 1675 0449 91       		.byte	0x91
+ 1676 044a 70       		.sleb128 -16
+ 1677 044b 0F       		.uleb128 0xf
+ 1678 044c DA040000 		.4byte	.LASF72
+ 1679 0450 01       		.byte	0x1
+ 1680 0451 64       		.byte	0x64
+ 1681 0452 C7000000 		.4byte	0xc7
+ 1682 0456 02       		.uleb128 0x2
+ 1683 0457 91       		.byte	0x91
+ 1684 0458 74       		.sleb128 -12
+ 1685 0459 00       		.byte	0
+ 1686 045a 0C       		.uleb128 0xc
+ 1687 045b DF020000 		.4byte	.LASF76
+ 1688 045f 01       		.byte	0x1
+ 1689 0460 AE       		.byte	0xae
+ 1690 0461 A4030000 		.4byte	0x3a4
+ 1691 0465 00000000 		.4byte	.LFB3
+ 1692 0469 50010000 		.4byte	.LFE3-.LFB3
+ 1693 046d 01       		.uleb128 0x1
+ 1694 046e 9C       		.byte	0x9c
+ 1695 046f C8040000 		.4byte	0x4c8
+ 1696 0473 0D       		.uleb128 0xd
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 42
+
+
+ 1697 0474 BB030000 		.4byte	.LASF75
+ 1698 0478 01       		.byte	0x1
+ 1699 0479 AE       		.byte	0xae
+ 1700 047a A4030000 		.4byte	0x3a4
+ 1701 047e 02       		.uleb128 0x2
+ 1702 047f 91       		.byte	0x91
+ 1703 0480 64       		.sleb128 -28
+ 1704 0481 10       		.uleb128 0x10
+ 1705 0482 6F707400 		.ascii	"opt\000"
+ 1706 0486 01       		.byte	0x1
+ 1707 0487 AF       		.byte	0xaf
+ 1708 0488 8D000000 		.4byte	0x8d
+ 1709 048c 02       		.uleb128 0x2
+ 1710 048d 91       		.byte	0x91
+ 1711 048e 63       		.sleb128 -29
+ 1712 048f 0D       		.uleb128 0xd
+ 1713 0490 D5040000 		.4byte	.LASF77
+ 1714 0494 01       		.byte	0x1
+ 1715 0495 B0       		.byte	0xb0
+ 1716 0496 4A010000 		.4byte	0x14a
+ 1717 049a 02       		.uleb128 0x2
+ 1718 049b 91       		.byte	0x91
+ 1719 049c 5C       		.sleb128 -36
+ 1720 049d 0F       		.uleb128 0xf
+ 1721 049e F8040000 		.4byte	.LASF78
+ 1722 04a2 01       		.byte	0x1
+ 1723 04a3 B2       		.byte	0xb2
+ 1724 04a4 82000000 		.4byte	0x82
+ 1725 04a8 02       		.uleb128 0x2
+ 1726 04a9 91       		.byte	0x91
+ 1727 04aa 77       		.sleb128 -9
+ 1728 04ab 0F       		.uleb128 0xf
+ 1729 04ac 1E000000 		.4byte	.LASF79
+ 1730 04b0 01       		.byte	0x1
+ 1731 04b1 B3       		.byte	0xb3
+ 1732 04b2 A4030000 		.4byte	0x3a4
+ 1733 04b6 02       		.uleb128 0x2
+ 1734 04b7 91       		.byte	0x91
+ 1735 04b8 70       		.sleb128 -16
+ 1736 04b9 0F       		.uleb128 0xf
+ 1737 04ba DA040000 		.4byte	.LASF72
+ 1738 04be 01       		.byte	0x1
+ 1739 04bf B5       		.byte	0xb5
+ 1740 04c0 C7000000 		.4byte	0xc7
+ 1741 04c4 02       		.uleb128 0x2
+ 1742 04c5 91       		.byte	0x91
+ 1743 04c6 6C       		.sleb128 -20
+ 1744 04c7 00       		.byte	0
+ 1745 04c8 11       		.uleb128 0x11
+ 1746 04c9 B6040000 		.4byte	.LASF88
+ 1747 04cd 01       		.byte	0x1
+ 1748 04ce 2701     		.2byte	0x127
+ 1749 04d0 00000000 		.4byte	.LFB4
+ 1750 04d4 34010000 		.4byte	.LFE4-.LFB4
+ 1751 04d8 01       		.uleb128 0x1
+ 1752 04d9 9C       		.byte	0x9c
+ 1753 04da 1B050000 		.4byte	0x51b
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 43
+
+
+ 1754 04de 12       		.uleb128 0x12
+ 1755 04df BB030000 		.4byte	.LASF75
+ 1756 04e3 01       		.byte	0x1
+ 1757 04e4 2701     		.2byte	0x127
+ 1758 04e6 A4030000 		.4byte	0x3a4
+ 1759 04ea 02       		.uleb128 0x2
+ 1760 04eb 91       		.byte	0x91
+ 1761 04ec 6C       		.sleb128 -20
+ 1762 04ed 12       		.uleb128 0x12
+ 1763 04ee 20050000 		.4byte	.LASF80
+ 1764 04f2 01       		.byte	0x1
+ 1765 04f3 2801     		.2byte	0x128
+ 1766 04f5 A3000000 		.4byte	0xa3
+ 1767 04f9 02       		.uleb128 0x2
+ 1768 04fa 91       		.byte	0x91
+ 1769 04fb 68       		.sleb128 -24
+ 1770 04fc 12       		.uleb128 0x12
+ 1771 04fd D5040000 		.4byte	.LASF77
+ 1772 0501 01       		.byte	0x1
+ 1773 0502 2901     		.2byte	0x129
+ 1774 0504 4A010000 		.4byte	0x14a
+ 1775 0508 02       		.uleb128 0x2
+ 1776 0509 91       		.byte	0x91
+ 1777 050a 64       		.sleb128 -28
+ 1778 050b 13       		.uleb128 0x13
+ 1779 050c DA040000 		.4byte	.LASF72
+ 1780 0510 01       		.byte	0x1
+ 1781 0511 2C01     		.2byte	0x12c
+ 1782 0513 C7000000 		.4byte	0xc7
+ 1783 0517 02       		.uleb128 0x2
+ 1784 0518 91       		.byte	0x91
+ 1785 0519 74       		.sleb128 -12
+ 1786 051a 00       		.byte	0
+ 1787 051b 14       		.uleb128 0x14
+ 1788 051c 84030000 		.4byte	.LASF81
+ 1789 0520 01       		.byte	0x1
+ 1790 0521 9401     		.2byte	0x194
+ 1791 0523 8D000000 		.4byte	0x8d
+ 1792 0527 00000000 		.4byte	.LFB5
+ 1793 052b CE000000 		.4byte	.LFE5-.LFB5
+ 1794 052f 01       		.uleb128 0x1
+ 1795 0530 9C       		.byte	0x9c
+ 1796 0531 81050000 		.4byte	0x581
+ 1797 0535 12       		.uleb128 0x12
+ 1798 0536 BB030000 		.4byte	.LASF75
+ 1799 053a 01       		.byte	0x1
+ 1800 053b 9401     		.2byte	0x194
+ 1801 053d A4030000 		.4byte	0x3a4
+ 1802 0541 02       		.uleb128 0x2
+ 1803 0542 91       		.byte	0x91
+ 1804 0543 6C       		.sleb128 -20
+ 1805 0544 15       		.uleb128 0x15
+ 1806 0545 6F707400 		.ascii	"opt\000"
+ 1807 0549 01       		.byte	0x1
+ 1808 054a 9501     		.2byte	0x195
+ 1809 054c 8D000000 		.4byte	0x8d
+ 1810 0550 02       		.uleb128 0x2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 44
+
+
+ 1811 0551 91       		.byte	0x91
+ 1812 0552 6B       		.sleb128 -21
+ 1813 0553 12       		.uleb128 0x12
+ 1814 0554 D5040000 		.4byte	.LASF77
+ 1815 0558 01       		.byte	0x1
+ 1816 0559 9601     		.2byte	0x196
+ 1817 055b 4A010000 		.4byte	0x14a
+ 1818 055f 02       		.uleb128 0x2
+ 1819 0560 91       		.byte	0x91
+ 1820 0561 64       		.sleb128 -28
+ 1821 0562 13       		.uleb128 0x13
+ 1822 0563 C5020000 		.4byte	.LASF82
+ 1823 0567 01       		.byte	0x1
+ 1824 0568 9801     		.2byte	0x198
+ 1825 056a 8D000000 		.4byte	0x8d
+ 1826 056e 02       		.uleb128 0x2
+ 1827 056f 91       		.byte	0x91
+ 1828 0570 77       		.sleb128 -9
+ 1829 0571 13       		.uleb128 0x13
+ 1830 0572 DA040000 		.4byte	.LASF72
+ 1831 0576 01       		.byte	0x1
+ 1832 0577 9A01     		.2byte	0x19a
+ 1833 0579 C7000000 		.4byte	0xc7
+ 1834 057d 02       		.uleb128 0x2
+ 1835 057e 91       		.byte	0x91
+ 1836 057f 70       		.sleb128 -16
+ 1837 0580 00       		.byte	0
+ 1838 0581 14       		.uleb128 0x14
+ 1839 0582 67000000 		.4byte	.LASF83
+ 1840 0586 01       		.byte	0x1
+ 1841 0587 DF01     		.2byte	0x1df
+ 1842 0589 8D000000 		.4byte	0x8d
+ 1843 058d 00000000 		.4byte	.LFB6
+ 1844 0591 88000000 		.4byte	.LFE6-.LFB6
+ 1845 0595 01       		.uleb128 0x1
+ 1846 0596 9C       		.byte	0x9c
+ 1847 0597 BA050000 		.4byte	0x5ba
+ 1848 059b 12       		.uleb128 0x12
+ 1849 059c BB030000 		.4byte	.LASF75
+ 1850 05a0 01       		.byte	0x1
+ 1851 05a1 DF01     		.2byte	0x1df
+ 1852 05a3 A4030000 		.4byte	0x3a4
+ 1853 05a7 02       		.uleb128 0x2
+ 1854 05a8 91       		.byte	0x91
+ 1855 05a9 6C       		.sleb128 -20
+ 1856 05aa 13       		.uleb128 0x13
+ 1857 05ab DA040000 		.4byte	.LASF72
+ 1858 05af 01       		.byte	0x1
+ 1859 05b0 E201     		.2byte	0x1e2
+ 1860 05b2 C7000000 		.4byte	0xc7
+ 1861 05b6 02       		.uleb128 0x2
+ 1862 05b7 91       		.byte	0x91
+ 1863 05b8 74       		.sleb128 -12
+ 1864 05b9 00       		.byte	0
+ 1865 05ba 14       		.uleb128 0x14
+ 1866 05bb BA020000 		.4byte	.LASF84
+ 1867 05bf 01       		.byte	0x1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 45
+
+
+ 1868 05c0 1502     		.2byte	0x215
+ 1869 05c2 8D000000 		.4byte	0x8d
+ 1870 05c6 00000000 		.4byte	.LFB7
+ 1871 05ca 96000000 		.4byte	.LFE7-.LFB7
+ 1872 05ce 01       		.uleb128 0x1
+ 1873 05cf 9C       		.byte	0x9c
+ 1874 05d0 2D060000 		.4byte	0x62d
+ 1875 05d4 12       		.uleb128 0x12
+ 1876 05d5 BB030000 		.4byte	.LASF75
+ 1877 05d9 01       		.byte	0x1
+ 1878 05da 1502     		.2byte	0x215
+ 1879 05dc A4030000 		.4byte	0x3a4
+ 1880 05e0 02       		.uleb128 0x2
+ 1881 05e1 91       		.byte	0x91
+ 1882 05e2 64       		.sleb128 -28
+ 1883 05e3 12       		.uleb128 0x12
+ 1884 05e4 28050000 		.4byte	.LASF85
+ 1885 05e8 01       		.byte	0x1
+ 1886 05e9 1602     		.2byte	0x216
+ 1887 05eb 2D060000 		.4byte	0x62d
+ 1888 05ef 02       		.uleb128 0x2
+ 1889 05f0 91       		.byte	0x91
+ 1890 05f1 60       		.sleb128 -32
+ 1891 05f2 16       		.uleb128 0x16
+ 1892 05f3 6900     		.ascii	"i\000"
+ 1893 05f5 01       		.byte	0x1
+ 1894 05f6 1802     		.2byte	0x218
+ 1895 05f8 8D000000 		.4byte	0x8d
+ 1896 05fc 02       		.uleb128 0x2
+ 1897 05fd 91       		.byte	0x91
+ 1898 05fe 77       		.sleb128 -9
+ 1899 05ff 13       		.uleb128 0x13
+ 1900 0600 DB000000 		.4byte	.LASF86
+ 1901 0604 01       		.byte	0x1
+ 1902 0605 1902     		.2byte	0x219
+ 1903 0607 33060000 		.4byte	0x633
+ 1904 060b 02       		.uleb128 0x2
+ 1905 060c 91       		.byte	0x91
+ 1906 060d 70       		.sleb128 -16
+ 1907 060e 13       		.uleb128 0x13
+ 1908 060f C2030000 		.4byte	.LASF87
+ 1909 0613 01       		.byte	0x1
+ 1910 0614 1A02     		.2byte	0x21a
+ 1911 0616 33060000 		.4byte	0x633
+ 1912 061a 02       		.uleb128 0x2
+ 1913 061b 91       		.byte	0x91
+ 1914 061c 6C       		.sleb128 -20
+ 1915 061d 13       		.uleb128 0x13
+ 1916 061e DA040000 		.4byte	.LASF72
+ 1917 0622 01       		.byte	0x1
+ 1918 0623 1C02     		.2byte	0x21c
+ 1919 0625 C7000000 		.4byte	0xc7
+ 1920 0629 02       		.uleb128 0x2
+ 1921 062a 91       		.byte	0x91
+ 1922 062b 68       		.sleb128 -24
+ 1923 062c 00       		.byte	0
+ 1924 062d 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 46
+
+
+ 1925 062e 04       		.byte	0x4
+ 1926 062f 05020000 		.4byte	0x205
+ 1927 0633 0B       		.uleb128 0xb
+ 1928 0634 04       		.byte	0x4
+ 1929 0635 D2000000 		.4byte	0xd2
+ 1930 0639 11       		.uleb128 0x11
+ 1931 063a 3E010000 		.4byte	.LASF89
+ 1932 063e 01       		.byte	0x1
+ 1933 063f 5302     		.2byte	0x253
+ 1934 0641 00000000 		.4byte	.LFB8
+ 1935 0645 7E000000 		.4byte	.LFE8-.LFB8
+ 1936 0649 01       		.uleb128 0x1
+ 1937 064a 9C       		.byte	0x9c
+ 1938 064b 8C060000 		.4byte	0x68c
+ 1939 064f 12       		.uleb128 0x12
+ 1940 0650 BB030000 		.4byte	.LASF75
+ 1941 0654 01       		.byte	0x1
+ 1942 0655 5302     		.2byte	0x253
+ 1943 0657 A4030000 		.4byte	0x3a4
+ 1944 065b 02       		.uleb128 0x2
+ 1945 065c 91       		.byte	0x91
+ 1946 065d 6C       		.sleb128 -20
+ 1947 065e 15       		.uleb128 0x15
+ 1948 065f 636E7400 		.ascii	"cnt\000"
+ 1949 0663 01       		.byte	0x1
+ 1950 0664 5402     		.2byte	0x254
+ 1951 0666 98000000 		.4byte	0x98
+ 1952 066a 02       		.uleb128 0x2
+ 1953 066b 91       		.byte	0x91
+ 1954 066c 6A       		.sleb128 -22
+ 1955 066d 12       		.uleb128 0x12
+ 1956 066e D5040000 		.4byte	.LASF77
+ 1957 0672 01       		.byte	0x1
+ 1958 0673 5502     		.2byte	0x255
+ 1959 0675 4A010000 		.4byte	0x14a
+ 1960 0679 02       		.uleb128 0x2
+ 1961 067a 91       		.byte	0x91
+ 1962 067b 64       		.sleb128 -28
+ 1963 067c 13       		.uleb128 0x13
+ 1964 067d DA040000 		.4byte	.LASF72
+ 1965 0681 01       		.byte	0x1
+ 1966 0682 5802     		.2byte	0x258
+ 1967 0684 C7000000 		.4byte	0xc7
+ 1968 0688 02       		.uleb128 0x2
+ 1969 0689 91       		.byte	0x91
+ 1970 068a 74       		.sleb128 -12
+ 1971 068b 00       		.byte	0
+ 1972 068c 17       		.uleb128 0x17
+ 1973 068d E0000000 		.4byte	.LASF90
+ 1974 0691 03       		.byte	0x3
+ 1975 0692 B302     		.2byte	0x2b3
+ 1976 0694 A4030000 		.4byte	0x3a4
+ 1977 0698 17       		.uleb128 0x17
+ 1978 0699 AD000000 		.4byte	.LASF91
+ 1979 069d 03       		.byte	0x3
+ 1980 069e C402     		.2byte	0x2c4
+ 1981 06a0 8D000000 		.4byte	0x8d
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 47
+
+
+ 1982 06a4 17       		.uleb128 0x17
+ 1983 06a5 87040000 		.4byte	.LASF92
+ 1984 06a9 03       		.byte	0x3
+ 1985 06aa C602     		.2byte	0x2c6
+ 1986 06ac 8D000000 		.4byte	0x8d
+ 1987 06b0 17       		.uleb128 0x17
+ 1988 06b1 AD040000 		.4byte	.LASF93
+ 1989 06b5 03       		.byte	0x3
+ 1990 06b6 DB02     		.2byte	0x2db
+ 1991 06b8 BC060000 		.4byte	0x6bc
+ 1992 06bc 0B       		.uleb128 0xb
+ 1993 06bd 04       		.byte	0x4
+ 1994 06be C6030000 		.4byte	0x3c6
+ 1995 06c2 00       		.byte	0
+ 1996              		.section	.debug_abbrev,"",%progbits
+ 1997              	.Ldebug_abbrev0:
+ 1998 0000 01       		.uleb128 0x1
+ 1999 0001 11       		.uleb128 0x11
+ 2000 0002 01       		.byte	0x1
+ 2001 0003 25       		.uleb128 0x25
+ 2002 0004 0E       		.uleb128 0xe
+ 2003 0005 13       		.uleb128 0x13
+ 2004 0006 0B       		.uleb128 0xb
+ 2005 0007 03       		.uleb128 0x3
+ 2006 0008 0E       		.uleb128 0xe
+ 2007 0009 1B       		.uleb128 0x1b
+ 2008 000a 0E       		.uleb128 0xe
+ 2009 000b 55       		.uleb128 0x55
+ 2010 000c 17       		.uleb128 0x17
+ 2011 000d 11       		.uleb128 0x11
+ 2012 000e 01       		.uleb128 0x1
+ 2013 000f 10       		.uleb128 0x10
+ 2014 0010 17       		.uleb128 0x17
+ 2015 0011 00       		.byte	0
+ 2016 0012 00       		.byte	0
+ 2017 0013 02       		.uleb128 0x2
+ 2018 0014 24       		.uleb128 0x24
+ 2019 0015 00       		.byte	0
+ 2020 0016 0B       		.uleb128 0xb
+ 2021 0017 0B       		.uleb128 0xb
+ 2022 0018 3E       		.uleb128 0x3e
+ 2023 0019 0B       		.uleb128 0xb
+ 2024 001a 03       		.uleb128 0x3
+ 2025 001b 0E       		.uleb128 0xe
+ 2026 001c 00       		.byte	0
+ 2027 001d 00       		.byte	0
+ 2028 001e 03       		.uleb128 0x3
+ 2029 001f 24       		.uleb128 0x24
+ 2030 0020 00       		.byte	0
+ 2031 0021 0B       		.uleb128 0xb
+ 2032 0022 0B       		.uleb128 0xb
+ 2033 0023 3E       		.uleb128 0x3e
+ 2034 0024 0B       		.uleb128 0xb
+ 2035 0025 03       		.uleb128 0x3
+ 2036 0026 08       		.uleb128 0x8
+ 2037 0027 00       		.byte	0
+ 2038 0028 00       		.byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 48
+
+
+ 2039 0029 04       		.uleb128 0x4
+ 2040 002a 0F       		.uleb128 0xf
+ 2041 002b 00       		.byte	0
+ 2042 002c 0B       		.uleb128 0xb
+ 2043 002d 0B       		.uleb128 0xb
+ 2044 002e 00       		.byte	0
+ 2045 002f 00       		.byte	0
+ 2046 0030 05       		.uleb128 0x5
+ 2047 0031 16       		.uleb128 0x16
+ 2048 0032 00       		.byte	0
+ 2049 0033 03       		.uleb128 0x3
+ 2050 0034 0E       		.uleb128 0xe
+ 2051 0035 3A       		.uleb128 0x3a
+ 2052 0036 0B       		.uleb128 0xb
+ 2053 0037 3B       		.uleb128 0x3b
+ 2054 0038 0B       		.uleb128 0xb
+ 2055 0039 49       		.uleb128 0x49
+ 2056 003a 13       		.uleb128 0x13
+ 2057 003b 00       		.byte	0
+ 2058 003c 00       		.byte	0
+ 2059 003d 06       		.uleb128 0x6
+ 2060 003e 16       		.uleb128 0x16
+ 2061 003f 00       		.byte	0
+ 2062 0040 03       		.uleb128 0x3
+ 2063 0041 0E       		.uleb128 0xe
+ 2064 0042 3A       		.uleb128 0x3a
+ 2065 0043 0B       		.uleb128 0xb
+ 2066 0044 3B       		.uleb128 0x3b
+ 2067 0045 05       		.uleb128 0x5
+ 2068 0046 49       		.uleb128 0x49
+ 2069 0047 13       		.uleb128 0x13
+ 2070 0048 00       		.byte	0
+ 2071 0049 00       		.byte	0
+ 2072 004a 07       		.uleb128 0x7
+ 2073 004b 13       		.uleb128 0x13
+ 2074 004c 01       		.byte	0x1
+ 2075 004d 03       		.uleb128 0x3
+ 2076 004e 0E       		.uleb128 0xe
+ 2077 004f 0B       		.uleb128 0xb
+ 2078 0050 0B       		.uleb128 0xb
+ 2079 0051 3A       		.uleb128 0x3a
+ 2080 0052 0B       		.uleb128 0xb
+ 2081 0053 3B       		.uleb128 0x3b
+ 2082 0054 05       		.uleb128 0x5
+ 2083 0055 01       		.uleb128 0x1
+ 2084 0056 13       		.uleb128 0x13
+ 2085 0057 00       		.byte	0
+ 2086 0058 00       		.byte	0
+ 2087 0059 08       		.uleb128 0x8
+ 2088 005a 0D       		.uleb128 0xd
+ 2089 005b 00       		.byte	0
+ 2090 005c 03       		.uleb128 0x3
+ 2091 005d 0E       		.uleb128 0xe
+ 2092 005e 3A       		.uleb128 0x3a
+ 2093 005f 0B       		.uleb128 0xb
+ 2094 0060 3B       		.uleb128 0x3b
+ 2095 0061 05       		.uleb128 0x5
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 49
+
+
+ 2096 0062 49       		.uleb128 0x49
+ 2097 0063 13       		.uleb128 0x13
+ 2098 0064 38       		.uleb128 0x38
+ 2099 0065 0B       		.uleb128 0xb
+ 2100 0066 00       		.byte	0
+ 2101 0067 00       		.byte	0
+ 2102 0068 09       		.uleb128 0x9
+ 2103 0069 01       		.uleb128 0x1
+ 2104 006a 01       		.byte	0x1
+ 2105 006b 49       		.uleb128 0x49
+ 2106 006c 13       		.uleb128 0x13
+ 2107 006d 01       		.uleb128 0x1
+ 2108 006e 13       		.uleb128 0x13
+ 2109 006f 00       		.byte	0
+ 2110 0070 00       		.byte	0
+ 2111 0071 0A       		.uleb128 0xa
+ 2112 0072 21       		.uleb128 0x21
+ 2113 0073 00       		.byte	0
+ 2114 0074 49       		.uleb128 0x49
+ 2115 0075 13       		.uleb128 0x13
+ 2116 0076 2F       		.uleb128 0x2f
+ 2117 0077 0B       		.uleb128 0xb
+ 2118 0078 00       		.byte	0
+ 2119 0079 00       		.byte	0
+ 2120 007a 0B       		.uleb128 0xb
+ 2121 007b 0F       		.uleb128 0xf
+ 2122 007c 00       		.byte	0
+ 2123 007d 0B       		.uleb128 0xb
+ 2124 007e 0B       		.uleb128 0xb
+ 2125 007f 49       		.uleb128 0x49
+ 2126 0080 13       		.uleb128 0x13
+ 2127 0081 00       		.byte	0
+ 2128 0082 00       		.byte	0
+ 2129 0083 0C       		.uleb128 0xc
+ 2130 0084 2E       		.uleb128 0x2e
+ 2131 0085 01       		.byte	0x1
+ 2132 0086 3F       		.uleb128 0x3f
+ 2133 0087 19       		.uleb128 0x19
+ 2134 0088 03       		.uleb128 0x3
+ 2135 0089 0E       		.uleb128 0xe
+ 2136 008a 3A       		.uleb128 0x3a
+ 2137 008b 0B       		.uleb128 0xb
+ 2138 008c 3B       		.uleb128 0x3b
+ 2139 008d 0B       		.uleb128 0xb
+ 2140 008e 27       		.uleb128 0x27
+ 2141 008f 19       		.uleb128 0x19
+ 2142 0090 49       		.uleb128 0x49
+ 2143 0091 13       		.uleb128 0x13
+ 2144 0092 11       		.uleb128 0x11
+ 2145 0093 01       		.uleb128 0x1
+ 2146 0094 12       		.uleb128 0x12
+ 2147 0095 06       		.uleb128 0x6
+ 2148 0096 40       		.uleb128 0x40
+ 2149 0097 18       		.uleb128 0x18
+ 2150 0098 9642     		.uleb128 0x2116
+ 2151 009a 19       		.uleb128 0x19
+ 2152 009b 01       		.uleb128 0x1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 50
+
+
+ 2153 009c 13       		.uleb128 0x13
+ 2154 009d 00       		.byte	0
+ 2155 009e 00       		.byte	0
+ 2156 009f 0D       		.uleb128 0xd
+ 2157 00a0 05       		.uleb128 0x5
+ 2158 00a1 00       		.byte	0
+ 2159 00a2 03       		.uleb128 0x3
+ 2160 00a3 0E       		.uleb128 0xe
+ 2161 00a4 3A       		.uleb128 0x3a
+ 2162 00a5 0B       		.uleb128 0xb
+ 2163 00a6 3B       		.uleb128 0x3b
+ 2164 00a7 0B       		.uleb128 0xb
+ 2165 00a8 49       		.uleb128 0x49
+ 2166 00a9 13       		.uleb128 0x13
+ 2167 00aa 02       		.uleb128 0x2
+ 2168 00ab 18       		.uleb128 0x18
+ 2169 00ac 00       		.byte	0
+ 2170 00ad 00       		.byte	0
+ 2171 00ae 0E       		.uleb128 0xe
+ 2172 00af 34       		.uleb128 0x34
+ 2173 00b0 00       		.byte	0
+ 2174 00b1 03       		.uleb128 0x3
+ 2175 00b2 08       		.uleb128 0x8
+ 2176 00b3 3A       		.uleb128 0x3a
+ 2177 00b4 0B       		.uleb128 0xb
+ 2178 00b5 3B       		.uleb128 0x3b
+ 2179 00b6 0B       		.uleb128 0xb
+ 2180 00b7 49       		.uleb128 0x49
+ 2181 00b8 13       		.uleb128 0x13
+ 2182 00b9 02       		.uleb128 0x2
+ 2183 00ba 18       		.uleb128 0x18
+ 2184 00bb 00       		.byte	0
+ 2185 00bc 00       		.byte	0
+ 2186 00bd 0F       		.uleb128 0xf
+ 2187 00be 34       		.uleb128 0x34
+ 2188 00bf 00       		.byte	0
+ 2189 00c0 03       		.uleb128 0x3
+ 2190 00c1 0E       		.uleb128 0xe
+ 2191 00c2 3A       		.uleb128 0x3a
+ 2192 00c3 0B       		.uleb128 0xb
+ 2193 00c4 3B       		.uleb128 0x3b
+ 2194 00c5 0B       		.uleb128 0xb
+ 2195 00c6 49       		.uleb128 0x49
+ 2196 00c7 13       		.uleb128 0x13
+ 2197 00c8 02       		.uleb128 0x2
+ 2198 00c9 18       		.uleb128 0x18
+ 2199 00ca 00       		.byte	0
+ 2200 00cb 00       		.byte	0
+ 2201 00cc 10       		.uleb128 0x10
+ 2202 00cd 05       		.uleb128 0x5
+ 2203 00ce 00       		.byte	0
+ 2204 00cf 03       		.uleb128 0x3
+ 2205 00d0 08       		.uleb128 0x8
+ 2206 00d1 3A       		.uleb128 0x3a
+ 2207 00d2 0B       		.uleb128 0xb
+ 2208 00d3 3B       		.uleb128 0x3b
+ 2209 00d4 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 51
+
+
+ 2210 00d5 49       		.uleb128 0x49
+ 2211 00d6 13       		.uleb128 0x13
+ 2212 00d7 02       		.uleb128 0x2
+ 2213 00d8 18       		.uleb128 0x18
+ 2214 00d9 00       		.byte	0
+ 2215 00da 00       		.byte	0
+ 2216 00db 11       		.uleb128 0x11
+ 2217 00dc 2E       		.uleb128 0x2e
+ 2218 00dd 01       		.byte	0x1
+ 2219 00de 3F       		.uleb128 0x3f
+ 2220 00df 19       		.uleb128 0x19
+ 2221 00e0 03       		.uleb128 0x3
+ 2222 00e1 0E       		.uleb128 0xe
+ 2223 00e2 3A       		.uleb128 0x3a
+ 2224 00e3 0B       		.uleb128 0xb
+ 2225 00e4 3B       		.uleb128 0x3b
+ 2226 00e5 05       		.uleb128 0x5
+ 2227 00e6 27       		.uleb128 0x27
+ 2228 00e7 19       		.uleb128 0x19
+ 2229 00e8 11       		.uleb128 0x11
+ 2230 00e9 01       		.uleb128 0x1
+ 2231 00ea 12       		.uleb128 0x12
+ 2232 00eb 06       		.uleb128 0x6
+ 2233 00ec 40       		.uleb128 0x40
+ 2234 00ed 18       		.uleb128 0x18
+ 2235 00ee 9642     		.uleb128 0x2116
+ 2236 00f0 19       		.uleb128 0x19
+ 2237 00f1 01       		.uleb128 0x1
+ 2238 00f2 13       		.uleb128 0x13
+ 2239 00f3 00       		.byte	0
+ 2240 00f4 00       		.byte	0
+ 2241 00f5 12       		.uleb128 0x12
+ 2242 00f6 05       		.uleb128 0x5
+ 2243 00f7 00       		.byte	0
+ 2244 00f8 03       		.uleb128 0x3
+ 2245 00f9 0E       		.uleb128 0xe
+ 2246 00fa 3A       		.uleb128 0x3a
+ 2247 00fb 0B       		.uleb128 0xb
+ 2248 00fc 3B       		.uleb128 0x3b
+ 2249 00fd 05       		.uleb128 0x5
+ 2250 00fe 49       		.uleb128 0x49
+ 2251 00ff 13       		.uleb128 0x13
+ 2252 0100 02       		.uleb128 0x2
+ 2253 0101 18       		.uleb128 0x18
+ 2254 0102 00       		.byte	0
+ 2255 0103 00       		.byte	0
+ 2256 0104 13       		.uleb128 0x13
+ 2257 0105 34       		.uleb128 0x34
+ 2258 0106 00       		.byte	0
+ 2259 0107 03       		.uleb128 0x3
+ 2260 0108 0E       		.uleb128 0xe
+ 2261 0109 3A       		.uleb128 0x3a
+ 2262 010a 0B       		.uleb128 0xb
+ 2263 010b 3B       		.uleb128 0x3b
+ 2264 010c 05       		.uleb128 0x5
+ 2265 010d 49       		.uleb128 0x49
+ 2266 010e 13       		.uleb128 0x13
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 52
+
+
+ 2267 010f 02       		.uleb128 0x2
+ 2268 0110 18       		.uleb128 0x18
+ 2269 0111 00       		.byte	0
+ 2270 0112 00       		.byte	0
+ 2271 0113 14       		.uleb128 0x14
+ 2272 0114 2E       		.uleb128 0x2e
+ 2273 0115 01       		.byte	0x1
+ 2274 0116 3F       		.uleb128 0x3f
+ 2275 0117 19       		.uleb128 0x19
+ 2276 0118 03       		.uleb128 0x3
+ 2277 0119 0E       		.uleb128 0xe
+ 2278 011a 3A       		.uleb128 0x3a
+ 2279 011b 0B       		.uleb128 0xb
+ 2280 011c 3B       		.uleb128 0x3b
+ 2281 011d 05       		.uleb128 0x5
+ 2282 011e 27       		.uleb128 0x27
+ 2283 011f 19       		.uleb128 0x19
+ 2284 0120 49       		.uleb128 0x49
+ 2285 0121 13       		.uleb128 0x13
+ 2286 0122 11       		.uleb128 0x11
+ 2287 0123 01       		.uleb128 0x1
+ 2288 0124 12       		.uleb128 0x12
+ 2289 0125 06       		.uleb128 0x6
+ 2290 0126 40       		.uleb128 0x40
+ 2291 0127 18       		.uleb128 0x18
+ 2292 0128 9642     		.uleb128 0x2116
+ 2293 012a 19       		.uleb128 0x19
+ 2294 012b 01       		.uleb128 0x1
+ 2295 012c 13       		.uleb128 0x13
+ 2296 012d 00       		.byte	0
+ 2297 012e 00       		.byte	0
+ 2298 012f 15       		.uleb128 0x15
+ 2299 0130 05       		.uleb128 0x5
+ 2300 0131 00       		.byte	0
+ 2301 0132 03       		.uleb128 0x3
+ 2302 0133 08       		.uleb128 0x8
+ 2303 0134 3A       		.uleb128 0x3a
+ 2304 0135 0B       		.uleb128 0xb
+ 2305 0136 3B       		.uleb128 0x3b
+ 2306 0137 05       		.uleb128 0x5
+ 2307 0138 49       		.uleb128 0x49
+ 2308 0139 13       		.uleb128 0x13
+ 2309 013a 02       		.uleb128 0x2
+ 2310 013b 18       		.uleb128 0x18
+ 2311 013c 00       		.byte	0
+ 2312 013d 00       		.byte	0
+ 2313 013e 16       		.uleb128 0x16
+ 2314 013f 34       		.uleb128 0x34
+ 2315 0140 00       		.byte	0
+ 2316 0141 03       		.uleb128 0x3
+ 2317 0142 08       		.uleb128 0x8
+ 2318 0143 3A       		.uleb128 0x3a
+ 2319 0144 0B       		.uleb128 0xb
+ 2320 0145 3B       		.uleb128 0x3b
+ 2321 0146 05       		.uleb128 0x5
+ 2322 0147 49       		.uleb128 0x49
+ 2323 0148 13       		.uleb128 0x13
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 53
+
+
+ 2324 0149 02       		.uleb128 0x2
+ 2325 014a 18       		.uleb128 0x18
+ 2326 014b 00       		.byte	0
+ 2327 014c 00       		.byte	0
+ 2328 014d 17       		.uleb128 0x17
+ 2329 014e 34       		.uleb128 0x34
+ 2330 014f 00       		.byte	0
+ 2331 0150 03       		.uleb128 0x3
+ 2332 0151 0E       		.uleb128 0xe
+ 2333 0152 3A       		.uleb128 0x3a
+ 2334 0153 0B       		.uleb128 0xb
+ 2335 0154 3B       		.uleb128 0x3b
+ 2336 0155 05       		.uleb128 0x5
+ 2337 0156 49       		.uleb128 0x49
+ 2338 0157 13       		.uleb128 0x13
+ 2339 0158 3F       		.uleb128 0x3f
+ 2340 0159 19       		.uleb128 0x19
+ 2341 015a 3C       		.uleb128 0x3c
+ 2342 015b 19       		.uleb128 0x19
+ 2343 015c 00       		.byte	0
+ 2344 015d 00       		.byte	0
+ 2345 015e 00       		.byte	0
+ 2346              		.section	.debug_aranges,"",%progbits
+ 2347 0000 54000000 		.4byte	0x54
+ 2348 0004 0200     		.2byte	0x2
+ 2349 0006 00000000 		.4byte	.Ldebug_info0
+ 2350 000a 04       		.byte	0x4
+ 2351 000b 00       		.byte	0
+ 2352 000c 0000     		.2byte	0
+ 2353 000e 0000     		.2byte	0
+ 2354 0010 00000000 		.4byte	.LFB1
+ 2355 0014 60000000 		.4byte	.LFE1-.LFB1
+ 2356 0018 00000000 		.4byte	.LFB2
+ 2357 001c 84000000 		.4byte	.LFE2-.LFB2
+ 2358 0020 00000000 		.4byte	.LFB3
+ 2359 0024 50010000 		.4byte	.LFE3-.LFB3
+ 2360 0028 00000000 		.4byte	.LFB4
+ 2361 002c 34010000 		.4byte	.LFE4-.LFB4
+ 2362 0030 00000000 		.4byte	.LFB5
+ 2363 0034 CE000000 		.4byte	.LFE5-.LFB5
+ 2364 0038 00000000 		.4byte	.LFB6
+ 2365 003c 88000000 		.4byte	.LFE6-.LFB6
+ 2366 0040 00000000 		.4byte	.LFB7
+ 2367 0044 96000000 		.4byte	.LFE7-.LFB7
+ 2368 0048 00000000 		.4byte	.LFB8
+ 2369 004c 7E000000 		.4byte	.LFE8-.LFB8
+ 2370 0050 00000000 		.4byte	0
+ 2371 0054 00000000 		.4byte	0
+ 2372              		.section	.debug_ranges,"",%progbits
+ 2373              	.Ldebug_ranges0:
+ 2374 0000 00000000 		.4byte	.LFB1
+ 2375 0004 60000000 		.4byte	.LFE1
+ 2376 0008 00000000 		.4byte	.LFB2
+ 2377 000c 84000000 		.4byte	.LFE2
+ 2378 0010 00000000 		.4byte	.LFB3
+ 2379 0014 50010000 		.4byte	.LFE3
+ 2380 0018 00000000 		.4byte	.LFB4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 54
+
+
+ 2381 001c 34010000 		.4byte	.LFE4
+ 2382 0020 00000000 		.4byte	.LFB5
+ 2383 0024 CE000000 		.4byte	.LFE5
+ 2384 0028 00000000 		.4byte	.LFB6
+ 2385 002c 88000000 		.4byte	.LFE6
+ 2386 0030 00000000 		.4byte	.LFB7
+ 2387 0034 96000000 		.4byte	.LFE7
+ 2388 0038 00000000 		.4byte	.LFB8
+ 2389 003c 7E000000 		.4byte	.LFE8
+ 2390 0040 00000000 		.4byte	0
+ 2391 0044 00000000 		.4byte	0
+ 2392              		.section	.debug_line,"",%progbits
+ 2393              	.Ldebug_line0:
+ 2394 0000 06020000 		.section	.debug_str,"MS",%progbits,1
+ 2394      0200A500 
+ 2394      00000201 
+ 2394      FB0E0D00 
+ 2394      01010101 
+ 2395              	.LASF28:
+ 2396 0000 4F535F46 		.ascii	"OS_FLAGS\000"
+ 2396      4C414753 
+ 2396      00
+ 2397              	.LASF57:
+ 2398 0009 4F535443 		.ascii	"OSTCBStatPend\000"
+ 2398      42537461 
+ 2398      7450656E 
+ 2398      6400
+ 2399              	.LASF71:
+ 2400 0017 4F535F54 		.ascii	"OS_TCB\000"
+ 2400      434200
+ 2401              	.LASF79:
+ 2402 001e 70657665 		.ascii	"pevent_return\000"
+ 2402      6E745F72 
+ 2402      65747572 
+ 2402      6E00
+ 2403              	.LASF17:
+ 2404 002c 646F7562 		.ascii	"double\000"
+ 2404      6C6500
+ 2405              	.LASF67:
+ 2406 0033 4F535443 		.ascii	"OSTCBStkBase\000"
+ 2406      4253746B 
+ 2406      42617365 
+ 2406      00
+ 2407              	.LASF34:
+ 2408 0040 4F53466C 		.ascii	"OSFlagNodeFlagGrp\000"
+ 2408      61674E6F 
+ 2408      6465466C 
+ 2408      61674772 
+ 2408      7000
+ 2409              	.LASF63:
+ 2410 0052 4F535443 		.ascii	"OSTCBDelReq\000"
+ 2410      4244656C 
+ 2410      52657100 
+ 2411              	.LASF52:
+ 2412 005e 4F535443 		.ascii	"OSTCBMsg\000"
+ 2412      424D7367 
+ 2412      00
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 55
+
+
+ 2413              	.LASF83:
+ 2414 0067 4F535365 		.ascii	"OSSemPost\000"
+ 2414      6D506F73 
+ 2414      7400
+ 2415              	.LASF26:
+ 2416 0071 4F534576 		.ascii	"OSEventName\000"
+ 2416      656E744E 
+ 2416      616D6500 
+ 2417              	.LASF10:
+ 2418 007d 73697A65 		.ascii	"sizetype\000"
+ 2418      74797065 
+ 2418      00
+ 2419              	.LASF18:
+ 2420 0086 4F535F53 		.ascii	"OS_STK\000"
+ 2420      544B00
+ 2421              	.LASF19:
+ 2422 008d 4F535F43 		.ascii	"OS_CPU_SR\000"
+ 2422      50555F53 
+ 2422      5200
+ 2423              	.LASF68:
+ 2424 0097 4F535443 		.ascii	"OSTCBStkUsed\000"
+ 2424      4253746B 
+ 2424      55736564 
+ 2424      00
+ 2425              	.LASF29:
+ 2426 00a4 6F735F65 		.ascii	"os_event\000"
+ 2426      76656E74 
+ 2426      00
+ 2427              	.LASF91:
+ 2428 00ad 4F53496E 		.ascii	"OSIntNesting\000"
+ 2428      744E6573 
+ 2428      74696E67 
+ 2428      00
+ 2429              	.LASF23:
+ 2430 00ba 4F534576 		.ascii	"OSEventCnt\000"
+ 2430      656E7443 
+ 2430      6E7400
+ 2431              	.LASF2:
+ 2432 00c5 73686F72 		.ascii	"short int\000"
+ 2432      7420696E 
+ 2432      7400
+ 2433              	.LASF42:
+ 2434 00cf 4F535443 		.ascii	"OSTCBStkPtr\000"
+ 2434      4253746B 
+ 2434      50747200 
+ 2435              	.LASF86:
+ 2436 00db 70737263 		.ascii	"psrc\000"
+ 2436      00
+ 2437              	.LASF90:
+ 2438 00e0 4F534576 		.ascii	"OSEventFreeList\000"
+ 2438      656E7446 
+ 2438      7265654C 
+ 2438      69737400 
+ 2439              	.LASF15:
+ 2440 00f0 494E5433 		.ascii	"INT32U\000"
+ 2440      325500
+ 2441              	.LASF95:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 56
+
+
+ 2442 00f7 2E2E5C2E 		.ascii	"..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source\\"
+ 2442      2E5C2E2E 
+ 2442      5C2E2E5C 
+ 2442      2E2E5C2E 
+ 2442      2E5C536F 
+ 2443 0121 6F735F73 		.ascii	"os_sem.c\000"
+ 2443      656D2E63 
+ 2443      00
+ 2444              	.LASF58:
+ 2445 012a 4F535443 		.ascii	"OSTCBPrio\000"
+ 2445      42507269 
+ 2445      6F00
+ 2446              	.LASF48:
+ 2447 0134 4F535443 		.ascii	"OSTCBNext\000"
+ 2447      424E6578 
+ 2447      7400
+ 2448              	.LASF89:
+ 2449 013e 4F535365 		.ascii	"OSSemSet\000"
+ 2449      6D536574 
+ 2449      00
+ 2450              	.LASF22:
+ 2451 0147 4F534576 		.ascii	"OSEventPtr\000"
+ 2451      656E7450 
+ 2451      747200
+ 2452              	.LASF73:
+ 2453 0152 4F535365 		.ascii	"OSSemAccept\000"
+ 2453      6D416363 
+ 2453      65707400 
+ 2454              	.LASF0:
+ 2455 015e 7369676E 		.ascii	"signed char\000"
+ 2455      65642063 
+ 2455      68617200 
+ 2456              	.LASF40:
+ 2457 016a 4F535F53 		.ascii	"OS_SEM_DATA\000"
+ 2457      454D5F44 
+ 2457      41544100 
+ 2458              	.LASF64:
+ 2459 0176 4F535443 		.ascii	"OSTCBCtxSwCtr\000"
+ 2459      42437478 
+ 2459      53774374 
+ 2459      7200
+ 2460              	.LASF16:
+ 2461 0184 666C6F61 		.ascii	"float\000"
+ 2461      7400
+ 2462              	.LASF53:
+ 2463 018a 4F535443 		.ascii	"OSTCBFlagNode\000"
+ 2463      42466C61 
+ 2463      674E6F64 
+ 2463      6500
+ 2464              	.LASF55:
+ 2465 0198 4F535443 		.ascii	"OSTCBDly\000"
+ 2465      42446C79 
+ 2465      00
+ 2466              	.LASF39:
+ 2467 01a1 4F53436E 		.ascii	"OSCnt\000"
+ 2467      7400
+ 2468              	.LASF6:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 57
+
+
+ 2469 01a7 6C6F6E67 		.ascii	"long long int\000"
+ 2469      206C6F6E 
+ 2469      6720696E 
+ 2469      7400
+ 2470              	.LASF27:
+ 2471 01b5 4F535F45 		.ascii	"OS_EVENT\000"
+ 2471      56454E54 
+ 2471      00
+ 2472              	.LASF4:
+ 2473 01be 6C6F6E67 		.ascii	"long int\000"
+ 2473      20696E74 
+ 2473      00
+ 2474              	.LASF59:
+ 2475 01c7 4F535443 		.ascii	"OSTCBX\000"
+ 2475      425800
+ 2476              	.LASF60:
+ 2477 01ce 4F535443 		.ascii	"OSTCBY\000"
+ 2477      425900
+ 2478              	.LASF47:
+ 2479 01d5 4F535443 		.ascii	"OSTCBId\000"
+ 2479      42496400 
+ 2480              	.LASF61:
+ 2481 01dd 4F535443 		.ascii	"OSTCBBitX\000"
+ 2481      42426974 
+ 2481      5800
+ 2482              	.LASF45:
+ 2483 01e7 4F535443 		.ascii	"OSTCBStkSize\000"
+ 2483      4253746B 
+ 2483      53697A65 
+ 2483      00
+ 2484              	.LASF41:
+ 2485 01f4 6F735F74 		.ascii	"os_tcb\000"
+ 2485      636200
+ 2486              	.LASF13:
+ 2487 01fb 494E5438 		.ascii	"INT8U\000"
+ 2487      5500
+ 2488              	.LASF94:
+ 2489 0201 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 2489      43313120 
+ 2489      352E342E 
+ 2489      31203230 
+ 2489      31363036 
+ 2490 0234 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 2490      20726576 
+ 2490      6973696F 
+ 2490      6E203233 
+ 2490      37373135 
+ 2491 0267 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 2491      66756E63 
+ 2491      74696F6E 
+ 2491      2D736563 
+ 2491      74696F6E 
+ 2492              	.LASF66:
+ 2493 028f 4F535443 		.ascii	"OSTCBCyclesStart\000"
+ 2493      42437963 
+ 2493      6C657353 
+ 2493      74617274 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 58
+
+
+ 2493      00
+ 2494              	.LASF1:
+ 2495 02a0 756E7369 		.ascii	"unsigned char\000"
+ 2495      676E6564 
+ 2495      20636861 
+ 2495      7200
+ 2496              	.LASF9:
+ 2497 02ae 6C6F6E67 		.ascii	"long double\000"
+ 2497      20646F75 
+ 2497      626C6500 
+ 2498              	.LASF84:
+ 2499 02ba 4F535365 		.ascii	"OSSemQuery\000"
+ 2499      6D517565 
+ 2499      727900
+ 2500              	.LASF82:
+ 2501 02c5 6E62725F 		.ascii	"nbr_tasks\000"
+ 2501      7461736B 
+ 2501      7300
+ 2502              	.LASF35:
+ 2503 02cf 4F53466C 		.ascii	"OSFlagNodeFlags\000"
+ 2503      61674E6F 
+ 2503      6465466C 
+ 2503      61677300 
+ 2504              	.LASF76:
+ 2505 02df 4F535365 		.ascii	"OSSemDel\000"
+ 2505      6D44656C 
+ 2505      00
+ 2506              	.LASF36:
+ 2507 02e8 4F53466C 		.ascii	"OSFlagNodeWaitType\000"
+ 2507      61674E6F 
+ 2507      64655761 
+ 2507      69745479 
+ 2507      706500
+ 2508              	.LASF74:
+ 2509 02fb 4F535365 		.ascii	"OSSemCreate\000"
+ 2509      6D437265 
+ 2509      61746500 
+ 2510              	.LASF62:
+ 2511 0307 4F535443 		.ascii	"OSTCBBitY\000"
+ 2511      42426974 
+ 2511      5900
+ 2512              	.LASF14:
+ 2513 0311 494E5431 		.ascii	"INT16U\000"
+ 2513      365500
+ 2514              	.LASF43:
+ 2515 0318 4F535443 		.ascii	"OSTCBExtPtr\000"
+ 2515      42457874 
+ 2515      50747200 
+ 2516              	.LASF7:
+ 2517 0324 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2517      206C6F6E 
+ 2517      6720756E 
+ 2517      7369676E 
+ 2517      65642069 
+ 2518              	.LASF8:
+ 2519 033b 756E7369 		.ascii	"unsigned int\000"
+ 2519      676E6564 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 59
+
+
+ 2519      20696E74 
+ 2519      00
+ 2520              	.LASF50:
+ 2521 0348 4F535443 		.ascii	"OSTCBEventPtr\000"
+ 2521      42457665 
+ 2521      6E745074 
+ 2521      7200
+ 2522              	.LASF51:
+ 2523 0356 4F535443 		.ascii	"OSTCBEventMultiPtr\000"
+ 2523      42457665 
+ 2523      6E744D75 
+ 2523      6C746950 
+ 2523      747200
+ 2524              	.LASF32:
+ 2525 0369 4F53466C 		.ascii	"OSFlagNodePrev\000"
+ 2525      61674E6F 
+ 2525      64655072 
+ 2525      657600
+ 2526              	.LASF70:
+ 2527 0378 4F535443 		.ascii	"OSTCBRegTbl\000"
+ 2527      42526567 
+ 2527      54626C00 
+ 2528              	.LASF81:
+ 2529 0384 4F535365 		.ascii	"OSSemPendAbort\000"
+ 2529      6D50656E 
+ 2529      6441626F 
+ 2529      727400
+ 2530              	.LASF11:
+ 2531 0393 63686172 		.ascii	"char\000"
+ 2531      00
+ 2532              	.LASF31:
+ 2533 0398 4F53466C 		.ascii	"OSFlagNodeNext\000"
+ 2533      61674E6F 
+ 2533      64654E65 
+ 2533      787400
+ 2534              	.LASF20:
+ 2535 03a7 4F535F50 		.ascii	"OS_PRIO\000"
+ 2535      52494F00 
+ 2536              	.LASF21:
+ 2537 03af 4F534576 		.ascii	"OSEventType\000"
+ 2537      656E7454 
+ 2537      79706500 
+ 2538              	.LASF75:
+ 2539 03bb 70657665 		.ascii	"pevent\000"
+ 2539      6E7400
+ 2540              	.LASF87:
+ 2541 03c2 70646573 		.ascii	"pdest\000"
+ 2541      7400
+ 2542              	.LASF65:
+ 2543 03c8 4F535443 		.ascii	"OSTCBCyclesTot\000"
+ 2543      42437963 
+ 2543      6C657354 
+ 2543      6F7400
+ 2544              	.LASF3:
+ 2545 03d7 73686F72 		.ascii	"short unsigned int\000"
+ 2545      7420756E 
+ 2545      7369676E 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 60
+
+
+ 2545      65642069 
+ 2545      6E7400
+ 2546              	.LASF46:
+ 2547 03ea 4F535443 		.ascii	"OSTCBOpt\000"
+ 2547      424F7074 
+ 2547      00
+ 2548              	.LASF44:
+ 2549 03f3 4F535443 		.ascii	"OSTCBStkBottom\000"
+ 2549      4253746B 
+ 2549      426F7474 
+ 2549      6F6D00
+ 2550              	.LASF5:
+ 2551 0402 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2551      20756E73 
+ 2551      69676E65 
+ 2551      6420696E 
+ 2551      7400
+ 2552              	.LASF96:
+ 2553 0414 443A5C43 		.ascii	"D:\\CYTEST\\Micrium_CY8CKIT-044_OS2\\Micrium\\Examp"
+ 2553      59544553 
+ 2553      545C4D69 
+ 2553      63726975 
+ 2553      6D5F4359 
+ 2554 0443 6C65735C 		.ascii	"les\\Cypress\\CY8CKIT-044\\OS2\\PSoC\\OS2.cydsn\000"
+ 2554      43797072 
+ 2554      6573735C 
+ 2554      43593843 
+ 2554      4B49542D 
+ 2555              	.LASF54:
+ 2556 046e 4F535443 		.ascii	"OSTCBFlagsRdy\000"
+ 2556      42466C61 
+ 2556      67735264 
+ 2556      7900
+ 2557              	.LASF24:
+ 2558 047c 4F534576 		.ascii	"OSEventGrp\000"
+ 2558      656E7447 
+ 2558      727000
+ 2559              	.LASF92:
+ 2560 0487 4F534C6F 		.ascii	"OSLockNesting\000"
+ 2560      636B4E65 
+ 2560      7374696E 
+ 2560      6700
+ 2561              	.LASF33:
+ 2562 0495 4F53466C 		.ascii	"OSFlagNodeTCB\000"
+ 2562      61674E6F 
+ 2562      64655443 
+ 2562      4200
+ 2563              	.LASF49:
+ 2564 04a3 4F535443 		.ascii	"OSTCBPrev\000"
+ 2564      42507265 
+ 2564      7600
+ 2565              	.LASF93:
+ 2566 04ad 4F535443 		.ascii	"OSTCBCur\000"
+ 2566      42437572 
+ 2566      00
+ 2567              	.LASF88:
+ 2568 04b6 4F535365 		.ascii	"OSSemPend\000"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cck0OouC.s 			page 61
+
+
+ 2568      6D50656E 
+ 2568      6400
+ 2569              	.LASF37:
+ 2570 04c0 4F535F46 		.ascii	"OS_FLAG_NODE\000"
+ 2570      4C41475F 
+ 2570      4E4F4445 
+ 2570      00
+ 2571              	.LASF12:
+ 2572 04cd 424F4F4C 		.ascii	"BOOLEAN\000"
+ 2572      45414E00 
+ 2573              	.LASF77:
+ 2574 04d5 70657272 		.ascii	"perr\000"
+ 2574      00
+ 2575              	.LASF72:
+ 2576 04da 6370755F 		.ascii	"cpu_sr\000"
+ 2576      737200
+ 2577              	.LASF56:
+ 2578 04e1 4F535443 		.ascii	"OSTCBStat\000"
+ 2578      42537461 
+ 2578      7400
+ 2579              	.LASF30:
+ 2580 04eb 6F735F66 		.ascii	"os_flag_node\000"
+ 2580      6C61675F 
+ 2580      6E6F6465 
+ 2580      00
+ 2581              	.LASF78:
+ 2582 04f8 7461736B 		.ascii	"tasks_waiting\000"
+ 2582      735F7761 
+ 2582      6974696E 
+ 2582      6700
+ 2583              	.LASF38:
+ 2584 0506 6F735F73 		.ascii	"os_sem_data\000"
+ 2584      656D5F64 
+ 2584      61746100 
+ 2585              	.LASF69:
+ 2586 0512 4F535443 		.ascii	"OSTCBTaskName\000"
+ 2586      42546173 
+ 2586      6B4E616D 
+ 2586      6500
+ 2587              	.LASF80:
+ 2588 0520 74696D65 		.ascii	"timeout\000"
+ 2588      6F757400 
+ 2589              	.LASF85:
+ 2590 0528 705F7365 		.ascii	"p_sem_data\000"
+ 2590      6D5F6461 
+ 2590      746100
+ 2591              	.LASF25:
+ 2592 0533 4F534576 		.ascii	"OSEventTbl\000"
+ 2592      656E7454 
+ 2592      626C00
+ 2593              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

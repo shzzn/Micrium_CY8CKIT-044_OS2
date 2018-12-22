@@ -1,0 +1,2562 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"os_mem.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.OSMemCreate,"ax",%progbits
+  20              		.align	2
+  21              		.global	OSMemCreate
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	OSMemCreate, %function
+  25              	OSMemCreate:
+  26              	.LFB1:
+  27              		.file 1 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source\\os_mem.c"
+   1:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*
+   2:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+   3:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                                uC/OS-II
+   4:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                          The Real-Time Kernel
+   5:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                            MEMORY MANAGEMENT
+   6:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+   7:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                              (c) Copyright 1992-2013, Micrium, Weston, FL
+   8:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                           All Rights Reserved
+   9:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+  10:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * File    : OS_MEM.C
+  11:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * By      : Jean J. Labrosse
+  12:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Version : V2.92.11
+  13:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+  14:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * LICENSING TERMS:
+  15:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * ---------------
+  16:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful re
+  17:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * If you plan on using  uC/OS-II  in a commercial product you need to contact Micrium to properly l
+  18:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * its use in your product. We provide ALL the source code for your convenience and to help you expe
+  19:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  pa
+  20:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * licensing fee.
+  21:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+  22:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** */
+  23:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+  24:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #define  MICRIUM_SOURCE
+  25:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+  26:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #ifndef  OS_MASTER_FILE
+  27:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #include <ucos_ii.h>
+  28:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+  29:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+  30:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if (OS_MEM_EN > 0u) && (OS_MAX_MEM_PART > 0u)
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 2
+
+
+  31:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*
+  32:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+  33:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                      CREATE A MEMORY PARTITION
+  34:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+  35:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Description : Create a fixed-sized memory partition that will be managed by uC/OS-II.
+  36:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+  37:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Arguments   : addr     is the starting address of the memory partition
+  38:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+  39:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               nblks    is the number of memory blocks to create from the partition.
+  40:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+  41:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               blksize  is the size (in bytes) of each block in the memory partition.
+  42:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+  43:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               perr     is a pointer to a variable containing an error message which will be set b
+  44:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        this function to either:
+  45:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+  46:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_NONE              if the memory partition has been created correctl
+  47:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_MEM_INVALID_ADDR  if you are specifying an invalid address for the 
+  48:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                                 storage of the partition or, the block does not a
+  49:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                                 on a pointer boundary
+  50:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_MEM_INVALID_PART  no free partitions available
+  51:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_MEM_INVALID_BLKS  user specified an invalid number of blocks (must 
+  52:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_MEM_INVALID_SIZE  user specified an invalid block size
+  53:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                                   - must be greater than the size of a pointer
+  54:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                                   - must be able to hold an integral number of po
+  55:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Returns    : != (OS_MEM *)0  is the partition was created
+  56:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *              == (OS_MEM *)0  if the partition was not created because of invalid arguments or, no
+  57:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                              free partition is available.
+  58:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+  59:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** */
+  60:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+  61:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** OS_MEM  *OSMemCreate (void   *addr,
+  62:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                       INT32U  nblks,
+  63:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                       INT32U  blksize,
+  64:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                       INT8U  *perr)
+  65:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** {
+  28              		.loc 1 65 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 40
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 80B5     		push	{r7, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 8AB0     		sub	sp, sp, #40
+  37              		.cfi_def_cfa_offset 48
+  38 0004 00AF     		add	r7, sp, #0
+  39              		.cfi_def_cfa_register 7
+  40 0006 F860     		str	r0, [r7, #12]
+  41 0008 B960     		str	r1, [r7, #8]
+  42 000a 7A60     		str	r2, [r7, #4]
+  43 000c 3B60     		str	r3, [r7]
+  66:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_MEM    *pmem;
+  67:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     INT8U     *pblk;
+  68:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     void     **plink;
+  69:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     INT32U     loops;
+  70:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     INT32U     i;
+  71:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register  
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 3
+
+
+  72:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_CPU_SR  cpu_sr = 0u;
+  44              		.loc 1 72 0
+  45 000e 0023     		movs	r3, #0
+  46 0010 BB61     		str	r3, [r7, #24]
+  73:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+  74:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+  75:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+  76:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+  77:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #ifdef OS_SAFETY_CRITICAL
+  78:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (perr == (INT8U *)0) {
+  79:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+  80:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return ((OS_MEM *)0);
+  81:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+  82:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+  83:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+  84:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #ifdef OS_SAFETY_CRITICAL_IEC61508
+  85:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (OSSafetyCriticalStartFlag == OS_TRUE) {
+  86:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+  87:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return ((OS_MEM *)0);
+  88:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+  89:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+  90:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+  91:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_ARG_CHK_EN > 0u
+  92:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (addr == (void *)0) {                          /* Must pass a valid address for the memory p
+  47              		.loc 1 92 0
+  48 0012 FB68     		ldr	r3, [r7, #12]
+  49 0014 002B     		cmp	r3, #0
+  50 0016 04D1     		bne	.L2
+  93:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_MEM_INVALID_ADDR;
+  51              		.loc 1 93 0
+  52 0018 3B68     		ldr	r3, [r7]
+  53 001a 6222     		movs	r2, #98
+  54 001c 1A70     		strb	r2, [r3]
+  94:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return ((OS_MEM *)0);
+  55              		.loc 1 94 0
+  56 001e 0023     		movs	r3, #0
+  57 0020 64E0     		b	.L3
+  58              	.L2:
+  95:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+  96:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (((INT32U)addr & (sizeof(void *) - 1u)) != 0u){  /* Must be pointer size aligned            
+  59              		.loc 1 96 0
+  60 0022 FB68     		ldr	r3, [r7, #12]
+  61 0024 0322     		movs	r2, #3
+  62 0026 1340     		ands	r3, r2
+  63 0028 04D0     		beq	.L4
+  97:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_MEM_INVALID_ADDR;
+  64              		.loc 1 97 0
+  65 002a 3B68     		ldr	r3, [r7]
+  66 002c 6222     		movs	r2, #98
+  67 002e 1A70     		strb	r2, [r3]
+  98:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return ((OS_MEM *)0);
+  68              		.loc 1 98 0
+  69 0030 0023     		movs	r3, #0
+  70 0032 5BE0     		b	.L3
+  71              	.L4:
+  99:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 100:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (nblks < 2u) {                                 /* Must have at least 2 blocks per partition 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 4
+
+
+  72              		.loc 1 100 0
+  73 0034 BB68     		ldr	r3, [r7, #8]
+  74 0036 012B     		cmp	r3, #1
+  75 0038 04D8     		bhi	.L5
+ 101:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_MEM_INVALID_BLKS;
+  76              		.loc 1 101 0
+  77 003a 3B68     		ldr	r3, [r7]
+  78 003c 5B22     		movs	r2, #91
+  79 003e 1A70     		strb	r2, [r3]
+ 102:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return ((OS_MEM *)0);
+  80              		.loc 1 102 0
+  81 0040 0023     		movs	r3, #0
+  82 0042 53E0     		b	.L3
+  83              	.L5:
+ 103:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 104:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (blksize < sizeof(void *)) {                   /* Must contain space for at least a pointer 
+  84              		.loc 1 104 0
+  85 0044 7B68     		ldr	r3, [r7, #4]
+  86 0046 032B     		cmp	r3, #3
+  87 0048 04D8     		bhi	.L6
+ 105:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_MEM_INVALID_SIZE;
+  88              		.loc 1 105 0
+  89 004a 3B68     		ldr	r3, [r7]
+  90 004c 5C22     		movs	r2, #92
+  91 004e 1A70     		strb	r2, [r3]
+ 106:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return ((OS_MEM *)0);
+  92              		.loc 1 106 0
+  93 0050 0023     		movs	r3, #0
+  94 0052 4BE0     		b	.L3
+  95              	.L6:
+ 107:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 108:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 109:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_ENTER_CRITICAL();
+  96              		.loc 1 109 0
+  97 0054 FFF7FEFF 		bl	OS_CPU_SR_Save
+  98 0058 0300     		movs	r3, r0
+  99 005a BB61     		str	r3, [r7, #24]
+ 110:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem = OSMemFreeList;                             /* Get next free memory partition            
+ 100              		.loc 1 110 0
+ 101 005c 254B     		ldr	r3, .L11
+ 102 005e 1B68     		ldr	r3, [r3]
+ 103 0060 7B61     		str	r3, [r7, #20]
+ 111:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (OSMemFreeList != (OS_MEM *)0) {               /* See if pool of free partitions was empty  
+ 104              		.loc 1 111 0
+ 105 0062 244B     		ldr	r3, .L11
+ 106 0064 1B68     		ldr	r3, [r3]
+ 107 0066 002B     		cmp	r3, #0
+ 108 0068 04D0     		beq	.L7
+ 112:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         OSMemFreeList = (OS_MEM *)OSMemFreeList->OSMemFreeList;
+ 109              		.loc 1 112 0
+ 110 006a 224B     		ldr	r3, .L11
+ 111 006c 1B68     		ldr	r3, [r3]
+ 112 006e 5A68     		ldr	r2, [r3, #4]
+ 113 0070 204B     		ldr	r3, .L11
+ 114 0072 1A60     		str	r2, [r3]
+ 115              	.L7:
+ 113:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 5
+
+
+ 114:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_EXIT_CRITICAL();
+ 116              		.loc 1 114 0
+ 117 0074 BB69     		ldr	r3, [r7, #24]
+ 118 0076 1800     		movs	r0, r3
+ 119 0078 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 115:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pmem == (OS_MEM *)0) {                        /* See if we have a memory partition         
+ 120              		.loc 1 115 0
+ 121 007c 7B69     		ldr	r3, [r7, #20]
+ 122 007e 002B     		cmp	r3, #0
+ 123 0080 04D1     		bne	.L8
+ 116:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_MEM_INVALID_PART;
+ 124              		.loc 1 116 0
+ 125 0082 3B68     		ldr	r3, [r7]
+ 126 0084 5A22     		movs	r2, #90
+ 127 0086 1A70     		strb	r2, [r3]
+ 117:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return ((OS_MEM *)0);
+ 128              		.loc 1 117 0
+ 129 0088 0023     		movs	r3, #0
+ 130 008a 2FE0     		b	.L3
+ 131              	.L8:
+ 118:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 119:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     plink = (void **)addr;                            /* Create linked list of free memory blocks  
+ 132              		.loc 1 119 0
+ 133 008c FB68     		ldr	r3, [r7, #12]
+ 134 008e 3B62     		str	r3, [r7, #32]
+ 120:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pblk  = (INT8U *)addr;
+ 135              		.loc 1 120 0
+ 136 0090 FB68     		ldr	r3, [r7, #12]
+ 137 0092 7B62     		str	r3, [r7, #36]
+ 121:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     loops  = nblks - 1u;
+ 138              		.loc 1 121 0
+ 139 0094 BB68     		ldr	r3, [r7, #8]
+ 140 0096 013B     		subs	r3, r3, #1
+ 141 0098 3B61     		str	r3, [r7, #16]
+ 122:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     for (i = 0u; i < loops; i++) {
+ 142              		.loc 1 122 0
+ 143 009a 0023     		movs	r3, #0
+ 144 009c FB61     		str	r3, [r7, #28]
+ 145 009e 0BE0     		b	.L9
+ 146              	.L10:
+ 123:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pblk +=  blksize;                             /* Point to the FOLLOWING block              
+ 147              		.loc 1 123 0 discriminator 3
+ 148 00a0 7A6A     		ldr	r2, [r7, #36]
+ 149 00a2 7B68     		ldr	r3, [r7, #4]
+ 150 00a4 D318     		adds	r3, r2, r3
+ 151 00a6 7B62     		str	r3, [r7, #36]
+ 124:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****        *plink = (void  *)pblk;                        /* Save pointer to NEXT block in CURRENT bloc
+ 152              		.loc 1 124 0 discriminator 3
+ 153 00a8 3B6A     		ldr	r3, [r7, #32]
+ 154 00aa 7A6A     		ldr	r2, [r7, #36]
+ 155 00ac 1A60     		str	r2, [r3]
+ 125:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         plink = (void **)pblk;                        /* Position to  NEXT      block              
+ 156              		.loc 1 125 0 discriminator 3
+ 157 00ae 7B6A     		ldr	r3, [r7, #36]
+ 158 00b0 3B62     		str	r3, [r7, #32]
+ 122:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pblk +=  blksize;                             /* Point to the FOLLOWING block              
+ 159              		.loc 1 122 0 discriminator 3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 6
+
+
+ 160 00b2 FB69     		ldr	r3, [r7, #28]
+ 161 00b4 0133     		adds	r3, r3, #1
+ 162 00b6 FB61     		str	r3, [r7, #28]
+ 163              	.L9:
+ 122:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pblk +=  blksize;                             /* Point to the FOLLOWING block              
+ 164              		.loc 1 122 0 is_stmt 0 discriminator 1
+ 165 00b8 FA69     		ldr	r2, [r7, #28]
+ 166 00ba 3B69     		ldr	r3, [r7, #16]
+ 167 00bc 9A42     		cmp	r2, r3
+ 168 00be EFD3     		bcc	.L10
+ 126:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 127:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     *plink              = (void *)0;                  /* Last memory block points to NULL          
+ 169              		.loc 1 127 0 is_stmt 1
+ 170 00c0 3B6A     		ldr	r3, [r7, #32]
+ 171 00c2 0022     		movs	r2, #0
+ 172 00c4 1A60     		str	r2, [r3]
+ 128:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemAddr     = addr;                       /* Store start address of memory partition   
+ 173              		.loc 1 128 0
+ 174 00c6 7B69     		ldr	r3, [r7, #20]
+ 175 00c8 FA68     		ldr	r2, [r7, #12]
+ 176 00ca 1A60     		str	r2, [r3]
+ 129:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemFreeList = addr;                       /* Initialize pointer to pool of free blocks 
+ 177              		.loc 1 129 0
+ 178 00cc 7B69     		ldr	r3, [r7, #20]
+ 179 00ce FA68     		ldr	r2, [r7, #12]
+ 180 00d0 5A60     		str	r2, [r3, #4]
+ 130:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemNFree    = nblks;                      /* Store number of free blocks in MCB        
+ 181              		.loc 1 130 0
+ 182 00d2 7B69     		ldr	r3, [r7, #20]
+ 183 00d4 BA68     		ldr	r2, [r7, #8]
+ 184 00d6 1A61     		str	r2, [r3, #16]
+ 131:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemNBlks    = nblks;
+ 185              		.loc 1 131 0
+ 186 00d8 7B69     		ldr	r3, [r7, #20]
+ 187 00da BA68     		ldr	r2, [r7, #8]
+ 188 00dc DA60     		str	r2, [r3, #12]
+ 132:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemBlkSize  = blksize;                    /* Store block size of each memory blocks    
+ 189              		.loc 1 132 0
+ 190 00de 7B69     		ldr	r3, [r7, #20]
+ 191 00e0 7A68     		ldr	r2, [r7, #4]
+ 192 00e2 9A60     		str	r2, [r3, #8]
+ 133:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     *perr               = OS_ERR_NONE;
+ 193              		.loc 1 133 0
+ 194 00e4 3B68     		ldr	r3, [r7]
+ 195 00e6 0022     		movs	r2, #0
+ 196 00e8 1A70     		strb	r2, [r3]
+ 134:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     return (pmem);
+ 197              		.loc 1 134 0
+ 198 00ea 7B69     		ldr	r3, [r7, #20]
+ 199              	.L3:
+ 135:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** }
+ 200              		.loc 1 135 0
+ 201 00ec 1800     		movs	r0, r3
+ 202 00ee BD46     		mov	sp, r7
+ 203 00f0 0AB0     		add	sp, sp, #40
+ 204              		@ sp needed
+ 205 00f2 80BD     		pop	{r7, pc}
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 7
+
+
+ 206              	.L12:
+ 207              		.align	2
+ 208              	.L11:
+ 209 00f4 00000000 		.word	OSMemFreeList
+ 210              		.cfi_endproc
+ 211              	.LFE1:
+ 212              		.size	OSMemCreate, .-OSMemCreate
+ 213              		.section	.text.OSMemGet,"ax",%progbits
+ 214              		.align	2
+ 215              		.global	OSMemGet
+ 216              		.code	16
+ 217              		.thumb_func
+ 218              		.type	OSMemGet, %function
+ 219              	OSMemGet:
+ 220              	.LFB2:
+ 136:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*$PAGE*/
+ 137:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*
+ 138:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 139:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                         GET A MEMORY BLOCK
+ 140:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 141:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Description : Get a memory block from a partition
+ 142:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 143:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Arguments   : pmem    is a pointer to the memory partition control block
+ 144:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 145:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               perr    is a pointer to a variable containing an error message which will be set by
+ 146:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                       function to either:
+ 147:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 148:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                       OS_ERR_NONE             if the memory partition has been created correctly.
+ 149:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                       OS_ERR_MEM_NO_FREE_BLKS if there are no more free memory blocks to allocate
+ 150:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                       OS_ERR_MEM_INVALID_PMEM if you passed a NULL pointer for 'pmem'
+ 151:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 152:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Returns     : A pointer to a memory block if no error is detected
+ 153:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               A pointer to NULL if an error is detected
+ 154:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 155:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** */
+ 156:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 157:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** void  *OSMemGet (OS_MEM  *pmem,
+ 158:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                  INT8U   *perr)
+ 159:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** {
+ 221              		.loc 1 159 0
+ 222              		.cfi_startproc
+ 223              		@ args = 0, pretend = 0, frame = 16
+ 224              		@ frame_needed = 1, uses_anonymous_args = 0
+ 225 0000 80B5     		push	{r7, lr}
+ 226              		.cfi_def_cfa_offset 8
+ 227              		.cfi_offset 7, -8
+ 228              		.cfi_offset 14, -4
+ 229 0002 84B0     		sub	sp, sp, #16
+ 230              		.cfi_def_cfa_offset 24
+ 231 0004 00AF     		add	r7, sp, #0
+ 232              		.cfi_def_cfa_register 7
+ 233 0006 7860     		str	r0, [r7, #4]
+ 234 0008 3960     		str	r1, [r7]
+ 160:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     void      *pblk;
+ 161:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register  
+ 162:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 235              		.loc 1 162 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 8
+
+
+ 236 000a 0023     		movs	r3, #0
+ 237 000c FB60     		str	r3, [r7, #12]
+ 163:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 164:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 165:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 166:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 167:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #ifdef OS_SAFETY_CRITICAL
+ 168:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (perr == (INT8U *)0) {
+ 169:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+ 170:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return ((void *)0);
+ 171:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 172:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 173:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 174:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_ARG_CHK_EN > 0u
+ 175:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pmem == (OS_MEM *)0) {                        /* Must point to a valid memory partition    
+ 238              		.loc 1 175 0
+ 239 000e 7B68     		ldr	r3, [r7, #4]
+ 240 0010 002B     		cmp	r3, #0
+ 241 0012 04D1     		bne	.L14
+ 176:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_MEM_INVALID_PMEM;
+ 242              		.loc 1 176 0
+ 243 0014 3B68     		ldr	r3, [r7]
+ 244 0016 6022     		movs	r2, #96
+ 245 0018 1A70     		strb	r2, [r3]
+ 177:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return ((void *)0);
+ 246              		.loc 1 177 0
+ 247 001a 0023     		movs	r3, #0
+ 248 001c 24E0     		b	.L15
+ 249              	.L14:
+ 178:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 179:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 180:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_ENTER_CRITICAL();
+ 250              		.loc 1 180 0
+ 251 001e FFF7FEFF 		bl	OS_CPU_SR_Save
+ 252 0022 0300     		movs	r3, r0
+ 253 0024 FB60     		str	r3, [r7, #12]
+ 181:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pmem->OSMemNFree > 0u) {                      /* See if there are any free memory blocks   
+ 254              		.loc 1 181 0
+ 255 0026 7B68     		ldr	r3, [r7, #4]
+ 256 0028 1B69     		ldr	r3, [r3, #16]
+ 257 002a 002B     		cmp	r3, #0
+ 258 002c 14D0     		beq	.L16
+ 182:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pblk                = pmem->OSMemFreeList;    /* Yes, point to next free memory block      
+ 259              		.loc 1 182 0
+ 260 002e 7B68     		ldr	r3, [r7, #4]
+ 261 0030 5B68     		ldr	r3, [r3, #4]
+ 262 0032 BB60     		str	r3, [r7, #8]
+ 183:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pmem->OSMemFreeList = *(void **)pblk;         /*      Adjust pointer to new free list      
+ 263              		.loc 1 183 0
+ 264 0034 BB68     		ldr	r3, [r7, #8]
+ 265 0036 1A68     		ldr	r2, [r3]
+ 266 0038 7B68     		ldr	r3, [r7, #4]
+ 267 003a 5A60     		str	r2, [r3, #4]
+ 184:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pmem->OSMemNFree--;                           /*      One less memory block in this partiti
+ 268              		.loc 1 184 0
+ 269 003c 7B68     		ldr	r3, [r7, #4]
+ 270 003e 1B69     		ldr	r3, [r3, #16]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 9
+
+
+ 271 0040 5A1E     		subs	r2, r3, #1
+ 272 0042 7B68     		ldr	r3, [r7, #4]
+ 273 0044 1A61     		str	r2, [r3, #16]
+ 185:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         OS_EXIT_CRITICAL();
+ 274              		.loc 1 185 0
+ 275 0046 FB68     		ldr	r3, [r7, #12]
+ 276 0048 1800     		movs	r0, r3
+ 277 004a FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 186:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_NONE;                          /*      No error                             
+ 278              		.loc 1 186 0
+ 279 004e 3B68     		ldr	r3, [r7]
+ 280 0050 0022     		movs	r2, #0
+ 281 0052 1A70     		strb	r2, [r3]
+ 187:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (pblk);                                /*      Return memory block to caller        
+ 282              		.loc 1 187 0
+ 283 0054 BB68     		ldr	r3, [r7, #8]
+ 284 0056 07E0     		b	.L15
+ 285              	.L16:
+ 188:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 189:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_EXIT_CRITICAL();
+ 286              		.loc 1 189 0
+ 287 0058 FB68     		ldr	r3, [r7, #12]
+ 288 005a 1800     		movs	r0, r3
+ 289 005c FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 190:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     *perr = OS_ERR_MEM_NO_FREE_BLKS;                  /* No,  Notify caller of empty memory partiti
+ 290              		.loc 1 190 0
+ 291 0060 3B68     		ldr	r3, [r7]
+ 292 0062 5D22     		movs	r2, #93
+ 293 0064 1A70     		strb	r2, [r3]
+ 191:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     return ((void *)0);                               /*      Return NULL pointer to caller        
+ 294              		.loc 1 191 0
+ 295 0066 0023     		movs	r3, #0
+ 296              	.L15:
+ 192:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** }
+ 297              		.loc 1 192 0
+ 298 0068 1800     		movs	r0, r3
+ 299 006a BD46     		mov	sp, r7
+ 300 006c 04B0     		add	sp, sp, #16
+ 301              		@ sp needed
+ 302 006e 80BD     		pop	{r7, pc}
+ 303              		.cfi_endproc
+ 304              	.LFE2:
+ 305              		.size	OSMemGet, .-OSMemGet
+ 306              		.section	.text.OSMemNameGet,"ax",%progbits
+ 307              		.align	2
+ 308              		.global	OSMemNameGet
+ 309              		.code	16
+ 310              		.thumb_func
+ 311              		.type	OSMemNameGet, %function
+ 312              	OSMemNameGet:
+ 313              	.LFB3:
+ 193:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*$PAGE*/
+ 194:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*
+ 195:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 196:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                 GET THE NAME OF A MEMORY PARTITION
+ 197:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 198:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Description: This function is used to obtain the name assigned to a memory partition.
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 10
+
+
+ 199:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 200:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Arguments  : pmem      is a pointer to the memory partition
+ 201:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 202:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *              pname     is a pointer to a pointer to an ASCII string that will receive the name of
+ 203:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 204:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *              perr      is a pointer to an error code that can contain one of the following values
+ 205:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 206:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_NONE                if the name was copied to 'pname'
+ 207:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_MEM_INVALID_PMEM    if you passed a NULL pointer for 'pmem'
+ 208:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_PNAME_NULL          You passed a NULL pointer for 'pname'
+ 209:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_NAME_GET_ISR        You called this function from an ISR
+ 210:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 211:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Returns    : The length of the string or 0 if 'pmem' is a NULL pointer.
+ 212:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 213:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** */
+ 214:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 215:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_MEM_NAME_EN > 0u
+ 216:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** INT8U  OSMemNameGet (OS_MEM   *pmem,
+ 217:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                      INT8U   **pname,
+ 218:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                      INT8U    *perr)
+ 219:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** {
+ 314              		.loc 1 219 0
+ 315              		.cfi_startproc
+ 316              		@ args = 0, pretend = 0, frame = 24
+ 317              		@ frame_needed = 1, uses_anonymous_args = 0
+ 318 0000 90B5     		push	{r4, r7, lr}
+ 319              		.cfi_def_cfa_offset 12
+ 320              		.cfi_offset 4, -12
+ 321              		.cfi_offset 7, -8
+ 322              		.cfi_offset 14, -4
+ 323 0002 87B0     		sub	sp, sp, #28
+ 324              		.cfi_def_cfa_offset 40
+ 325 0004 00AF     		add	r7, sp, #0
+ 326              		.cfi_def_cfa_register 7
+ 327 0006 F860     		str	r0, [r7, #12]
+ 328 0008 B960     		str	r1, [r7, #8]
+ 329 000a 7A60     		str	r2, [r7, #4]
+ 220:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     INT8U      len;
+ 221:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_CRITICAL_METHOD == 3u                     /* Allocate storage for CPU status register       
+ 222:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 330              		.loc 1 222 0
+ 331 000c 0023     		movs	r3, #0
+ 332 000e 7B61     		str	r3, [r7, #20]
+ 223:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 224:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 225:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 226:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 227:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #ifdef OS_SAFETY_CRITICAL
+ 228:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (perr == (INT8U *)0) {
+ 229:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+ 230:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (0u);
+ 231:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 232:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 233:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 234:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_ARG_CHK_EN > 0u
+ 235:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pmem == (OS_MEM *)0) {                   /* Is 'pmem' a NULL pointer?                      
+ 333              		.loc 1 235 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 11
+
+
+ 334 0010 FB68     		ldr	r3, [r7, #12]
+ 335 0012 002B     		cmp	r3, #0
+ 336 0014 04D1     		bne	.L18
+ 236:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_MEM_INVALID_PMEM;
+ 337              		.loc 1 236 0
+ 338 0016 7B68     		ldr	r3, [r7, #4]
+ 339 0018 6022     		movs	r2, #96
+ 340 001a 1A70     		strb	r2, [r3]
+ 237:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (0u);
+ 341              		.loc 1 237 0
+ 342 001c 0023     		movs	r3, #0
+ 343 001e 2BE0     		b	.L19
+ 344              	.L18:
+ 238:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 239:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pname == (INT8U **)0) {                  /* Is 'pname' a NULL pointer?                     
+ 345              		.loc 1 239 0
+ 346 0020 BB68     		ldr	r3, [r7, #8]
+ 347 0022 002B     		cmp	r3, #0
+ 348 0024 04D1     		bne	.L20
+ 240:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_PNAME_NULL;
+ 349              		.loc 1 240 0
+ 350 0026 7B68     		ldr	r3, [r7, #4]
+ 351 0028 0C22     		movs	r2, #12
+ 352 002a 1A70     		strb	r2, [r3]
+ 241:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (0u);
+ 353              		.loc 1 241 0
+ 354 002c 0023     		movs	r3, #0
+ 355 002e 23E0     		b	.L19
+ 356              	.L20:
+ 242:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 243:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 244:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (OSIntNesting > 0u) {                     /* See if trying to call from an ISR              
+ 357              		.loc 1 244 0
+ 358 0030 134B     		ldr	r3, .L22
+ 359 0032 1B78     		ldrb	r3, [r3]
+ 360 0034 002B     		cmp	r3, #0
+ 361 0036 04D0     		beq	.L21
+ 245:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_NAME_GET_ISR;
+ 362              		.loc 1 245 0
+ 363 0038 7B68     		ldr	r3, [r7, #4]
+ 364 003a 1122     		movs	r2, #17
+ 365 003c 1A70     		strb	r2, [r3]
+ 246:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (0u);
+ 366              		.loc 1 246 0
+ 367 003e 0023     		movs	r3, #0
+ 368 0040 1AE0     		b	.L19
+ 369              	.L21:
+ 247:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 248:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_ENTER_CRITICAL();
+ 370              		.loc 1 248 0
+ 371 0042 FFF7FEFF 		bl	OS_CPU_SR_Save
+ 372 0046 0300     		movs	r3, r0
+ 373 0048 7B61     		str	r3, [r7, #20]
+ 249:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     *pname = pmem->OSMemName;
+ 374              		.loc 1 249 0
+ 375 004a FB68     		ldr	r3, [r7, #12]
+ 376 004c 5A69     		ldr	r2, [r3, #20]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 12
+
+
+ 377 004e BB68     		ldr	r3, [r7, #8]
+ 378 0050 1A60     		str	r2, [r3]
+ 250:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     len    = OS_StrLen(*pname);
+ 379              		.loc 1 250 0
+ 380 0052 BB68     		ldr	r3, [r7, #8]
+ 381 0054 1B68     		ldr	r3, [r3]
+ 382 0056 1322     		movs	r2, #19
+ 383 0058 BC18     		adds	r4, r7, r2
+ 384 005a 1800     		movs	r0, r3
+ 385 005c FFF7FEFF 		bl	OS_StrLen
+ 386 0060 0300     		movs	r3, r0
+ 387 0062 2370     		strb	r3, [r4]
+ 251:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_EXIT_CRITICAL();
+ 388              		.loc 1 251 0
+ 389 0064 7B69     		ldr	r3, [r7, #20]
+ 390 0066 1800     		movs	r0, r3
+ 391 0068 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 252:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     *perr  = OS_ERR_NONE;
+ 392              		.loc 1 252 0
+ 393 006c 7B68     		ldr	r3, [r7, #4]
+ 394 006e 0022     		movs	r2, #0
+ 395 0070 1A70     		strb	r2, [r3]
+ 253:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     return (len);
+ 396              		.loc 1 253 0
+ 397 0072 1323     		movs	r3, #19
+ 398 0074 FB18     		adds	r3, r7, r3
+ 399 0076 1B78     		ldrb	r3, [r3]
+ 400              	.L19:
+ 254:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** }
+ 401              		.loc 1 254 0
+ 402 0078 1800     		movs	r0, r3
+ 403 007a BD46     		mov	sp, r7
+ 404 007c 07B0     		add	sp, sp, #28
+ 405              		@ sp needed
+ 406 007e 90BD     		pop	{r4, r7, pc}
+ 407              	.L23:
+ 408              		.align	2
+ 409              	.L22:
+ 410 0080 00000000 		.word	OSIntNesting
+ 411              		.cfi_endproc
+ 412              	.LFE3:
+ 413              		.size	OSMemNameGet, .-OSMemNameGet
+ 414              		.section	.text.OSMemNameSet,"ax",%progbits
+ 415              		.align	2
+ 416              		.global	OSMemNameSet
+ 417              		.code	16
+ 418              		.thumb_func
+ 419              		.type	OSMemNameSet, %function
+ 420              	OSMemNameSet:
+ 421              	.LFB4:
+ 255:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 256:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 257:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*$PAGE*/
+ 258:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*
+ 259:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 260:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                 ASSIGN A NAME TO A MEMORY PARTITION
+ 261:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 13
+
+
+ 262:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Description: This function assigns a name to a memory partition.
+ 263:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 264:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Arguments  : pmem      is a pointer to the memory partition
+ 265:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 266:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *              pname     is a pointer to an ASCII string that contains the name of the memory parti
+ 267:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 268:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *              perr      is a pointer to an error code that can contain one of the following values
+ 269:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 270:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_NONE                if the name was copied to 'pname'
+ 271:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_MEM_INVALID_PMEM    if you passed a NULL pointer for 'pmem'
+ 272:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_PNAME_NULL          You passed a NULL pointer for 'pname'
+ 273:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_MEM_NAME_TOO_LONG   if the name doesn't fit in the storage area
+ 274:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                        OS_ERR_NAME_SET_ISR        if you called this function from an ISR
+ 275:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 276:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Returns    : None
+ 277:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 278:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** */
+ 279:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 280:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_MEM_NAME_EN > 0u
+ 281:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** void  OSMemNameSet (OS_MEM  *pmem,
+ 282:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                     INT8U   *pname,
+ 283:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                     INT8U   *perr)
+ 284:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** {
+ 422              		.loc 1 284 0
+ 423              		.cfi_startproc
+ 424              		@ args = 0, pretend = 0, frame = 24
+ 425              		@ frame_needed = 1, uses_anonymous_args = 0
+ 426 0000 80B5     		push	{r7, lr}
+ 427              		.cfi_def_cfa_offset 8
+ 428              		.cfi_offset 7, -8
+ 429              		.cfi_offset 14, -4
+ 430 0002 86B0     		sub	sp, sp, #24
+ 431              		.cfi_def_cfa_offset 32
+ 432 0004 00AF     		add	r7, sp, #0
+ 433              		.cfi_def_cfa_register 7
+ 434 0006 F860     		str	r0, [r7, #12]
+ 435 0008 B960     		str	r1, [r7, #8]
+ 436 000a 7A60     		str	r2, [r7, #4]
+ 285:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_CRITICAL_METHOD == 3u                     /* Allocate storage for CPU status register       
+ 286:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 437              		.loc 1 286 0
+ 438 000c 0023     		movs	r3, #0
+ 439 000e 7B61     		str	r3, [r7, #20]
+ 287:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 288:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 289:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 290:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 291:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #ifdef OS_SAFETY_CRITICAL
+ 292:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (perr == (INT8U *)0) {
+ 293:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         OS_SAFETY_CRITICAL_EXCEPTION();
+ 294:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return;
+ 295:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 296:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 297:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 298:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_ARG_CHK_EN > 0u
+ 299:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pmem == (OS_MEM *)0) {                   /* Is 'pmem' a NULL pointer?                      
+ 440              		.loc 1 299 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 14
+
+
+ 441 0010 FB68     		ldr	r3, [r7, #12]
+ 442 0012 002B     		cmp	r3, #0
+ 443 0014 03D1     		bne	.L25
+ 300:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_MEM_INVALID_PMEM;
+ 444              		.loc 1 300 0
+ 445 0016 7B68     		ldr	r3, [r7, #4]
+ 446 0018 6022     		movs	r2, #96
+ 447 001a 1A70     		strb	r2, [r3]
+ 301:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return;
+ 448              		.loc 1 301 0
+ 449 001c 1CE0     		b	.L24
+ 450              	.L25:
+ 302:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 303:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pname == (INT8U *)0) {                   /* Is 'pname' a NULL pointer?                     
+ 451              		.loc 1 303 0
+ 452 001e BB68     		ldr	r3, [r7, #8]
+ 453 0020 002B     		cmp	r3, #0
+ 454 0022 03D1     		bne	.L27
+ 304:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_PNAME_NULL;
+ 455              		.loc 1 304 0
+ 456 0024 7B68     		ldr	r3, [r7, #4]
+ 457 0026 0C22     		movs	r2, #12
+ 458 0028 1A70     		strb	r2, [r3]
+ 305:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return;
+ 459              		.loc 1 305 0
+ 460 002a 15E0     		b	.L24
+ 461              	.L27:
+ 306:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 307:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 308:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (OSIntNesting > 0u) {                     /* See if trying to call from an ISR              
+ 462              		.loc 1 308 0
+ 463 002c 0C4B     		ldr	r3, .L29
+ 464 002e 1B78     		ldrb	r3, [r3]
+ 465 0030 002B     		cmp	r3, #0
+ 466 0032 03D0     		beq	.L28
+ 309:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         *perr = OS_ERR_NAME_SET_ISR;
+ 467              		.loc 1 309 0
+ 468 0034 7B68     		ldr	r3, [r7, #4]
+ 469 0036 1222     		movs	r2, #18
+ 470 0038 1A70     		strb	r2, [r3]
+ 310:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return;
+ 471              		.loc 1 310 0
+ 472 003a 0DE0     		b	.L24
+ 473              	.L28:
+ 311:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 312:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_ENTER_CRITICAL();
+ 474              		.loc 1 312 0
+ 475 003c FFF7FEFF 		bl	OS_CPU_SR_Save
+ 476 0040 0300     		movs	r3, r0
+ 477 0042 7B61     		str	r3, [r7, #20]
+ 313:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemName = pname;
+ 478              		.loc 1 313 0
+ 479 0044 FB68     		ldr	r3, [r7, #12]
+ 480 0046 BA68     		ldr	r2, [r7, #8]
+ 481 0048 5A61     		str	r2, [r3, #20]
+ 314:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_EXIT_CRITICAL();
+ 482              		.loc 1 314 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 15
+
+
+ 483 004a 7B69     		ldr	r3, [r7, #20]
+ 484 004c 1800     		movs	r0, r3
+ 485 004e FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 315:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     *perr           = OS_ERR_NONE;
+ 486              		.loc 1 315 0
+ 487 0052 7B68     		ldr	r3, [r7, #4]
+ 488 0054 0022     		movs	r2, #0
+ 489 0056 1A70     		strb	r2, [r3]
+ 490              	.L24:
+ 316:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** }
+ 491              		.loc 1 316 0
+ 492 0058 BD46     		mov	sp, r7
+ 493 005a 06B0     		add	sp, sp, #24
+ 494              		@ sp needed
+ 495 005c 80BD     		pop	{r7, pc}
+ 496              	.L30:
+ 497 005e C046     		.align	2
+ 498              	.L29:
+ 499 0060 00000000 		.word	OSIntNesting
+ 500              		.cfi_endproc
+ 501              	.LFE4:
+ 502              		.size	OSMemNameSet, .-OSMemNameSet
+ 503              		.section	.text.OSMemPut,"ax",%progbits
+ 504              		.align	2
+ 505              		.global	OSMemPut
+ 506              		.code	16
+ 507              		.thumb_func
+ 508              		.type	OSMemPut, %function
+ 509              	OSMemPut:
+ 510              	.LFB5:
+ 317:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 318:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 319:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*$PAGE*/
+ 320:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*
+ 321:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 322:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                       RELEASE A MEMORY BLOCK
+ 323:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 324:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Description : Returns a memory block to a partition
+ 325:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 326:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Arguments   : pmem    is a pointer to the memory partition control block
+ 327:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 328:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               pblk    is a pointer to the memory block being released.
+ 329:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 330:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Returns     : OS_ERR_NONE              if the memory block was inserted into the partition
+ 331:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               OS_ERR_MEM_FULL          if you are returning a memory block to an already FULL mem
+ 332:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                        partition (You freed more blocks than you allocated!)
+ 333:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               OS_ERR_MEM_INVALID_PMEM  if you passed a NULL pointer for 'pmem'
+ 334:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               OS_ERR_MEM_INVALID_PBLK  if you passed a NULL pointer for the block to release.
+ 335:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 336:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** */
+ 337:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 338:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** INT8U  OSMemPut (OS_MEM  *pmem,
+ 339:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                  void    *pblk)
+ 340:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** {
+ 511              		.loc 1 340 0
+ 512              		.cfi_startproc
+ 513              		@ args = 0, pretend = 0, frame = 16
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 16
+
+
+ 514              		@ frame_needed = 1, uses_anonymous_args = 0
+ 515 0000 80B5     		push	{r7, lr}
+ 516              		.cfi_def_cfa_offset 8
+ 517              		.cfi_offset 7, -8
+ 518              		.cfi_offset 14, -4
+ 519 0002 84B0     		sub	sp, sp, #16
+ 520              		.cfi_def_cfa_offset 24
+ 521 0004 00AF     		add	r7, sp, #0
+ 522              		.cfi_def_cfa_register 7
+ 523 0006 7860     		str	r0, [r7, #4]
+ 524 0008 3960     		str	r1, [r7]
+ 341:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_CRITICAL_METHOD == 3u                     /* Allocate storage for CPU status register       
+ 342:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 525              		.loc 1 342 0
+ 526 000a 0023     		movs	r3, #0
+ 527 000c FB60     		str	r3, [r7, #12]
+ 343:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 344:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 345:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 346:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 347:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_ARG_CHK_EN > 0u
+ 348:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pmem == (OS_MEM *)0) {                   /* Must point to a valid memory partition         
+ 528              		.loc 1 348 0
+ 529 000e 7B68     		ldr	r3, [r7, #4]
+ 530 0010 002B     		cmp	r3, #0
+ 531 0012 01D1     		bne	.L32
+ 349:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (OS_ERR_MEM_INVALID_PMEM);
+ 532              		.loc 1 349 0
+ 533 0014 6023     		movs	r3, #96
+ 534 0016 25E0     		b	.L33
+ 535              	.L32:
+ 350:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 351:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pblk == (void *)0) {                     /* Must release a valid block                     
+ 536              		.loc 1 351 0
+ 537 0018 3B68     		ldr	r3, [r7]
+ 538 001a 002B     		cmp	r3, #0
+ 539 001c 01D1     		bne	.L34
+ 352:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (OS_ERR_MEM_INVALID_PBLK);
+ 540              		.loc 1 352 0
+ 541 001e 5F23     		movs	r3, #95
+ 542 0020 20E0     		b	.L33
+ 543              	.L34:
+ 353:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 354:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 355:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_ENTER_CRITICAL();
+ 544              		.loc 1 355 0
+ 545 0022 FFF7FEFF 		bl	OS_CPU_SR_Save
+ 546 0026 0300     		movs	r3, r0
+ 547 0028 FB60     		str	r3, [r7, #12]
+ 356:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pmem->OSMemNFree >= pmem->OSMemNBlks) {  /* Make sure all blocks not already returned      
+ 548              		.loc 1 356 0
+ 549 002a 7B68     		ldr	r3, [r7, #4]
+ 550 002c 1A69     		ldr	r2, [r3, #16]
+ 551 002e 7B68     		ldr	r3, [r7, #4]
+ 552 0030 DB68     		ldr	r3, [r3, #12]
+ 553 0032 9A42     		cmp	r2, r3
+ 554 0034 05D3     		bcc	.L35
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 17
+
+
+ 357:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         OS_EXIT_CRITICAL();
+ 555              		.loc 1 357 0
+ 556 0036 FB68     		ldr	r3, [r7, #12]
+ 557 0038 1800     		movs	r0, r3
+ 558 003a FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 358:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (OS_ERR_MEM_FULL);
+ 559              		.loc 1 358 0
+ 560 003e 5E23     		movs	r3, #94
+ 561 0040 10E0     		b	.L33
+ 562              	.L35:
+ 359:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 360:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     *(void **)pblk      = pmem->OSMemFreeList;   /* Insert released block into free block list     
+ 563              		.loc 1 360 0
+ 564 0042 7B68     		ldr	r3, [r7, #4]
+ 565 0044 5A68     		ldr	r2, [r3, #4]
+ 566 0046 3B68     		ldr	r3, [r7]
+ 567 0048 1A60     		str	r2, [r3]
+ 361:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemFreeList = pblk;
+ 568              		.loc 1 361 0
+ 569 004a 7B68     		ldr	r3, [r7, #4]
+ 570 004c 3A68     		ldr	r2, [r7]
+ 571 004e 5A60     		str	r2, [r3, #4]
+ 362:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemNFree++;                          /* One more memory block in this partition        
+ 572              		.loc 1 362 0
+ 573 0050 7B68     		ldr	r3, [r7, #4]
+ 574 0052 1B69     		ldr	r3, [r3, #16]
+ 575 0054 5A1C     		adds	r2, r3, #1
+ 576 0056 7B68     		ldr	r3, [r7, #4]
+ 577 0058 1A61     		str	r2, [r3, #16]
+ 363:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_EXIT_CRITICAL();
+ 578              		.loc 1 363 0
+ 579 005a FB68     		ldr	r3, [r7, #12]
+ 580 005c 1800     		movs	r0, r3
+ 581 005e FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 364:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     return (OS_ERR_NONE);                        /* Notify caller that memory block was released   
+ 582              		.loc 1 364 0
+ 583 0062 0023     		movs	r3, #0
+ 584              	.L33:
+ 365:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** }
+ 585              		.loc 1 365 0
+ 586 0064 1800     		movs	r0, r3
+ 587 0066 BD46     		mov	sp, r7
+ 588 0068 04B0     		add	sp, sp, #16
+ 589              		@ sp needed
+ 590 006a 80BD     		pop	{r7, pc}
+ 591              		.cfi_endproc
+ 592              	.LFE5:
+ 593              		.size	OSMemPut, .-OSMemPut
+ 594              		.section	.text.OSMemQuery,"ax",%progbits
+ 595              		.align	2
+ 596              		.global	OSMemQuery
+ 597              		.code	16
+ 598              		.thumb_func
+ 599              		.type	OSMemQuery, %function
+ 600              	OSMemQuery:
+ 601              	.LFB6:
+ 366:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*$PAGE*/
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 18
+
+
+ 367:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*
+ 368:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 369:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                       QUERY MEMORY PARTITION
+ 370:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 371:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Description : This function is used to determine the number of free memory blocks and the number 
+ 372:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               used memory blocks from a memory partition.
+ 373:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 374:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Arguments   : pmem        is a pointer to the memory partition control block
+ 375:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 376:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               p_mem_data  is a pointer to a structure that will contain information about the mem
+ 377:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                           partition.
+ 378:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 379:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Returns     : OS_ERR_NONE               if no errors were found.
+ 380:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               OS_ERR_MEM_INVALID_PMEM   if you passed a NULL pointer for 'pmem'
+ 381:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               OS_ERR_MEM_INVALID_PDATA  if you passed a NULL pointer to the data recipient.
+ 382:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 383:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** */
+ 384:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 385:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_MEM_QUERY_EN > 0u
+ 386:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** INT8U  OSMemQuery (OS_MEM       *pmem,
+ 387:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****                    OS_MEM_DATA  *p_mem_data)
+ 388:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** {
+ 602              		.loc 1 388 0
+ 603              		.cfi_startproc
+ 604              		@ args = 0, pretend = 0, frame = 16
+ 605              		@ frame_needed = 1, uses_anonymous_args = 0
+ 606 0000 80B5     		push	{r7, lr}
+ 607              		.cfi_def_cfa_offset 8
+ 608              		.cfi_offset 7, -8
+ 609              		.cfi_offset 14, -4
+ 610 0002 84B0     		sub	sp, sp, #16
+ 611              		.cfi_def_cfa_offset 24
+ 612 0004 00AF     		add	r7, sp, #0
+ 613              		.cfi_def_cfa_register 7
+ 614 0006 7860     		str	r0, [r7, #4]
+ 615 0008 3960     		str	r1, [r7]
+ 389:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_CRITICAL_METHOD == 3u                     /* Allocate storage for CPU status register       
+ 390:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_CPU_SR  cpu_sr = 0u;
+ 616              		.loc 1 390 0
+ 617 000a 0023     		movs	r3, #0
+ 618 000c FB60     		str	r3, [r7, #12]
+ 391:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 392:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 393:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 394:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 395:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_ARG_CHK_EN > 0u
+ 396:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (pmem == (OS_MEM *)0) {                   /* Must point to a valid memory partition         
+ 619              		.loc 1 396 0
+ 620 000e 7B68     		ldr	r3, [r7, #4]
+ 621 0010 002B     		cmp	r3, #0
+ 622 0012 01D1     		bne	.L37
+ 397:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (OS_ERR_MEM_INVALID_PMEM);
+ 623              		.loc 1 397 0
+ 624 0014 6023     		movs	r3, #96
+ 625 0016 28E0     		b	.L38
+ 626              	.L37:
+ 398:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 19
+
+
+ 399:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     if (p_mem_data == (OS_MEM_DATA *)0) {        /* Must release a valid storage area for the data 
+ 627              		.loc 1 399 0
+ 628 0018 3B68     		ldr	r3, [r7]
+ 629 001a 002B     		cmp	r3, #0
+ 630 001c 01D1     		bne	.L39
+ 400:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         return (OS_ERR_MEM_INVALID_PDATA);
+ 631              		.loc 1 400 0
+ 632 001e 6123     		movs	r3, #97
+ 633 0020 23E0     		b	.L38
+ 634              	.L39:
+ 401:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 402:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 403:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_ENTER_CRITICAL();
+ 635              		.loc 1 403 0
+ 636 0022 FFF7FEFF 		bl	OS_CPU_SR_Save
+ 637 0026 0300     		movs	r3, r0
+ 638 0028 FB60     		str	r3, [r7, #12]
+ 404:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     p_mem_data->OSAddr     = pmem->OSMemAddr;
+ 639              		.loc 1 404 0
+ 640 002a 7B68     		ldr	r3, [r7, #4]
+ 641 002c 1A68     		ldr	r2, [r3]
+ 642 002e 3B68     		ldr	r3, [r7]
+ 643 0030 1A60     		str	r2, [r3]
+ 405:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     p_mem_data->OSFreeList = pmem->OSMemFreeList;
+ 644              		.loc 1 405 0
+ 645 0032 7B68     		ldr	r3, [r7, #4]
+ 646 0034 5A68     		ldr	r2, [r3, #4]
+ 647 0036 3B68     		ldr	r3, [r7]
+ 648 0038 5A60     		str	r2, [r3, #4]
+ 406:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     p_mem_data->OSBlkSize  = pmem->OSMemBlkSize;
+ 649              		.loc 1 406 0
+ 650 003a 7B68     		ldr	r3, [r7, #4]
+ 651 003c 9A68     		ldr	r2, [r3, #8]
+ 652 003e 3B68     		ldr	r3, [r7]
+ 653 0040 9A60     		str	r2, [r3, #8]
+ 407:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     p_mem_data->OSNBlks    = pmem->OSMemNBlks;
+ 654              		.loc 1 407 0
+ 655 0042 7B68     		ldr	r3, [r7, #4]
+ 656 0044 DA68     		ldr	r2, [r3, #12]
+ 657 0046 3B68     		ldr	r3, [r7]
+ 658 0048 DA60     		str	r2, [r3, #12]
+ 408:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     p_mem_data->OSNFree    = pmem->OSMemNFree;
+ 659              		.loc 1 408 0
+ 660 004a 7B68     		ldr	r3, [r7, #4]
+ 661 004c 1A69     		ldr	r2, [r3, #16]
+ 662 004e 3B68     		ldr	r3, [r7]
+ 663 0050 1A61     		str	r2, [r3, #16]
+ 409:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_EXIT_CRITICAL();
+ 664              		.loc 1 409 0
+ 665 0052 FB68     		ldr	r3, [r7, #12]
+ 666 0054 1800     		movs	r0, r3
+ 667 0056 FFF7FEFF 		bl	OS_CPU_SR_Restore
+ 410:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     p_mem_data->OSNUsed    = p_mem_data->OSNBlks - p_mem_data->OSNFree;
+ 668              		.loc 1 410 0
+ 669 005a 3B68     		ldr	r3, [r7]
+ 670 005c DA68     		ldr	r2, [r3, #12]
+ 671 005e 3B68     		ldr	r3, [r7]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 20
+
+
+ 672 0060 1B69     		ldr	r3, [r3, #16]
+ 673 0062 D21A     		subs	r2, r2, r3
+ 674 0064 3B68     		ldr	r3, [r7]
+ 675 0066 5A61     		str	r2, [r3, #20]
+ 411:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     return (OS_ERR_NONE);
+ 676              		.loc 1 411 0
+ 677 0068 0023     		movs	r3, #0
+ 678              	.L38:
+ 412:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** }
+ 679              		.loc 1 412 0
+ 680 006a 1800     		movs	r0, r3
+ 681 006c BD46     		mov	sp, r7
+ 682 006e 04B0     		add	sp, sp, #16
+ 683              		@ sp needed
+ 684 0070 80BD     		pop	{r7, pc}
+ 685              		.cfi_endproc
+ 686              	.LFE6:
+ 687              		.size	OSMemQuery, .-OSMemQuery
+ 688 0072 C046     		.section	.rodata
+ 689              		.align	2
+ 690              	.LC4:
+ 691 0000 3F00     		.ascii	"?\000"
+ 692              		.section	.text.OS_MemInit,"ax",%progbits
+ 693              		.align	2
+ 694              		.global	OS_MemInit
+ 695              		.code	16
+ 696              		.thumb_func
+ 697              		.type	OS_MemInit, %function
+ 698              	OS_MemInit:
+ 699              	.LFB7:
+ 413:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif                                           /* OS_MEM_QUERY_EN                                
+ 414:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*$PAGE*/
+ 415:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** /*
+ 416:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 417:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *                                 INITIALIZE MEMORY PARTITION MANAGER
+ 418:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 419:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Description : This function is called by uC/OS-II to initialize the memory partition manager.  Yo
+ 420:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *               application MUST NOT call this function.
+ 421:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 422:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Arguments   : none
+ 423:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 424:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Returns     : none
+ 425:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** *
+ 426:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** * Note(s)    : This function is INTERNAL to uC/OS-II and your application should not call it.
+ 427:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** ***************************************************************************************************
+ 428:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** */
+ 429:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 430:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** void  OS_MemInit (void)
+ 431:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** {
+ 700              		.loc 1 431 0
+ 701              		.cfi_startproc
+ 702              		@ args = 0, pretend = 0, frame = 8
+ 703              		@ frame_needed = 1, uses_anonymous_args = 0
+ 704 0000 80B5     		push	{r7, lr}
+ 705              		.cfi_def_cfa_offset 8
+ 706              		.cfi_offset 7, -8
+ 707              		.cfi_offset 14, -4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 21
+
+
+ 708 0002 82B0     		sub	sp, sp, #8
+ 709              		.cfi_def_cfa_offset 16
+ 710 0004 00AF     		add	r7, sp, #0
+ 711              		.cfi_def_cfa_register 7
+ 432:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_MAX_MEM_PART == 1u
+ 433:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_MemClr((INT8U *)&OSMemTbl[0], sizeof(OSMemTbl));   /* Clear the memory partition table      
+ 434:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OSMemFreeList               = (OS_MEM *)&OSMemTbl[0]; /* Point to beginning of free list       
+ 435:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_MEM_NAME_EN > 0u
+ 436:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OSMemFreeList->OSMemName    = (INT8U *)"?";           /* Unknown name                          
+ 437:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 438:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 439:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 440:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_MAX_MEM_PART >= 2u
+ 441:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_MEM  *pmem;
+ 442:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     INT16U   i;
+ 443:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 444:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 445:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OS_MemClr((INT8U *)&OSMemTbl[0], sizeof(OSMemTbl));   /* Clear the memory partition table      
+ 712              		.loc 1 445 0
+ 713 0006 1F4B     		ldr	r3, .L43
+ 714 0008 7821     		movs	r1, #120
+ 715 000a 1800     		movs	r0, r3
+ 716 000c FFF7FEFF 		bl	OS_MemClr
+ 446:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     for (i = 0u; i < (OS_MAX_MEM_PART - 1u); i++) {       /* Init. list of free memory partitions  
+ 717              		.loc 1 446 0
+ 718 0010 BB1D     		adds	r3, r7, #6
+ 719 0012 0022     		movs	r2, #0
+ 720 0014 1A80     		strh	r2, [r3]
+ 721 0016 1BE0     		b	.L41
+ 722              	.L42:
+ 447:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pmem                = &OSMemTbl[i];               /* Point to memory control block (MCB)   
+ 723              		.loc 1 447 0 discriminator 3
+ 724 0018 BB1D     		adds	r3, r7, #6
+ 725 001a 1A88     		ldrh	r2, [r3]
+ 726 001c 1300     		movs	r3, r2
+ 727 001e 5B00     		lsls	r3, r3, #1
+ 728 0020 9B18     		adds	r3, r3, r2
+ 729 0022 DB00     		lsls	r3, r3, #3
+ 730 0024 174A     		ldr	r2, .L43
+ 731 0026 9B18     		adds	r3, r3, r2
+ 732 0028 3B60     		str	r3, [r7]
+ 448:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pmem->OSMemFreeList = (void *)&OSMemTbl[i + 1u];  /* Chain list of free partitions         
+ 733              		.loc 1 448 0 discriminator 3
+ 734 002a BB1D     		adds	r3, r7, #6
+ 735 002c 1B88     		ldrh	r3, [r3]
+ 736 002e 5A1C     		adds	r2, r3, #1
+ 737 0030 1300     		movs	r3, r2
+ 738 0032 5B00     		lsls	r3, r3, #1
+ 739 0034 9B18     		adds	r3, r3, r2
+ 740 0036 DB00     		lsls	r3, r3, #3
+ 741 0038 124A     		ldr	r2, .L43
+ 742 003a 9A18     		adds	r2, r3, r2
+ 743 003c 3B68     		ldr	r3, [r7]
+ 744 003e 5A60     		str	r2, [r3, #4]
+ 449:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_MEM_NAME_EN > 0u
+ 450:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pmem->OSMemName  = (INT8U *)(void *)"?";
+ 745              		.loc 1 450 0 discriminator 3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 22
+
+
+ 746 0040 3B68     		ldr	r3, [r7]
+ 747 0042 114A     		ldr	r2, .L43+4
+ 748 0044 5A61     		str	r2, [r3, #20]
+ 446:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pmem                = &OSMemTbl[i];               /* Point to memory control block (MCB)   
+ 749              		.loc 1 446 0 discriminator 3
+ 750 0046 BB1D     		adds	r3, r7, #6
+ 751 0048 1A88     		ldrh	r2, [r3]
+ 752 004a BB1D     		adds	r3, r7, #6
+ 753 004c 0132     		adds	r2, r2, #1
+ 754 004e 1A80     		strh	r2, [r3]
+ 755              	.L41:
+ 446:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****         pmem                = &OSMemTbl[i];               /* Point to memory control block (MCB)   
+ 756              		.loc 1 446 0 is_stmt 0 discriminator 1
+ 757 0050 BB1D     		adds	r3, r7, #6
+ 758 0052 1B88     		ldrh	r3, [r3]
+ 759 0054 032B     		cmp	r3, #3
+ 760 0056 DFD9     		bls	.L42
+ 451:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 452:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     }
+ 453:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem                = &OSMemTbl[i];
+ 761              		.loc 1 453 0 is_stmt 1
+ 762 0058 BB1D     		adds	r3, r7, #6
+ 763 005a 1A88     		ldrh	r2, [r3]
+ 764 005c 1300     		movs	r3, r2
+ 765 005e 5B00     		lsls	r3, r3, #1
+ 766 0060 9B18     		adds	r3, r3, r2
+ 767 0062 DB00     		lsls	r3, r3, #3
+ 768 0064 074A     		ldr	r2, .L43
+ 769 0066 9B18     		adds	r3, r3, r2
+ 770 0068 3B60     		str	r3, [r7]
+ 454:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemFreeList = (void *)0;                      /* Initialize last node                  
+ 771              		.loc 1 454 0
+ 772 006a 3B68     		ldr	r3, [r7]
+ 773 006c 0022     		movs	r2, #0
+ 774 006e 5A60     		str	r2, [r3, #4]
+ 455:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #if OS_MEM_NAME_EN > 0u
+ 456:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     pmem->OSMemName = (INT8U *)(void *)"?";
+ 775              		.loc 1 456 0
+ 776 0070 3B68     		ldr	r3, [r7]
+ 777 0072 054A     		ldr	r2, .L43+4
+ 778 0074 5A61     		str	r2, [r3, #20]
+ 457:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 458:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** 
+ 459:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c ****     OSMemFreeList   = &OSMemTbl[0];                       /* Point to beginning of free list       
+ 779              		.loc 1 459 0
+ 780 0076 054B     		ldr	r3, .L43+8
+ 781 0078 024A     		ldr	r2, .L43
+ 782 007a 1A60     		str	r2, [r3]
+ 460:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** #endif
+ 461:..\..\..\..\..\..\Software\uCOS-II\Source/os_mem.c **** }
+ 783              		.loc 1 461 0
+ 784 007c C046     		nop
+ 785 007e BD46     		mov	sp, r7
+ 786 0080 02B0     		add	sp, sp, #8
+ 787              		@ sp needed
+ 788 0082 80BD     		pop	{r7, pc}
+ 789              	.L44:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 23
+
+
+ 790              		.align	2
+ 791              	.L43:
+ 792 0084 00000000 		.word	OSMemTbl
+ 793 0088 00000000 		.word	.LC4
+ 794 008c 00000000 		.word	OSMemFreeList
+ 795              		.cfi_endproc
+ 796              	.LFE7:
+ 797              		.size	OS_MemInit, .-OS_MemInit
+ 798              		.text
+ 799              	.Letext0:
+ 800              		.file 2 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Ports\\ARM-Cortex-M0\\Generic\\GNU/os_cpu.h"
+ 801              		.file 3 "..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source/ucos_ii.h"
+ 802              		.section	.debug_info,"",%progbits
+ 803              	.Ldebug_info0:
+ 804 0000 47040000 		.4byte	0x447
+ 805 0004 0400     		.2byte	0x4
+ 806 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 807 000a 04       		.byte	0x4
+ 808 000b 01       		.uleb128 0x1
+ 809 000c D2000000 		.4byte	.LASF54
+ 810 0010 0C       		.byte	0xc
+ 811 0011 0D020000 		.4byte	.LASF55
+ 812 0015 7D020000 		.4byte	.LASF56
+ 813 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 814 001d 00000000 		.4byte	0
+ 815 0021 00000000 		.4byte	.Ldebug_line0
+ 816 0025 02       		.uleb128 0x2
+ 817 0026 01       		.byte	0x1
+ 818 0027 06       		.byte	0x6
+ 819 0028 00030000 		.4byte	.LASF0
+ 820 002c 02       		.uleb128 0x2
+ 821 002d 01       		.byte	0x1
+ 822 002e 08       		.byte	0x8
+ 823 002f 9F000000 		.4byte	.LASF1
+ 824 0033 02       		.uleb128 0x2
+ 825 0034 02       		.byte	0x2
+ 826 0035 05       		.byte	0x5
+ 827 0036 55020000 		.4byte	.LASF2
+ 828 003a 02       		.uleb128 0x2
+ 829 003b 02       		.byte	0x2
+ 830 003c 07       		.byte	0x7
+ 831 003d 10000000 		.4byte	.LASF3
+ 832 0041 02       		.uleb128 0x2
+ 833 0042 04       		.byte	0x4
+ 834 0043 05       		.byte	0x5
+ 835 0044 D7020000 		.4byte	.LASF4
+ 836 0048 02       		.uleb128 0x2
+ 837 0049 04       		.byte	0x4
+ 838 004a 07       		.byte	0x7
+ 839 004b BB000000 		.4byte	.LASF5
+ 840 004f 02       		.uleb128 0x2
+ 841 0050 08       		.byte	0x8
+ 842 0051 05       		.byte	0x5
+ 843 0052 ED010000 		.4byte	.LASF6
+ 844 0056 02       		.uleb128 0x2
+ 845 0057 08       		.byte	0x8
+ 846 0058 07       		.byte	0x7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 24
+
+
+ 847 0059 B3010000 		.4byte	.LASF7
+ 848 005d 03       		.uleb128 0x3
+ 849 005e 04       		.byte	0x4
+ 850 005f 05       		.byte	0x5
+ 851 0060 696E7400 		.ascii	"int\000"
+ 852 0064 02       		.uleb128 0x2
+ 853 0065 04       		.byte	0x4
+ 854 0066 07       		.byte	0x7
+ 855 0067 A0010000 		.4byte	.LASF8
+ 856 006b 02       		.uleb128 0x2
+ 857 006c 08       		.byte	0x8
+ 858 006d 04       		.byte	0x4
+ 859 006e EC020000 		.4byte	.LASF9
+ 860 0072 04       		.uleb128 0x4
+ 861 0073 04       		.byte	0x4
+ 862 0074 02       		.uleb128 0x2
+ 863 0075 04       		.byte	0x4
+ 864 0076 07       		.byte	0x7
+ 865 0077 E4010000 		.4byte	.LASF10
+ 866 007b 02       		.uleb128 0x2
+ 867 007c 01       		.byte	0x1
+ 868 007d 08       		.byte	0x8
+ 869 007e FB010000 		.4byte	.LASF11
+ 870 0082 05       		.uleb128 0x5
+ 871 0083 AD010000 		.4byte	.LASF12
+ 872 0087 02       		.byte	0x2
+ 873 0088 73       		.byte	0x73
+ 874 0089 2C000000 		.4byte	0x2c
+ 875 008d 05       		.uleb128 0x5
+ 876 008e 75000000 		.4byte	.LASF13
+ 877 0092 02       		.byte	0x2
+ 878 0093 75       		.byte	0x75
+ 879 0094 3A000000 		.4byte	0x3a
+ 880 0098 05       		.uleb128 0x5
+ 881 0099 6C020000 		.4byte	.LASF14
+ 882 009d 02       		.byte	0x2
+ 883 009e 77       		.byte	0x77
+ 884 009f 64000000 		.4byte	0x64
+ 885 00a3 02       		.uleb128 0x2
+ 886 00a4 04       		.byte	0x4
+ 887 00a5 04       		.byte	0x4
+ 888 00a6 84000000 		.4byte	.LASF15
+ 889 00aa 02       		.uleb128 0x2
+ 890 00ab 08       		.byte	0x8
+ 891 00ac 04       		.byte	0x4
+ 892 00ad 5C000000 		.4byte	.LASF16
+ 893 00b1 05       		.uleb128 0x5
+ 894 00b2 90000000 		.4byte	.LASF17
+ 895 00b6 02       		.byte	0x2
+ 896 00b7 7D       		.byte	0x7d
+ 897 00b8 64000000 		.4byte	0x64
+ 898 00bc 06       		.uleb128 0x6
+ 899 00bd 04       		.byte	0x4
+ 900 00be 82000000 		.4byte	0x82
+ 901 00c2 07       		.uleb128 0x7
+ 902 00c3 99010000 		.4byte	.LASF25
+ 903 00c7 18       		.byte	0x18
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 25
+
+
+ 904 00c8 03       		.byte	0x3
+ 905 00c9 CA01     		.2byte	0x1ca
+ 906 00cb 1E010000 		.4byte	0x11e
+ 907 00cf 08       		.uleb128 0x8
+ 908 00d0 35000000 		.4byte	.LASF18
+ 909 00d4 03       		.byte	0x3
+ 910 00d5 CB01     		.2byte	0x1cb
+ 911 00d7 72000000 		.4byte	0x72
+ 912 00db 00       		.byte	0
+ 913 00dc 08       		.uleb128 0x8
+ 914 00dd CA010000 		.4byte	.LASF19
+ 915 00e1 03       		.byte	0x3
+ 916 00e2 CC01     		.2byte	0x1cc
+ 917 00e4 72000000 		.4byte	0x72
+ 918 00e8 04       		.byte	0x4
+ 919 00e9 08       		.uleb128 0x8
+ 920 00ea 00020000 		.4byte	.LASF20
+ 921 00ee 03       		.byte	0x3
+ 922 00ef CD01     		.2byte	0x1cd
+ 923 00f1 98000000 		.4byte	0x98
+ 924 00f5 08       		.byte	0x8
+ 925 00f6 08       		.uleb128 0x8
+ 926 00f7 63000000 		.4byte	.LASF21
+ 927 00fb 03       		.byte	0x3
+ 928 00fc CE01     		.2byte	0x1ce
+ 929 00fe 98000000 		.4byte	0x98
+ 930 0102 0C       		.byte	0xc
+ 931 0103 08       		.uleb128 0x8
+ 932 0104 15030000 		.4byte	.LASF22
+ 933 0108 03       		.byte	0x3
+ 934 0109 CF01     		.2byte	0x1cf
+ 935 010b 98000000 		.4byte	0x98
+ 936 010f 10       		.byte	0x10
+ 937 0110 08       		.uleb128 0x8
+ 938 0111 8F010000 		.4byte	.LASF23
+ 939 0115 03       		.byte	0x3
+ 940 0116 D101     		.2byte	0x1d1
+ 941 0118 BC000000 		.4byte	0xbc
+ 942 011c 14       		.byte	0x14
+ 943 011d 00       		.byte	0
+ 944 011e 09       		.uleb128 0x9
+ 945 011f 6E000000 		.4byte	.LASF24
+ 946 0123 03       		.byte	0x3
+ 947 0124 D301     		.2byte	0x1d3
+ 948 0126 C2000000 		.4byte	0xc2
+ 949 012a 07       		.uleb128 0x7
+ 950 012b D8010000 		.4byte	.LASF26
+ 951 012f 18       		.byte	0x18
+ 952 0130 03       		.byte	0x3
+ 953 0131 D601     		.2byte	0x1d6
+ 954 0133 86010000 		.4byte	0x186
+ 955 0137 08       		.uleb128 0x8
+ 956 0138 6E010000 		.4byte	.LASF27
+ 957 013c 03       		.byte	0x3
+ 958 013d D701     		.2byte	0x1d7
+ 959 013f 72000000 		.4byte	0x72
+ 960 0143 00       		.byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 26
+
+
+ 961 0144 08       		.uleb128 0x8
+ 962 0145 23000000 		.4byte	.LASF28
+ 963 0149 03       		.byte	0x3
+ 964 014a D801     		.2byte	0x1d8
+ 965 014c 72000000 		.4byte	0x72
+ 966 0150 04       		.byte	0x4
+ 967 0151 08       		.uleb128 0x8
+ 968 0152 73020000 		.4byte	.LASF29
+ 969 0156 03       		.byte	0x3
+ 970 0157 D901     		.2byte	0x1d9
+ 971 0159 98000000 		.4byte	0x98
+ 972 015d 08       		.byte	0x8
+ 973 015e 08       		.uleb128 0x8
+ 974 015f 7C000000 		.4byte	.LASF30
+ 975 0163 03       		.byte	0x3
+ 976 0164 DA01     		.2byte	0x1da
+ 977 0166 98000000 		.4byte	0x98
+ 978 016a 0C       		.byte	0xc
+ 979 016b 08       		.uleb128 0x8
+ 980 016c F8020000 		.4byte	.LASF31
+ 981 0170 03       		.byte	0x3
+ 982 0171 DB01     		.2byte	0x1db
+ 983 0173 98000000 		.4byte	0x98
+ 984 0177 10       		.byte	0x10
+ 985 0178 08       		.uleb128 0x8
+ 986 0179 66010000 		.4byte	.LASF32
+ 987 017d 03       		.byte	0x3
+ 988 017e DC01     		.2byte	0x1dc
+ 989 0180 98000000 		.4byte	0x98
+ 990 0184 14       		.byte	0x14
+ 991 0185 00       		.byte	0
+ 992 0186 09       		.uleb128 0x9
+ 993 0187 40020000 		.4byte	.LASF33
+ 994 018b 03       		.byte	0x3
+ 995 018c DD01     		.2byte	0x1dd
+ 996 018e 2A010000 		.4byte	0x12a
+ 997 0192 06       		.uleb128 0x6
+ 998 0193 04       		.byte	0x4
+ 999 0194 72000000 		.4byte	0x72
+ 1000 0198 0A       		.uleb128 0xa
+ 1001 0199 E0020000 		.4byte	.LASF43
+ 1002 019d 01       		.byte	0x1
+ 1003 019e 3D       		.byte	0x3d
+ 1004 019f 3C020000 		.4byte	0x23c
+ 1005 01a3 00000000 		.4byte	.LFB1
+ 1006 01a7 F8000000 		.4byte	.LFE1-.LFB1
+ 1007 01ab 01       		.uleb128 0x1
+ 1008 01ac 9C       		.byte	0x9c
+ 1009 01ad 3C020000 		.4byte	0x23c
+ 1010 01b1 0B       		.uleb128 0xb
+ 1011 01b2 CD000000 		.4byte	.LASF34
+ 1012 01b6 01       		.byte	0x1
+ 1013 01b7 3D       		.byte	0x3d
+ 1014 01b8 72000000 		.4byte	0x72
+ 1015 01bc 02       		.uleb128 0x2
+ 1016 01bd 91       		.byte	0x91
+ 1017 01be 5C       		.sleb128 -36
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 27
+
+
+ 1018 01bf 0B       		.uleb128 0xb
+ 1019 01c0 AD000000 		.4byte	.LASF35
+ 1020 01c4 01       		.byte	0x1
+ 1021 01c5 3E       		.byte	0x3e
+ 1022 01c6 98000000 		.4byte	0x98
+ 1023 01ca 02       		.uleb128 0x2
+ 1024 01cb 91       		.byte	0x91
+ 1025 01cc 58       		.sleb128 -40
+ 1026 01cd 0B       		.uleb128 0xb
+ 1027 01ce B3000000 		.4byte	.LASF36
+ 1028 01d2 01       		.byte	0x1
+ 1029 01d3 3F       		.byte	0x3f
+ 1030 01d4 98000000 		.4byte	0x98
+ 1031 01d8 02       		.uleb128 0x2
+ 1032 01d9 91       		.byte	0x91
+ 1033 01da 54       		.sleb128 -44
+ 1034 01db 0B       		.uleb128 0xb
+ 1035 01dc 9A000000 		.4byte	.LASF37
+ 1036 01e0 01       		.byte	0x1
+ 1037 01e1 40       		.byte	0x40
+ 1038 01e2 BC000000 		.4byte	0xbc
+ 1039 01e6 02       		.uleb128 0x2
+ 1040 01e7 91       		.byte	0x91
+ 1041 01e8 50       		.sleb128 -48
+ 1042 01e9 0C       		.uleb128 0xc
+ 1043 01ea 3F000000 		.4byte	.LASF38
+ 1044 01ee 01       		.byte	0x1
+ 1045 01ef 42       		.byte	0x42
+ 1046 01f0 3C020000 		.4byte	0x23c
+ 1047 01f4 02       		.uleb128 0x2
+ 1048 01f5 91       		.byte	0x91
+ 1049 01f6 64       		.sleb128 -28
+ 1050 01f7 0C       		.uleb128 0xc
+ 1051 01f8 0B000000 		.4byte	.LASF39
+ 1052 01fc 01       		.byte	0x1
+ 1053 01fd 43       		.byte	0x43
+ 1054 01fe BC000000 		.4byte	0xbc
+ 1055 0202 02       		.uleb128 0x2
+ 1056 0203 91       		.byte	0x91
+ 1057 0204 74       		.sleb128 -12
+ 1058 0205 0C       		.uleb128 0xc
+ 1059 0206 60010000 		.4byte	.LASF40
+ 1060 020a 01       		.byte	0x1
+ 1061 020b 44       		.byte	0x44
+ 1062 020c 92010000 		.4byte	0x192
+ 1063 0210 02       		.uleb128 0x2
+ 1064 0211 91       		.byte	0x91
+ 1065 0212 70       		.sleb128 -16
+ 1066 0213 0C       		.uleb128 0xc
+ 1067 0214 8A000000 		.4byte	.LASF41
+ 1068 0218 01       		.byte	0x1
+ 1069 0219 45       		.byte	0x45
+ 1070 021a 98000000 		.4byte	0x98
+ 1071 021e 02       		.uleb128 0x2
+ 1072 021f 91       		.byte	0x91
+ 1073 0220 60       		.sleb128 -32
+ 1074 0221 0D       		.uleb128 0xd
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 28
+
+
+ 1075 0222 6900     		.ascii	"i\000"
+ 1076 0224 01       		.byte	0x1
+ 1077 0225 46       		.byte	0x46
+ 1078 0226 98000000 		.4byte	0x98
+ 1079 022a 02       		.uleb128 0x2
+ 1080 022b 91       		.byte	0x91
+ 1081 022c 6C       		.sleb128 -20
+ 1082 022d 0C       		.uleb128 0xc
+ 1083 022e 2E000000 		.4byte	.LASF42
+ 1084 0232 01       		.byte	0x1
+ 1085 0233 48       		.byte	0x48
+ 1086 0234 B1000000 		.4byte	0xb1
+ 1087 0238 02       		.uleb128 0x2
+ 1088 0239 91       		.byte	0x91
+ 1089 023a 68       		.sleb128 -24
+ 1090 023b 00       		.byte	0
+ 1091 023c 06       		.uleb128 0x6
+ 1092 023d 04       		.byte	0x4
+ 1093 023e 1E010000 		.4byte	0x11e
+ 1094 0242 0A       		.uleb128 0xa
+ 1095 0243 0C030000 		.4byte	.LASF44
+ 1096 0247 01       		.byte	0x1
+ 1097 0248 9D       		.byte	0x9d
+ 1098 0249 72000000 		.4byte	0x72
+ 1099 024d 00000000 		.4byte	.LFB2
+ 1100 0251 70000000 		.4byte	.LFE2-.LFB2
+ 1101 0255 01       		.uleb128 0x1
+ 1102 0256 9C       		.byte	0x9c
+ 1103 0257 94020000 		.4byte	0x294
+ 1104 025b 0B       		.uleb128 0xb
+ 1105 025c 3F000000 		.4byte	.LASF38
+ 1106 0260 01       		.byte	0x1
+ 1107 0261 9D       		.byte	0x9d
+ 1108 0262 3C020000 		.4byte	0x23c
+ 1109 0266 02       		.uleb128 0x2
+ 1110 0267 91       		.byte	0x91
+ 1111 0268 6C       		.sleb128 -20
+ 1112 0269 0B       		.uleb128 0xb
+ 1113 026a 9A000000 		.4byte	.LASF37
+ 1114 026e 01       		.byte	0x1
+ 1115 026f 9E       		.byte	0x9e
+ 1116 0270 BC000000 		.4byte	0xbc
+ 1117 0274 02       		.uleb128 0x2
+ 1118 0275 91       		.byte	0x91
+ 1119 0276 68       		.sleb128 -24
+ 1120 0277 0C       		.uleb128 0xc
+ 1121 0278 0B000000 		.4byte	.LASF39
+ 1122 027c 01       		.byte	0x1
+ 1123 027d A0       		.byte	0xa0
+ 1124 027e 72000000 		.4byte	0x72
+ 1125 0282 02       		.uleb128 0x2
+ 1126 0283 91       		.byte	0x91
+ 1127 0284 70       		.sleb128 -16
+ 1128 0285 0C       		.uleb128 0xc
+ 1129 0286 2E000000 		.4byte	.LASF42
+ 1130 028a 01       		.byte	0x1
+ 1131 028b A2       		.byte	0xa2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 29
+
+
+ 1132 028c B1000000 		.4byte	0xb1
+ 1133 0290 02       		.uleb128 0x2
+ 1134 0291 91       		.byte	0x91
+ 1135 0292 74       		.sleb128 -12
+ 1136 0293 00       		.byte	0
+ 1137 0294 0A       		.uleb128 0xa
+ 1138 0295 5F020000 		.4byte	.LASF45
+ 1139 0299 01       		.byte	0x1
+ 1140 029a D8       		.byte	0xd8
+ 1141 029b 82000000 		.4byte	0x82
+ 1142 029f 00000000 		.4byte	.LFB3
+ 1143 02a3 84000000 		.4byte	.LFE3-.LFB3
+ 1144 02a7 01       		.uleb128 0x1
+ 1145 02a8 9C       		.byte	0x9c
+ 1146 02a9 F4020000 		.4byte	0x2f4
+ 1147 02ad 0B       		.uleb128 0xb
+ 1148 02ae 3F000000 		.4byte	.LASF38
+ 1149 02b2 01       		.byte	0x1
+ 1150 02b3 D8       		.byte	0xd8
+ 1151 02b4 3C020000 		.4byte	0x23c
+ 1152 02b8 02       		.uleb128 0x2
+ 1153 02b9 91       		.byte	0x91
+ 1154 02ba 64       		.sleb128 -28
+ 1155 02bb 0B       		.uleb128 0xb
+ 1156 02bc 89010000 		.4byte	.LASF46
+ 1157 02c0 01       		.byte	0x1
+ 1158 02c1 D9       		.byte	0xd9
+ 1159 02c2 F4020000 		.4byte	0x2f4
+ 1160 02c6 02       		.uleb128 0x2
+ 1161 02c7 91       		.byte	0x91
+ 1162 02c8 60       		.sleb128 -32
+ 1163 02c9 0B       		.uleb128 0xb
+ 1164 02ca 9A000000 		.4byte	.LASF37
+ 1165 02ce 01       		.byte	0x1
+ 1166 02cf DA       		.byte	0xda
+ 1167 02d0 BC000000 		.4byte	0xbc
+ 1168 02d4 02       		.uleb128 0x2
+ 1169 02d5 91       		.byte	0x91
+ 1170 02d6 5C       		.sleb128 -36
+ 1171 02d7 0D       		.uleb128 0xd
+ 1172 02d8 6C656E00 		.ascii	"len\000"
+ 1173 02dc 01       		.byte	0x1
+ 1174 02dd DC       		.byte	0xdc
+ 1175 02de 82000000 		.4byte	0x82
+ 1176 02e2 02       		.uleb128 0x2
+ 1177 02e3 91       		.byte	0x91
+ 1178 02e4 6B       		.sleb128 -21
+ 1179 02e5 0C       		.uleb128 0xc
+ 1180 02e6 2E000000 		.4byte	.LASF42
+ 1181 02ea 01       		.byte	0x1
+ 1182 02eb DE       		.byte	0xde
+ 1183 02ec B1000000 		.4byte	0xb1
+ 1184 02f0 02       		.uleb128 0x2
+ 1185 02f1 91       		.byte	0x91
+ 1186 02f2 6C       		.sleb128 -20
+ 1187 02f3 00       		.byte	0
+ 1188 02f4 06       		.uleb128 0x6
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 30
+
+
+ 1189 02f5 04       		.byte	0x4
+ 1190 02f6 BC000000 		.4byte	0xbc
+ 1191 02fa 0E       		.uleb128 0xe
+ 1192 02fb 20030000 		.4byte	.LASF50
+ 1193 02ff 01       		.byte	0x1
+ 1194 0300 1901     		.2byte	0x119
+ 1195 0302 00000000 		.4byte	.LFB4
+ 1196 0306 64000000 		.4byte	.LFE4-.LFB4
+ 1197 030a 01       		.uleb128 0x1
+ 1198 030b 9C       		.byte	0x9c
+ 1199 030c 4D030000 		.4byte	0x34d
+ 1200 0310 0F       		.uleb128 0xf
+ 1201 0311 3F000000 		.4byte	.LASF38
+ 1202 0315 01       		.byte	0x1
+ 1203 0316 1901     		.2byte	0x119
+ 1204 0318 3C020000 		.4byte	0x23c
+ 1205 031c 02       		.uleb128 0x2
+ 1206 031d 91       		.byte	0x91
+ 1207 031e 6C       		.sleb128 -20
+ 1208 031f 0F       		.uleb128 0xf
+ 1209 0320 89010000 		.4byte	.LASF46
+ 1210 0324 01       		.byte	0x1
+ 1211 0325 1A01     		.2byte	0x11a
+ 1212 0327 BC000000 		.4byte	0xbc
+ 1213 032b 02       		.uleb128 0x2
+ 1214 032c 91       		.byte	0x91
+ 1215 032d 68       		.sleb128 -24
+ 1216 032e 0F       		.uleb128 0xf
+ 1217 032f 9A000000 		.4byte	.LASF37
+ 1218 0333 01       		.byte	0x1
+ 1219 0334 1B01     		.2byte	0x11b
+ 1220 0336 BC000000 		.4byte	0xbc
+ 1221 033a 02       		.uleb128 0x2
+ 1222 033b 91       		.byte	0x91
+ 1223 033c 64       		.sleb128 -28
+ 1224 033d 10       		.uleb128 0x10
+ 1225 033e 2E000000 		.4byte	.LASF42
+ 1226 0342 01       		.byte	0x1
+ 1227 0343 1E01     		.2byte	0x11e
+ 1228 0345 B1000000 		.4byte	0xb1
+ 1229 0349 02       		.uleb128 0x2
+ 1230 034a 91       		.byte	0x91
+ 1231 034b 74       		.sleb128 -12
+ 1232 034c 00       		.byte	0
+ 1233 034d 11       		.uleb128 0x11
+ 1234 034e 80010000 		.4byte	.LASF47
+ 1235 0352 01       		.byte	0x1
+ 1236 0353 5201     		.2byte	0x152
+ 1237 0355 82000000 		.4byte	0x82
+ 1238 0359 00000000 		.4byte	.LFB5
+ 1239 035d 6C000000 		.4byte	.LFE5-.LFB5
+ 1240 0361 01       		.uleb128 0x1
+ 1241 0362 9C       		.byte	0x9c
+ 1242 0363 95030000 		.4byte	0x395
+ 1243 0367 0F       		.uleb128 0xf
+ 1244 0368 3F000000 		.4byte	.LASF38
+ 1245 036c 01       		.byte	0x1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 31
+
+
+ 1246 036d 5201     		.2byte	0x152
+ 1247 036f 3C020000 		.4byte	0x23c
+ 1248 0373 02       		.uleb128 0x2
+ 1249 0374 91       		.byte	0x91
+ 1250 0375 6C       		.sleb128 -20
+ 1251 0376 0F       		.uleb128 0xf
+ 1252 0377 0B000000 		.4byte	.LASF39
+ 1253 037b 01       		.byte	0x1
+ 1254 037c 5301     		.2byte	0x153
+ 1255 037e 72000000 		.4byte	0x72
+ 1256 0382 02       		.uleb128 0x2
+ 1257 0383 91       		.byte	0x91
+ 1258 0384 68       		.sleb128 -24
+ 1259 0385 10       		.uleb128 0x10
+ 1260 0386 2E000000 		.4byte	.LASF42
+ 1261 038a 01       		.byte	0x1
+ 1262 038b 5601     		.2byte	0x156
+ 1263 038d B1000000 		.4byte	0xb1
+ 1264 0391 02       		.uleb128 0x2
+ 1265 0392 91       		.byte	0x91
+ 1266 0393 74       		.sleb128 -12
+ 1267 0394 00       		.byte	0
+ 1268 0395 11       		.uleb128 0x11
+ 1269 0396 44000000 		.4byte	.LASF48
+ 1270 039a 01       		.byte	0x1
+ 1271 039b 8201     		.2byte	0x182
+ 1272 039d 82000000 		.4byte	0x82
+ 1273 03a1 00000000 		.4byte	.LFB6
+ 1274 03a5 72000000 		.4byte	.LFE6-.LFB6
+ 1275 03a9 01       		.uleb128 0x1
+ 1276 03aa 9C       		.byte	0x9c
+ 1277 03ab DD030000 		.4byte	0x3dd
+ 1278 03af 0F       		.uleb128 0xf
+ 1279 03b0 3F000000 		.4byte	.LASF38
+ 1280 03b4 01       		.byte	0x1
+ 1281 03b5 8201     		.2byte	0x182
+ 1282 03b7 3C020000 		.4byte	0x23c
+ 1283 03bb 02       		.uleb128 0x2
+ 1284 03bc 91       		.byte	0x91
+ 1285 03bd 6C       		.sleb128 -20
+ 1286 03be 0F       		.uleb128 0xf
+ 1287 03bf 75010000 		.4byte	.LASF49
+ 1288 03c3 01       		.byte	0x1
+ 1289 03c4 8301     		.2byte	0x183
+ 1290 03c6 DD030000 		.4byte	0x3dd
+ 1291 03ca 02       		.uleb128 0x2
+ 1292 03cb 91       		.byte	0x91
+ 1293 03cc 68       		.sleb128 -24
+ 1294 03cd 10       		.uleb128 0x10
+ 1295 03ce 2E000000 		.4byte	.LASF42
+ 1296 03d2 01       		.byte	0x1
+ 1297 03d3 8601     		.2byte	0x186
+ 1298 03d5 B1000000 		.4byte	0xb1
+ 1299 03d9 02       		.uleb128 0x2
+ 1300 03da 91       		.byte	0x91
+ 1301 03db 74       		.sleb128 -12
+ 1302 03dc 00       		.byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 32
+
+
+ 1303 03dd 06       		.uleb128 0x6
+ 1304 03de 04       		.byte	0x4
+ 1305 03df 86010000 		.4byte	0x186
+ 1306 03e3 0E       		.uleb128 0xe
+ 1307 03e4 00000000 		.4byte	.LASF51
+ 1308 03e8 01       		.byte	0x1
+ 1309 03e9 AE01     		.2byte	0x1ae
+ 1310 03eb 00000000 		.4byte	.LFB7
+ 1311 03ef 90000000 		.4byte	.LFE7-.LFB7
+ 1312 03f3 01       		.uleb128 0x1
+ 1313 03f4 9C       		.byte	0x9c
+ 1314 03f5 16040000 		.4byte	0x416
+ 1315 03f9 10       		.uleb128 0x10
+ 1316 03fa 3F000000 		.4byte	.LASF38
+ 1317 03fe 01       		.byte	0x1
+ 1318 03ff B901     		.2byte	0x1b9
+ 1319 0401 3C020000 		.4byte	0x23c
+ 1320 0405 02       		.uleb128 0x2
+ 1321 0406 91       		.byte	0x91
+ 1322 0407 70       		.sleb128 -16
+ 1323 0408 12       		.uleb128 0x12
+ 1324 0409 6900     		.ascii	"i\000"
+ 1325 040b 01       		.byte	0x1
+ 1326 040c BA01     		.2byte	0x1ba
+ 1327 040e 8D000000 		.4byte	0x8d
+ 1328 0412 02       		.uleb128 0x2
+ 1329 0413 91       		.byte	0x91
+ 1330 0414 76       		.sleb128 -10
+ 1331 0415 00       		.byte	0
+ 1332 0416 13       		.uleb128 0x13
+ 1333 0417 4F000000 		.4byte	.LASF52
+ 1334 041b 03       		.byte	0x3
+ 1335 041c C402     		.2byte	0x2c4
+ 1336 041e 82000000 		.4byte	0x82
+ 1337 0422 13       		.uleb128 0x13
+ 1338 0423 CA010000 		.4byte	.LASF19
+ 1339 0427 03       		.byte	0x3
+ 1340 0428 E702     		.2byte	0x2e7
+ 1341 042a 3C020000 		.4byte	0x23c
+ 1342 042e 14       		.uleb128 0x14
+ 1343 042f 1E010000 		.4byte	0x11e
+ 1344 0433 3E040000 		.4byte	0x43e
+ 1345 0437 15       		.uleb128 0x15
+ 1346 0438 74000000 		.4byte	0x74
+ 1347 043c 04       		.byte	0x4
+ 1348 043d 00       		.byte	0
+ 1349 043e 13       		.uleb128 0x13
+ 1350 043f 4C020000 		.4byte	.LASF53
+ 1351 0443 03       		.byte	0x3
+ 1352 0444 E802     		.2byte	0x2e8
+ 1353 0446 2E040000 		.4byte	0x42e
+ 1354 044a 00       		.byte	0
+ 1355              		.section	.debug_abbrev,"",%progbits
+ 1356              	.Ldebug_abbrev0:
+ 1357 0000 01       		.uleb128 0x1
+ 1358 0001 11       		.uleb128 0x11
+ 1359 0002 01       		.byte	0x1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 33
+
+
+ 1360 0003 25       		.uleb128 0x25
+ 1361 0004 0E       		.uleb128 0xe
+ 1362 0005 13       		.uleb128 0x13
+ 1363 0006 0B       		.uleb128 0xb
+ 1364 0007 03       		.uleb128 0x3
+ 1365 0008 0E       		.uleb128 0xe
+ 1366 0009 1B       		.uleb128 0x1b
+ 1367 000a 0E       		.uleb128 0xe
+ 1368 000b 55       		.uleb128 0x55
+ 1369 000c 17       		.uleb128 0x17
+ 1370 000d 11       		.uleb128 0x11
+ 1371 000e 01       		.uleb128 0x1
+ 1372 000f 10       		.uleb128 0x10
+ 1373 0010 17       		.uleb128 0x17
+ 1374 0011 00       		.byte	0
+ 1375 0012 00       		.byte	0
+ 1376 0013 02       		.uleb128 0x2
+ 1377 0014 24       		.uleb128 0x24
+ 1378 0015 00       		.byte	0
+ 1379 0016 0B       		.uleb128 0xb
+ 1380 0017 0B       		.uleb128 0xb
+ 1381 0018 3E       		.uleb128 0x3e
+ 1382 0019 0B       		.uleb128 0xb
+ 1383 001a 03       		.uleb128 0x3
+ 1384 001b 0E       		.uleb128 0xe
+ 1385 001c 00       		.byte	0
+ 1386 001d 00       		.byte	0
+ 1387 001e 03       		.uleb128 0x3
+ 1388 001f 24       		.uleb128 0x24
+ 1389 0020 00       		.byte	0
+ 1390 0021 0B       		.uleb128 0xb
+ 1391 0022 0B       		.uleb128 0xb
+ 1392 0023 3E       		.uleb128 0x3e
+ 1393 0024 0B       		.uleb128 0xb
+ 1394 0025 03       		.uleb128 0x3
+ 1395 0026 08       		.uleb128 0x8
+ 1396 0027 00       		.byte	0
+ 1397 0028 00       		.byte	0
+ 1398 0029 04       		.uleb128 0x4
+ 1399 002a 0F       		.uleb128 0xf
+ 1400 002b 00       		.byte	0
+ 1401 002c 0B       		.uleb128 0xb
+ 1402 002d 0B       		.uleb128 0xb
+ 1403 002e 00       		.byte	0
+ 1404 002f 00       		.byte	0
+ 1405 0030 05       		.uleb128 0x5
+ 1406 0031 16       		.uleb128 0x16
+ 1407 0032 00       		.byte	0
+ 1408 0033 03       		.uleb128 0x3
+ 1409 0034 0E       		.uleb128 0xe
+ 1410 0035 3A       		.uleb128 0x3a
+ 1411 0036 0B       		.uleb128 0xb
+ 1412 0037 3B       		.uleb128 0x3b
+ 1413 0038 0B       		.uleb128 0xb
+ 1414 0039 49       		.uleb128 0x49
+ 1415 003a 13       		.uleb128 0x13
+ 1416 003b 00       		.byte	0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 34
+
+
+ 1417 003c 00       		.byte	0
+ 1418 003d 06       		.uleb128 0x6
+ 1419 003e 0F       		.uleb128 0xf
+ 1420 003f 00       		.byte	0
+ 1421 0040 0B       		.uleb128 0xb
+ 1422 0041 0B       		.uleb128 0xb
+ 1423 0042 49       		.uleb128 0x49
+ 1424 0043 13       		.uleb128 0x13
+ 1425 0044 00       		.byte	0
+ 1426 0045 00       		.byte	0
+ 1427 0046 07       		.uleb128 0x7
+ 1428 0047 13       		.uleb128 0x13
+ 1429 0048 01       		.byte	0x1
+ 1430 0049 03       		.uleb128 0x3
+ 1431 004a 0E       		.uleb128 0xe
+ 1432 004b 0B       		.uleb128 0xb
+ 1433 004c 0B       		.uleb128 0xb
+ 1434 004d 3A       		.uleb128 0x3a
+ 1435 004e 0B       		.uleb128 0xb
+ 1436 004f 3B       		.uleb128 0x3b
+ 1437 0050 05       		.uleb128 0x5
+ 1438 0051 01       		.uleb128 0x1
+ 1439 0052 13       		.uleb128 0x13
+ 1440 0053 00       		.byte	0
+ 1441 0054 00       		.byte	0
+ 1442 0055 08       		.uleb128 0x8
+ 1443 0056 0D       		.uleb128 0xd
+ 1444 0057 00       		.byte	0
+ 1445 0058 03       		.uleb128 0x3
+ 1446 0059 0E       		.uleb128 0xe
+ 1447 005a 3A       		.uleb128 0x3a
+ 1448 005b 0B       		.uleb128 0xb
+ 1449 005c 3B       		.uleb128 0x3b
+ 1450 005d 05       		.uleb128 0x5
+ 1451 005e 49       		.uleb128 0x49
+ 1452 005f 13       		.uleb128 0x13
+ 1453 0060 38       		.uleb128 0x38
+ 1454 0061 0B       		.uleb128 0xb
+ 1455 0062 00       		.byte	0
+ 1456 0063 00       		.byte	0
+ 1457 0064 09       		.uleb128 0x9
+ 1458 0065 16       		.uleb128 0x16
+ 1459 0066 00       		.byte	0
+ 1460 0067 03       		.uleb128 0x3
+ 1461 0068 0E       		.uleb128 0xe
+ 1462 0069 3A       		.uleb128 0x3a
+ 1463 006a 0B       		.uleb128 0xb
+ 1464 006b 3B       		.uleb128 0x3b
+ 1465 006c 05       		.uleb128 0x5
+ 1466 006d 49       		.uleb128 0x49
+ 1467 006e 13       		.uleb128 0x13
+ 1468 006f 00       		.byte	0
+ 1469 0070 00       		.byte	0
+ 1470 0071 0A       		.uleb128 0xa
+ 1471 0072 2E       		.uleb128 0x2e
+ 1472 0073 01       		.byte	0x1
+ 1473 0074 3F       		.uleb128 0x3f
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 35
+
+
+ 1474 0075 19       		.uleb128 0x19
+ 1475 0076 03       		.uleb128 0x3
+ 1476 0077 0E       		.uleb128 0xe
+ 1477 0078 3A       		.uleb128 0x3a
+ 1478 0079 0B       		.uleb128 0xb
+ 1479 007a 3B       		.uleb128 0x3b
+ 1480 007b 0B       		.uleb128 0xb
+ 1481 007c 27       		.uleb128 0x27
+ 1482 007d 19       		.uleb128 0x19
+ 1483 007e 49       		.uleb128 0x49
+ 1484 007f 13       		.uleb128 0x13
+ 1485 0080 11       		.uleb128 0x11
+ 1486 0081 01       		.uleb128 0x1
+ 1487 0082 12       		.uleb128 0x12
+ 1488 0083 06       		.uleb128 0x6
+ 1489 0084 40       		.uleb128 0x40
+ 1490 0085 18       		.uleb128 0x18
+ 1491 0086 9642     		.uleb128 0x2116
+ 1492 0088 19       		.uleb128 0x19
+ 1493 0089 01       		.uleb128 0x1
+ 1494 008a 13       		.uleb128 0x13
+ 1495 008b 00       		.byte	0
+ 1496 008c 00       		.byte	0
+ 1497 008d 0B       		.uleb128 0xb
+ 1498 008e 05       		.uleb128 0x5
+ 1499 008f 00       		.byte	0
+ 1500 0090 03       		.uleb128 0x3
+ 1501 0091 0E       		.uleb128 0xe
+ 1502 0092 3A       		.uleb128 0x3a
+ 1503 0093 0B       		.uleb128 0xb
+ 1504 0094 3B       		.uleb128 0x3b
+ 1505 0095 0B       		.uleb128 0xb
+ 1506 0096 49       		.uleb128 0x49
+ 1507 0097 13       		.uleb128 0x13
+ 1508 0098 02       		.uleb128 0x2
+ 1509 0099 18       		.uleb128 0x18
+ 1510 009a 00       		.byte	0
+ 1511 009b 00       		.byte	0
+ 1512 009c 0C       		.uleb128 0xc
+ 1513 009d 34       		.uleb128 0x34
+ 1514 009e 00       		.byte	0
+ 1515 009f 03       		.uleb128 0x3
+ 1516 00a0 0E       		.uleb128 0xe
+ 1517 00a1 3A       		.uleb128 0x3a
+ 1518 00a2 0B       		.uleb128 0xb
+ 1519 00a3 3B       		.uleb128 0x3b
+ 1520 00a4 0B       		.uleb128 0xb
+ 1521 00a5 49       		.uleb128 0x49
+ 1522 00a6 13       		.uleb128 0x13
+ 1523 00a7 02       		.uleb128 0x2
+ 1524 00a8 18       		.uleb128 0x18
+ 1525 00a9 00       		.byte	0
+ 1526 00aa 00       		.byte	0
+ 1527 00ab 0D       		.uleb128 0xd
+ 1528 00ac 34       		.uleb128 0x34
+ 1529 00ad 00       		.byte	0
+ 1530 00ae 03       		.uleb128 0x3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 36
+
+
+ 1531 00af 08       		.uleb128 0x8
+ 1532 00b0 3A       		.uleb128 0x3a
+ 1533 00b1 0B       		.uleb128 0xb
+ 1534 00b2 3B       		.uleb128 0x3b
+ 1535 00b3 0B       		.uleb128 0xb
+ 1536 00b4 49       		.uleb128 0x49
+ 1537 00b5 13       		.uleb128 0x13
+ 1538 00b6 02       		.uleb128 0x2
+ 1539 00b7 18       		.uleb128 0x18
+ 1540 00b8 00       		.byte	0
+ 1541 00b9 00       		.byte	0
+ 1542 00ba 0E       		.uleb128 0xe
+ 1543 00bb 2E       		.uleb128 0x2e
+ 1544 00bc 01       		.byte	0x1
+ 1545 00bd 3F       		.uleb128 0x3f
+ 1546 00be 19       		.uleb128 0x19
+ 1547 00bf 03       		.uleb128 0x3
+ 1548 00c0 0E       		.uleb128 0xe
+ 1549 00c1 3A       		.uleb128 0x3a
+ 1550 00c2 0B       		.uleb128 0xb
+ 1551 00c3 3B       		.uleb128 0x3b
+ 1552 00c4 05       		.uleb128 0x5
+ 1553 00c5 27       		.uleb128 0x27
+ 1554 00c6 19       		.uleb128 0x19
+ 1555 00c7 11       		.uleb128 0x11
+ 1556 00c8 01       		.uleb128 0x1
+ 1557 00c9 12       		.uleb128 0x12
+ 1558 00ca 06       		.uleb128 0x6
+ 1559 00cb 40       		.uleb128 0x40
+ 1560 00cc 18       		.uleb128 0x18
+ 1561 00cd 9642     		.uleb128 0x2116
+ 1562 00cf 19       		.uleb128 0x19
+ 1563 00d0 01       		.uleb128 0x1
+ 1564 00d1 13       		.uleb128 0x13
+ 1565 00d2 00       		.byte	0
+ 1566 00d3 00       		.byte	0
+ 1567 00d4 0F       		.uleb128 0xf
+ 1568 00d5 05       		.uleb128 0x5
+ 1569 00d6 00       		.byte	0
+ 1570 00d7 03       		.uleb128 0x3
+ 1571 00d8 0E       		.uleb128 0xe
+ 1572 00d9 3A       		.uleb128 0x3a
+ 1573 00da 0B       		.uleb128 0xb
+ 1574 00db 3B       		.uleb128 0x3b
+ 1575 00dc 05       		.uleb128 0x5
+ 1576 00dd 49       		.uleb128 0x49
+ 1577 00de 13       		.uleb128 0x13
+ 1578 00df 02       		.uleb128 0x2
+ 1579 00e0 18       		.uleb128 0x18
+ 1580 00e1 00       		.byte	0
+ 1581 00e2 00       		.byte	0
+ 1582 00e3 10       		.uleb128 0x10
+ 1583 00e4 34       		.uleb128 0x34
+ 1584 00e5 00       		.byte	0
+ 1585 00e6 03       		.uleb128 0x3
+ 1586 00e7 0E       		.uleb128 0xe
+ 1587 00e8 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 37
+
+
+ 1588 00e9 0B       		.uleb128 0xb
+ 1589 00ea 3B       		.uleb128 0x3b
+ 1590 00eb 05       		.uleb128 0x5
+ 1591 00ec 49       		.uleb128 0x49
+ 1592 00ed 13       		.uleb128 0x13
+ 1593 00ee 02       		.uleb128 0x2
+ 1594 00ef 18       		.uleb128 0x18
+ 1595 00f0 00       		.byte	0
+ 1596 00f1 00       		.byte	0
+ 1597 00f2 11       		.uleb128 0x11
+ 1598 00f3 2E       		.uleb128 0x2e
+ 1599 00f4 01       		.byte	0x1
+ 1600 00f5 3F       		.uleb128 0x3f
+ 1601 00f6 19       		.uleb128 0x19
+ 1602 00f7 03       		.uleb128 0x3
+ 1603 00f8 0E       		.uleb128 0xe
+ 1604 00f9 3A       		.uleb128 0x3a
+ 1605 00fa 0B       		.uleb128 0xb
+ 1606 00fb 3B       		.uleb128 0x3b
+ 1607 00fc 05       		.uleb128 0x5
+ 1608 00fd 27       		.uleb128 0x27
+ 1609 00fe 19       		.uleb128 0x19
+ 1610 00ff 49       		.uleb128 0x49
+ 1611 0100 13       		.uleb128 0x13
+ 1612 0101 11       		.uleb128 0x11
+ 1613 0102 01       		.uleb128 0x1
+ 1614 0103 12       		.uleb128 0x12
+ 1615 0104 06       		.uleb128 0x6
+ 1616 0105 40       		.uleb128 0x40
+ 1617 0106 18       		.uleb128 0x18
+ 1618 0107 9642     		.uleb128 0x2116
+ 1619 0109 19       		.uleb128 0x19
+ 1620 010a 01       		.uleb128 0x1
+ 1621 010b 13       		.uleb128 0x13
+ 1622 010c 00       		.byte	0
+ 1623 010d 00       		.byte	0
+ 1624 010e 12       		.uleb128 0x12
+ 1625 010f 34       		.uleb128 0x34
+ 1626 0110 00       		.byte	0
+ 1627 0111 03       		.uleb128 0x3
+ 1628 0112 08       		.uleb128 0x8
+ 1629 0113 3A       		.uleb128 0x3a
+ 1630 0114 0B       		.uleb128 0xb
+ 1631 0115 3B       		.uleb128 0x3b
+ 1632 0116 05       		.uleb128 0x5
+ 1633 0117 49       		.uleb128 0x49
+ 1634 0118 13       		.uleb128 0x13
+ 1635 0119 02       		.uleb128 0x2
+ 1636 011a 18       		.uleb128 0x18
+ 1637 011b 00       		.byte	0
+ 1638 011c 00       		.byte	0
+ 1639 011d 13       		.uleb128 0x13
+ 1640 011e 34       		.uleb128 0x34
+ 1641 011f 00       		.byte	0
+ 1642 0120 03       		.uleb128 0x3
+ 1643 0121 0E       		.uleb128 0xe
+ 1644 0122 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 38
+
+
+ 1645 0123 0B       		.uleb128 0xb
+ 1646 0124 3B       		.uleb128 0x3b
+ 1647 0125 05       		.uleb128 0x5
+ 1648 0126 49       		.uleb128 0x49
+ 1649 0127 13       		.uleb128 0x13
+ 1650 0128 3F       		.uleb128 0x3f
+ 1651 0129 19       		.uleb128 0x19
+ 1652 012a 3C       		.uleb128 0x3c
+ 1653 012b 19       		.uleb128 0x19
+ 1654 012c 00       		.byte	0
+ 1655 012d 00       		.byte	0
+ 1656 012e 14       		.uleb128 0x14
+ 1657 012f 01       		.uleb128 0x1
+ 1658 0130 01       		.byte	0x1
+ 1659 0131 49       		.uleb128 0x49
+ 1660 0132 13       		.uleb128 0x13
+ 1661 0133 01       		.uleb128 0x1
+ 1662 0134 13       		.uleb128 0x13
+ 1663 0135 00       		.byte	0
+ 1664 0136 00       		.byte	0
+ 1665 0137 15       		.uleb128 0x15
+ 1666 0138 21       		.uleb128 0x21
+ 1667 0139 00       		.byte	0
+ 1668 013a 49       		.uleb128 0x49
+ 1669 013b 13       		.uleb128 0x13
+ 1670 013c 2F       		.uleb128 0x2f
+ 1671 013d 0B       		.uleb128 0xb
+ 1672 013e 00       		.byte	0
+ 1673 013f 00       		.byte	0
+ 1674 0140 00       		.byte	0
+ 1675              		.section	.debug_aranges,"",%progbits
+ 1676 0000 4C000000 		.4byte	0x4c
+ 1677 0004 0200     		.2byte	0x2
+ 1678 0006 00000000 		.4byte	.Ldebug_info0
+ 1679 000a 04       		.byte	0x4
+ 1680 000b 00       		.byte	0
+ 1681 000c 0000     		.2byte	0
+ 1682 000e 0000     		.2byte	0
+ 1683 0010 00000000 		.4byte	.LFB1
+ 1684 0014 F8000000 		.4byte	.LFE1-.LFB1
+ 1685 0018 00000000 		.4byte	.LFB2
+ 1686 001c 70000000 		.4byte	.LFE2-.LFB2
+ 1687 0020 00000000 		.4byte	.LFB3
+ 1688 0024 84000000 		.4byte	.LFE3-.LFB3
+ 1689 0028 00000000 		.4byte	.LFB4
+ 1690 002c 64000000 		.4byte	.LFE4-.LFB4
+ 1691 0030 00000000 		.4byte	.LFB5
+ 1692 0034 6C000000 		.4byte	.LFE5-.LFB5
+ 1693 0038 00000000 		.4byte	.LFB6
+ 1694 003c 72000000 		.4byte	.LFE6-.LFB6
+ 1695 0040 00000000 		.4byte	.LFB7
+ 1696 0044 90000000 		.4byte	.LFE7-.LFB7
+ 1697 0048 00000000 		.4byte	0
+ 1698 004c 00000000 		.4byte	0
+ 1699              		.section	.debug_ranges,"",%progbits
+ 1700              	.Ldebug_ranges0:
+ 1701 0000 00000000 		.4byte	.LFB1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 39
+
+
+ 1702 0004 F8000000 		.4byte	.LFE1
+ 1703 0008 00000000 		.4byte	.LFB2
+ 1704 000c 70000000 		.4byte	.LFE2
+ 1705 0010 00000000 		.4byte	.LFB3
+ 1706 0014 84000000 		.4byte	.LFE3
+ 1707 0018 00000000 		.4byte	.LFB4
+ 1708 001c 64000000 		.4byte	.LFE4
+ 1709 0020 00000000 		.4byte	.LFB5
+ 1710 0024 6C000000 		.4byte	.LFE5
+ 1711 0028 00000000 		.4byte	.LFB6
+ 1712 002c 72000000 		.4byte	.LFE6
+ 1713 0030 00000000 		.4byte	.LFB7
+ 1714 0034 90000000 		.4byte	.LFE7
+ 1715 0038 00000000 		.4byte	0
+ 1716 003c 00000000 		.4byte	0
+ 1717              		.section	.debug_line,"",%progbits
+ 1718              	.Ldebug_line0:
+ 1719 0000 D2010000 		.section	.debug_str,"MS",%progbits,1
+ 1719      0200A500 
+ 1719      00000201 
+ 1719      FB0E0D00 
+ 1719      01010101 
+ 1720              	.LASF51:
+ 1721 0000 4F535F4D 		.ascii	"OS_MemInit\000"
+ 1721      656D496E 
+ 1721      697400
+ 1722              	.LASF39:
+ 1723 000b 70626C6B 		.ascii	"pblk\000"
+ 1723      00
+ 1724              	.LASF3:
+ 1725 0010 73686F72 		.ascii	"short unsigned int\000"
+ 1725      7420756E 
+ 1725      7369676E 
+ 1725      65642069 
+ 1725      6E7400
+ 1726              	.LASF28:
+ 1727 0023 4F534672 		.ascii	"OSFreeList\000"
+ 1727      65654C69 
+ 1727      737400
+ 1728              	.LASF42:
+ 1729 002e 6370755F 		.ascii	"cpu_sr\000"
+ 1729      737200
+ 1730              	.LASF18:
+ 1731 0035 4F534D65 		.ascii	"OSMemAddr\000"
+ 1731      6D416464 
+ 1731      7200
+ 1732              	.LASF38:
+ 1733 003f 706D656D 		.ascii	"pmem\000"
+ 1733      00
+ 1734              	.LASF48:
+ 1735 0044 4F534D65 		.ascii	"OSMemQuery\000"
+ 1735      6D517565 
+ 1735      727900
+ 1736              	.LASF52:
+ 1737 004f 4F53496E 		.ascii	"OSIntNesting\000"
+ 1737      744E6573 
+ 1737      74696E67 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 40
+
+
+ 1737      00
+ 1738              	.LASF16:
+ 1739 005c 646F7562 		.ascii	"double\000"
+ 1739      6C6500
+ 1740              	.LASF21:
+ 1741 0063 4F534D65 		.ascii	"OSMemNBlks\000"
+ 1741      6D4E426C 
+ 1741      6B7300
+ 1742              	.LASF24:
+ 1743 006e 4F535F4D 		.ascii	"OS_MEM\000"
+ 1743      454D00
+ 1744              	.LASF13:
+ 1745 0075 494E5431 		.ascii	"INT16U\000"
+ 1745      365500
+ 1746              	.LASF30:
+ 1747 007c 4F534E42 		.ascii	"OSNBlks\000"
+ 1747      6C6B7300 
+ 1748              	.LASF15:
+ 1749 0084 666C6F61 		.ascii	"float\000"
+ 1749      7400
+ 1750              	.LASF41:
+ 1751 008a 6C6F6F70 		.ascii	"loops\000"
+ 1751      7300
+ 1752              	.LASF17:
+ 1753 0090 4F535F43 		.ascii	"OS_CPU_SR\000"
+ 1753      50555F53 
+ 1753      5200
+ 1754              	.LASF37:
+ 1755 009a 70657272 		.ascii	"perr\000"
+ 1755      00
+ 1756              	.LASF1:
+ 1757 009f 756E7369 		.ascii	"unsigned char\000"
+ 1757      676E6564 
+ 1757      20636861 
+ 1757      7200
+ 1758              	.LASF35:
+ 1759 00ad 6E626C6B 		.ascii	"nblks\000"
+ 1759      7300
+ 1760              	.LASF36:
+ 1761 00b3 626C6B73 		.ascii	"blksize\000"
+ 1761      697A6500 
+ 1762              	.LASF5:
+ 1763 00bb 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1763      20756E73 
+ 1763      69676E65 
+ 1763      6420696E 
+ 1763      7400
+ 1764              	.LASF34:
+ 1765 00cd 61646472 		.ascii	"addr\000"
+ 1765      00
+ 1766              	.LASF54:
+ 1767 00d2 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1767      43313120 
+ 1767      352E342E 
+ 1767      31203230 
+ 1767      31363036 
+ 1768 0105 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 41
+
+
+ 1768      20726576 
+ 1768      6973696F 
+ 1768      6E203233 
+ 1768      37373135 
+ 1769 0138 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 1769      66756E63 
+ 1769      74696F6E 
+ 1769      2D736563 
+ 1769      74696F6E 
+ 1770              	.LASF40:
+ 1771 0160 706C696E 		.ascii	"plink\000"
+ 1771      6B00
+ 1772              	.LASF32:
+ 1773 0166 4F534E55 		.ascii	"OSNUsed\000"
+ 1773      73656400 
+ 1774              	.LASF27:
+ 1775 016e 4F534164 		.ascii	"OSAddr\000"
+ 1775      647200
+ 1776              	.LASF49:
+ 1777 0175 705F6D65 		.ascii	"p_mem_data\000"
+ 1777      6D5F6461 
+ 1777      746100
+ 1778              	.LASF47:
+ 1779 0180 4F534D65 		.ascii	"OSMemPut\000"
+ 1779      6D507574 
+ 1779      00
+ 1780              	.LASF46:
+ 1781 0189 706E616D 		.ascii	"pname\000"
+ 1781      6500
+ 1782              	.LASF23:
+ 1783 018f 4F534D65 		.ascii	"OSMemName\000"
+ 1783      6D4E616D 
+ 1783      6500
+ 1784              	.LASF25:
+ 1785 0199 6F735F6D 		.ascii	"os_mem\000"
+ 1785      656D00
+ 1786              	.LASF8:
+ 1787 01a0 756E7369 		.ascii	"unsigned int\000"
+ 1787      676E6564 
+ 1787      20696E74 
+ 1787      00
+ 1788              	.LASF12:
+ 1789 01ad 494E5438 		.ascii	"INT8U\000"
+ 1789      5500
+ 1790              	.LASF7:
+ 1791 01b3 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1791      206C6F6E 
+ 1791      6720756E 
+ 1791      7369676E 
+ 1791      65642069 
+ 1792              	.LASF19:
+ 1793 01ca 4F534D65 		.ascii	"OSMemFreeList\000"
+ 1793      6D467265 
+ 1793      654C6973 
+ 1793      7400
+ 1794              	.LASF26:
+ 1795 01d8 6F735F6D 		.ascii	"os_mem_data\000"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 42
+
+
+ 1795      656D5F64 
+ 1795      61746100 
+ 1796              	.LASF10:
+ 1797 01e4 73697A65 		.ascii	"sizetype\000"
+ 1797      74797065 
+ 1797      00
+ 1798              	.LASF6:
+ 1799 01ed 6C6F6E67 		.ascii	"long long int\000"
+ 1799      206C6F6E 
+ 1799      6720696E 
+ 1799      7400
+ 1800              	.LASF11:
+ 1801 01fb 63686172 		.ascii	"char\000"
+ 1801      00
+ 1802              	.LASF20:
+ 1803 0200 4F534D65 		.ascii	"OSMemBlkSize\000"
+ 1803      6D426C6B 
+ 1803      53697A65 
+ 1803      00
+ 1804              	.LASF55:
+ 1805 020d 2E2E5C2E 		.ascii	"..\\..\\..\\..\\..\\..\\Software\\uCOS-II\\Source\\"
+ 1805      2E5C2E2E 
+ 1805      5C2E2E5C 
+ 1805      2E2E5C2E 
+ 1805      2E5C536F 
+ 1806 0237 6F735F6D 		.ascii	"os_mem.c\000"
+ 1806      656D2E63 
+ 1806      00
+ 1807              	.LASF33:
+ 1808 0240 4F535F4D 		.ascii	"OS_MEM_DATA\000"
+ 1808      454D5F44 
+ 1808      41544100 
+ 1809              	.LASF53:
+ 1810 024c 4F534D65 		.ascii	"OSMemTbl\000"
+ 1810      6D54626C 
+ 1810      00
+ 1811              	.LASF2:
+ 1812 0255 73686F72 		.ascii	"short int\000"
+ 1812      7420696E 
+ 1812      7400
+ 1813              	.LASF45:
+ 1814 025f 4F534D65 		.ascii	"OSMemNameGet\000"
+ 1814      6D4E616D 
+ 1814      65476574 
+ 1814      00
+ 1815              	.LASF14:
+ 1816 026c 494E5433 		.ascii	"INT32U\000"
+ 1816      325500
+ 1817              	.LASF29:
+ 1818 0273 4F53426C 		.ascii	"OSBlkSize\000"
+ 1818      6B53697A 
+ 1818      6500
+ 1819              	.LASF56:
+ 1820 027d 443A5C43 		.ascii	"D:\\CYTEST\\Micrium_CY8CKIT-044_OS2\\Micrium\\Examp"
+ 1820      59544553 
+ 1820      545C4D69 
+ 1820      63726975 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccjqW26u.s 			page 43
+
+
+ 1820      6D5F4359 
+ 1821 02ac 6C65735C 		.ascii	"les\\Cypress\\CY8CKIT-044\\OS2\\PSoC\\OS2.cydsn\000"
+ 1821      43797072 
+ 1821      6573735C 
+ 1821      43593843 
+ 1821      4B49542D 
+ 1822              	.LASF4:
+ 1823 02d7 6C6F6E67 		.ascii	"long int\000"
+ 1823      20696E74 
+ 1823      00
+ 1824              	.LASF43:
+ 1825 02e0 4F534D65 		.ascii	"OSMemCreate\000"
+ 1825      6D437265 
+ 1825      61746500 
+ 1826              	.LASF9:
+ 1827 02ec 6C6F6E67 		.ascii	"long double\000"
+ 1827      20646F75 
+ 1827      626C6500 
+ 1828              	.LASF31:
+ 1829 02f8 4F534E46 		.ascii	"OSNFree\000"
+ 1829      72656500 
+ 1830              	.LASF0:
+ 1831 0300 7369676E 		.ascii	"signed char\000"
+ 1831      65642063 
+ 1831      68617200 
+ 1832              	.LASF44:
+ 1833 030c 4F534D65 		.ascii	"OSMemGet\000"
+ 1833      6D476574 
+ 1833      00
+ 1834              	.LASF22:
+ 1835 0315 4F534D65 		.ascii	"OSMemNFree\000"
+ 1835      6D4E4672 
+ 1835      656500
+ 1836              	.LASF50:
+ 1837 0320 4F534D65 		.ascii	"OSMemNameSet\000"
+ 1837      6D4E616D 
+ 1837      65536574 
+ 1837      00
+ 1838              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran
